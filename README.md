@@ -16,7 +16,7 @@ Open Git Bash and use `git clone` command to download this repository.
 git clone https://github.com/Stomper10/CheXpert.git
 ```
 
-# 1. Download Data
+# 1. Download the Data
 At the bottom of the CheXpert [webpage](https://stanfordmlgroup.github.io/competitions/chexpert/), write a registration form to download the CheXpert dataset.
 You will receive a link to the download over email. Right-click your mouse on the download link(439GB or 11GB) and click 'Copy link address'.
 
@@ -58,7 +58,6 @@ For those who want to compare the running environment, mine was as below(used GP
 * Intel Xeon Silver 4216 CPU
 * 512GB memory
 * Nvidia Titan RTX GPU
-
 
 # 4. Task Lists
 - [x] Use subset of training dataset(10%) to check computational costs and performances.
