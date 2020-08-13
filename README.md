@@ -47,7 +47,7 @@ You may get training & validation losses and ROC curves for results. You can als
 ![](https://github.com/Stomper10/CheXpert/blob/master/Results/ROCfor10%25.png)
 
 
-This chart below is comparison with original paper results(used 10% of training dataset).
+This table below is a comparison with original paper results(used 10% of the training dataset).
 
 
 Observation | Experiment AUC | Paper AUC | Difference
