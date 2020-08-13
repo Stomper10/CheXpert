@@ -46,7 +46,26 @@ You may get training & validation losses and ROC curves for results. You can als
 
 ![](https://github.com/Stomper10/CheXpert/blob/master/Results/ROCfor10%25.png)
 
-# 4. References
+
+This chart below is comparison with original paper results(used 10% of training dataset).
+
+
+Observation | Experiment AUC | Paper AUC | Difference
+:-: | :-: | :-: | :-:
+Atelectasis | 0.64 | 0.85 | -0.21
+Cardiomegaly | 0.83 | 0.90 | -0.07
+Consolidation | 0.61 | 0.90 | -0.29
+Edema | 0.81 | 0.92 | -0.11
+Pleural Effusion | 0.82 | 0.97 | -0.15
+
+
+# 4. Task Lists
+- [x] Use subset of training dataset(10%) to check computational costs and performances.
+- [ ] Use whole training dataset and compare performances.
+- [ ] Apply Grad-CAM method for localization.
+- [ ] Use original dataset for training(~439GB).
+
+# 5. References
 - CheXpert: A Large Chest Radiograph Dataset with Uncertainty Labels and Expert Comparison, Irvin, Jeremy, et al., 2019 [[Arxiv:1901.07031]](https://arxiv.org/pdf/1901.07031.pdf)
 - Densely Connected Convolutional Networks, Huang et al., 2018 [[Arxiv:1608.06993]](https://arxiv.org/pdf/1608.06993.pdf)
 - [Github repository](https://github.com/gaetandi/cheXpert)
