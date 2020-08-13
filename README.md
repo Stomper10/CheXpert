@@ -35,11 +35,6 @@ Now the dataset is ready. You have to place `CheXpert-v1.0-small` directory and 
 # 2. Run the Code
 If you want to use `.ipynb` file, run `CheXpert_DenseNet121.ipynb` file. If you want `.py` file instead, `CheXpert_DenseNet121.py` is also ready for you. Same contents with the different file extensions. Maybe you need to install `PyTorch` and `Bar` packages before you run the code.  
 
-For those who want to compare, my running environment was as below(used GPU server).
-* Intel Xeon Silver 4216 CPU
-* 512GB memory
-* Nvidia Titan RTX GPU
-
 # 3. Results
 You may get training & validation losses and ROC curves for results. You can also check the computational costs. Saved model and ROC curve `.png` files are saved in the `Results` directory(I manually moved saved model and `.png` files after creating `Results` directory). Let me just show you the ROC curves here.
 
@@ -57,6 +52,12 @@ Cardiomegaly | 0.83 | 0.90 | -0.07
 Consolidation | 0.61 | 0.90 | -0.29
 Edema | 0.81 | 0.92 | -0.11
 Pleural Effusion | 0.82 | 0.97 | -0.15
+
+
+For those who want to compare running environment, mine was as below(used GPU server).
+* Intel Xeon Silver 4216 CPU
+* 512GB memory
+* Nvidia Titan RTX GPU
 
 
 # 4. Task Lists
