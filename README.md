@@ -42,7 +42,7 @@ You may get training & validation losses and ROC curves for results. You can als
 ![](https://github.com/Stomper10/CheXpert/blob/master/Results/ROCfor10%25.png)
 
 
-This table below is a comparison with original paper results(used 10% of the training dataset).
+This table below shows a comparison with original paper results(used 10% of the training dataset).
 
 
 Observation | Experiment AUC | Paper AUC | Difference
@@ -54,7 +54,7 @@ Edema | 0.81 | 0.92 | -0.11
 Pleural Effusion | 0.82 | 0.97 | -0.15
 
 
-For those who want to compare running environment, mine was as below(used GPU server).
+For those who want to compare the running environment, mine was as below(used GPU server).
 * Intel Xeon Silver 4216 CPU
 * 512GB memory
 * Nvidia Titan RTX GPU
