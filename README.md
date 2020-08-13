@@ -41,8 +41,8 @@ For those who want to compare, my running environment was as below(used GPU serv
 * Nvidia Titan RTX GPU
 
 # 3. Results
-You may get training & validation loss and ROC curve for results. You can also check the computational cost. Results are saved in the `Result` folder in this repository. Let me just show you the ROC curve here.
-![Alt text]()
+You may get training & validation loss and ROC curve for results. You can also check the computational cost. Saved models and ROC curve `.png` file are saved in the `Results` folder in this repository. Let me just show you the ROC curve here.
+![](https://github.com/Stomper10/CheXpert/blob/master/Results/ROCfor10%25.png)
 
 # 4. References
 - CheXpert: A Large Chest Radiograph Dataset with Uncertainty Labels and Expert Comparison, Irvin, Jeremy, et al., 2019 [[Arxiv:1901.07031]](https://arxiv.org/pdf/1901.07031.pdf)
