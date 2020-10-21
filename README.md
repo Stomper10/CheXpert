@@ -36,22 +36,30 @@ unzip CheXpert-v1.0-small.zip
 Now the dataset is ready. You have to place `CheXpert-v1.0-small` directory and `CheXpert_DenseNet121.ipynb` file(or `CheXpert_DenseNet121.py`) at the same location unless you modify the path in the source code.
 
 # 2. Run the Code
-If you want to use `.ipynb` file, run `CheXpert_DenseNet121.ipynb` file. If you want `.py` file instead, `CheXpert_DenseNet121.py` is also ready for you. Same contents with the different file extensions. Maybe you need to install `PyTorch` and `barbar` packages before you run the code.  
+Maybe you need to install `PyTorch` and `barbar` packages before you run the code.
+* Train with 10% of dataset
+Use `CheXpert_DenseNet121.ipynb` file.
+
+* Train with 100% of dataset
+Use `CheXpert_DenseNet121_ALL.ipynb` file. 
+
+* Train with 100% of dataset(using federated learning)
+Use `CheXpert_DenseNet121_FL.ipynb` file. You can modify federated learning hyperparameters.
 
 # 3. Results
 You may get training & validation losses and ROC curves for results. You can also check the computational costs. Saved model and ROC curve `.png` files are saved in the `Results` directory(I manually moved saved model and `.png` files after creating `Results` directory). Let me just show you the ROC curves here.
 
-![](https://github.com/Stomper10/CheXpert/blob/master/Results/ROCfor10%25.png)
+![](https://github.com/Stomper10/CheXpert/blob/master/Results/ROCfor100%25.png)
 
-This table shows a comparison with original paper results(used 10% of the training dataset).
+This table shows a comparison with original paper results(used 100% of the training dataset).
 
 Observation | Experiment AUC | Paper AUC | Difference
 :-: | :-: | :-: | :-:
-Atelectasis | 0.64 | 0.85 | -0.21
-Cardiomegaly | 0.83 | 0.90 | -0.07
-Consolidation | 0.61 | 0.90 | -0.29
-Edema | 0.81 | 0.92 | -0.11
-Pleural Effusion | 0.82 | 0.97 | -0.15
+Atelectasis | 0.75 | 0.85 | -0.10
+Cardiomegaly | 0.87 | 0.90 | -0.03
+Consolidation | 0.77 | 0.90 | -0.13
+Edema | 0.81 | 0.84 | -0.08
+Pleural Effusion | 0.89 | 0.97 | -0.08
 
 For those who want to compare the running environment, mine was as below(used GPU server).
 * Intel Xeon Silver 4216 CPU
@@ -60,12 +68,15 @@ For those who want to compare the running environment, mine was as below(used GP
 
 # 4. Task Lists
 - [x] Use subset of training dataset(10%) to check computational costs and performances.
-- [ ] Adjust the number of training data per each class.
-- [ ] Use whole training dataset and compare performances.
+- [x] Adjust the number of training data per each class.
+- [x] Use whole training dataset and compare performances.
+- [x] Try federated learning technique.
 - [ ] Apply Grad-CAM method for localization.
 - [ ] Use original dataset for training(~439GB).
 
 # 5. References
-- CheXpert: A Large Chest Radiograph Dataset with Uncertainty Labels and Expert Comparison, Irvin, Jeremy, et al., 2019 [[Arxiv:1901.07031]](https://arxiv.org/pdf/1901.07031.pdf)
-- Densely Connected Convolutional Networks, Huang et al., 2018 [[Arxiv:1608.06993]](https://arxiv.org/pdf/1608.06993.pdf)
+- CheXpert: A Large Chest Radiograph Dataset with Uncertainty Labels and Expert Comparison, Irvin et al., 2019 [[arXiv:1901.07031]](https://arxiv.org/pdf/1901.07031.pdf)
+- Densely Connected Convolutional Networks, Huang et al., 2018 [[arXiv:1608.06993v5]](https://arxiv.org/pdf/1608.06993.pdf)
+- Grad-CAM: Visual Explanations from Deep Networks via Gradient-based Localization, Selvaraju et al, 2019 [[arXiv:1610.02391v4]](https://arxiv.org/pdf/1608.06993.pdf)
+- Communication-Efficient Learning of Deep Networks from Decentralized Data, McMahan et al., 2017 [[arXiv:1602.05629v3]](https://arxiv.org/pdf/1602.05629.pdf)
 - [Github repository](https://github.com/gaetandi/cheXpert)
