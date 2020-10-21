@@ -46,7 +46,7 @@ Maybe you need to install `PyTorch` and `barbar` packages before you run the cod
 # 3. Results
 You may get training & validation losses and ROC curves for results. You can also check the computational costs. Saved model and ROC curve `.png` files are saved in the `Results` directory(I manually moved saved model and `.png` files after creating `Results` directory). Let me just show you the ROC curves here.
 
-![](https://github.com/Stomper10/CheXpert/blob/master/Results/ROCfor100%.png)
+![](https://github.com/Stomper10/CheXpert/blob/master/Results/ROCfor100%25.png)
 
 This table shows a comparison with original paper results(used 100% of the training dataset).
 
