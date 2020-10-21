@@ -33,7 +33,7 @@ After you downloaded the dataset, run the following command to unzip the `.zip` 
 unzip CheXpert-v1.0-small.zip
 ```
 
-Now the dataset is ready. You have to place `CheXpert-v1.0-small` directory and `CheXpert_DenseNet121.ipynb` file(or `CheXpert_DenseNet121.py`) at the same location unless you modify the path in the source code.
+Now the dataset is ready. You have to place `CheXpert-v1.0-small` directory and `CheXpert_DenseNet121.ipynb` file(or `_ALL` & `_FL` files) at the same location unless you modify the path in the source code.
 
 # 2. Run the Code
 Maybe you need to install `PyTorch` and `barbar` packages before you run the code.
