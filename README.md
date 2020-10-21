@@ -37,19 +37,16 @@ Now the dataset is ready. You have to place `CheXpert-v1.0-small` directory and 
 
 # 2. Run the Code
 Maybe you need to install `PyTorch` and `barbar` packages before you run the code.
-* Train with 10% of dataset
-Use `CheXpert_DenseNet121.ipynb` file.
+* Train with 10% of dataset: Use `CheXpert_DenseNet121.ipynb` file.
 
-* Train with 100% of dataset
-Use `CheXpert_DenseNet121_ALL.ipynb` file. 
+* Train with 100% of dataset: Use `CheXpert_DenseNet121_ALL.ipynb` file. 
 
-* Train with 100% of dataset(using federated learning)
-Use `CheXpert_DenseNet121_FL.ipynb` file. You can modify federated learning hyperparameters.
+* Train with 100% of dataset(using federated learning): Use `CheXpert_DenseNet121_FL.ipynb` file. You can modify federated learning hyperparameters.
 
 # 3. Results
 You may get training & validation losses and ROC curves for results. You can also check the computational costs. Saved model and ROC curve `.png` files are saved in the `Results` directory(I manually moved saved model and `.png` files after creating `Results` directory). Let me just show you the ROC curves here.
 
-![](https://github.com/Stomper10/CheXpert/blob/master/Results/ROCfor100%25.png)
+![](https://github.com/Stomper10/CheXpert/blob/master/Results/ROCfor100%.png)
 
 This table shows a comparison with original paper results(used 100% of the training dataset).
 
@@ -77,6 +74,6 @@ For those who want to compare the running environment, mine was as below(used GP
 # 5. References
 - CheXpert: A Large Chest Radiograph Dataset with Uncertainty Labels and Expert Comparison, Irvin et al., 2019 [[arXiv:1901.07031]](https://arxiv.org/pdf/1901.07031.pdf)
 - Densely Connected Convolutional Networks, Huang et al., 2018 [[arXiv:1608.06993v5]](https://arxiv.org/pdf/1608.06993.pdf)
-- Grad-CAM: Visual Explanations from Deep Networks via Gradient-based Localization, Selvaraju et al, 2019 [[arXiv:1610.02391v4]](https://arxiv.org/pdf/1608.06993.pdf)
+- Grad-CAM: Visual Explanations from Deep Networks via Gradient-based Localization, Selvaraju et al, 2019 [[arXiv:1610.02391v4]](https://arxiv.org/pdf/1610.02391.pdf)
 - Communication-Efficient Learning of Deep Networks from Decentralized Data, McMahan et al., 2017 [[arXiv:1602.05629v3]](https://arxiv.org/pdf/1602.05629.pdf)
 - [Github repository](https://github.com/gaetandi/cheXpert)
