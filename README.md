@@ -37,7 +37,7 @@ Now the dataset is ready. You have to place `CheXpert-v1.0-small` directory and 
 
 # 2. Run the Code
 Maybe you need to install `PyTorch` and `barbar` packages before you run the code.
-* Train with 10% of dataset: Use `CheXpert_DenseNet121.ipynb` file.
+* Train with 10% of dataset: Use `CheXpert_DenseNet121_10%.ipynb` file.
 
 * Train with 100% of dataset: Use `CheXpert_DenseNet121_ALL.ipynb` file. 
 
