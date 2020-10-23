@@ -39,7 +39,7 @@ Now the dataset is ready. You have to place `CheXpert-v1.0-small` directory and 
 Maybe you need to install `PyTorch` and `barbar` packages before you run the code.
 * Train with 10% of dataset: Use `CheXpert_DenseNet121_10%.ipynb` file.
 
-* Train with 100% of dataset: Use `CheXpert_DenseNet121_ALL.ipynb` file. 
+* Train with 100% of dataset: Use `CheXpert_DenseNet121_ALL.ipynb` file. You can also try the Grad-CAM method on test dataset here!
 
 * Train with 100% of dataset(using federated learning): Use `CheXpert_DenseNet121_FL.ipynb` file. You can modify federated learning hyperparameters.
 
@@ -68,7 +68,7 @@ For those who want to compare the running environment, mine was as below(used GP
 - [x] Adjust the number of training data per each class.
 - [x] Use whole training dataset and compare performances.
 - [x] Try federated learning technique.
-- [ ] Apply Grad-CAM method for localization.
+- [x] Apply Grad-CAM method for localization.
 - [ ] Use original dataset for training(~439GB).
 
 # 5. References
