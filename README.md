@@ -78,5 +78,5 @@ For those who want to compare the running environment, mine was as below(used GP
 - Densely Connected Convolutional Networks, Huang et al., 2018 [[arXiv:1608.06993v5]](https://arxiv.org/pdf/1608.06993.pdf)
 - Grad-CAM: Visual Explanations from Deep Networks via Gradient-based Localization, Selvaraju et al., 2019 [[arXiv:1610.02391v4]](https://arxiv.org/pdf/1610.02391.pdf)
 - Communication-Efficient Learning of Deep Networks from Decentralized Data, McMahan et al., 2017 [[arXiv:1602.05629v3]](https://arxiv.org/pdf/1602.05629.pdf)
-- CheXpert model [Github repository](https://github.com/gaetandi/cheXpert)
-- Grad-CAM implementaion [Github repository](https://github.com/ooodmt/MLMIP.git)
+- CheXpert model: [Github repository](https://github.com/gaetandi/cheXpert)
+- Grad-CAM implementaion: [Github repository](https://github.com/ooodmt/MLMIP.git)
