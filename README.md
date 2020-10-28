@@ -39,9 +39,11 @@ Now the dataset is ready. You have to place `CheXpert-v1.0-small` directory and 
 Maybe you need to install `PyTorch` and `barbar` packages before you run the code.
 * Train with 10% of dataset: Use `CheXpert_DenseNet121_10%.ipynb` file.
 
-* Train with 100% of dataset: Use `CheXpert_DenseNet121_ALL.ipynb` file. You can also try the Grad-CAM method on test dataset here!
+* Train with 100% of dataset: Use `CheXpert_DenseNet121_ALL.ipynb` file.
 
 * Train with 100% of dataset(using federated learning): Use `CheXpert_DenseNet121_FL.ipynb` file. You can modify federated learning hyperparameters.
+
+You can also try the Grad-CAM method on test dataset with `Grad-CAM.ipynb` file after you get the trained model.
 
 # 3. Results
 You may get training & validation losses and ROC curves for results. You can also check the computational costs. Saved model and ROC curve `.png` files are saved in the `Results` directory(I manually moved saved model and `.png` files after creating `Results` directory). Let me just show you the ROC curves here.
@@ -76,4 +78,5 @@ For those who want to compare the running environment, mine was as below(used GP
 - Densely Connected Convolutional Networks, Huang et al., 2018 [[arXiv:1608.06993v5]](https://arxiv.org/pdf/1608.06993.pdf)
 - Grad-CAM: Visual Explanations from Deep Networks via Gradient-based Localization, Selvaraju et al., 2019 [[arXiv:1610.02391v4]](https://arxiv.org/pdf/1610.02391.pdf)
 - Communication-Efficient Learning of Deep Networks from Decentralized Data, McMahan et al., 2017 [[arXiv:1602.05629v3]](https://arxiv.org/pdf/1602.05629.pdf)
-- [Github repository](https://github.com/gaetandi/cheXpert)
+- CheXpert model: [Github repository](https://github.com/gaetandi/cheXpert)
+- Grad-CAM implementaion: [Github repository](https://github.com/ooodmt/MLMIP.git)
