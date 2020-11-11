@@ -54,10 +54,10 @@ This table shows a comparison with original paper results(used 100% of the train
 
 Observation | Experiment AUC | Paper AUC | Difference
 :-: | :-: | :-: | :-:
-Atelectasis | 0.75 | 0.85 | -0.10
-Cardiomegaly | 0.87 | 0.90 | -0.03
-Consolidation | 0.77 | 0.90 | -0.13
-Edema | 0.81 | 0.84 | -0.08
+Atelectasis | 0.74 | 0.85 | -0.11
+Cardiomegaly | 0.86 | 0.90 | -0.04
+Consolidation | 0.76 | 0.90 | -0.14
+Edema | 0.84 | 0.84 | 0.00
 Pleural Effusion | 0.89 | 0.97 | -0.08
 
 For those who want to compare the running environment, mine was as below(used GPU server).
