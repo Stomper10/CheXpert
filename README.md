@@ -76,7 +76,7 @@ nohup python3 run_chexpert.py > result.txt &
 ### This part is optional
 * Train using the federated learning: Use `CheXpert_DenseNet121_FL.ipynb` file. You can modify federated learning hyperparameters.
 * You can also try the Grad-CAM method on test dataset with `Grad-CAM.ipynb` file after you get the trained model.
-* You can do ensemble experiments with `run_ensemble.py` file. (to be added soon)
+* You can do ensemble experiments with `run_ensembles.py` file. (to be added soon)
 
 
 
@@ -88,6 +88,7 @@ You may get training and validation losses, as well as the test accuracy like RO
 This table shows a comparison with original paper results(used 100% of the training dataset).
 
 * AUROC mean = 0.785
+
 Observation | Experiment AUC | Paper AUC | Difference
 :-: | :-: | :-: | :-:
 Atelectasis | 0.74 | 0.85 | -0.11
@@ -107,7 +108,7 @@ For those who want to compare the running environment, mine was as below(used GP
 - [x] Use whole training dataset and compare performances.
 - [x] Try federated learning technique.
 - [x] Apply Grad-CAM method for localization.
-- [ ] Try simple ensemble method.
+- [x] Try simple ensemble method.
 - [ ] Try various models to ensemble.
 - [ ] Use lateral images for training.
 - [ ] Use original dataset for training(~439GB).
