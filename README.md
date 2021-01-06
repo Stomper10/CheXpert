@@ -6,10 +6,11 @@ So I tried to use the same model(DenseNet121) and the parameters as the paper.
 
 This repository especially referenced [here](https://github.com/gaetandi/cheXpert) for the coding part.  
 You can easily run the code with the following instructions.
+This code is written for the GPU environment.
 
 # 0. Prerequisites
 - Python3
-- Git Bash
+- Git Bash (whatever can handle git)
 
 Open Git Bash and use `git clone` command to download this repository.
 
@@ -19,9 +20,9 @@ git clone https://github.com/Stomper10/CheXpert.git
 
 # 1. Download the Data
 At the bottom of the CheXpert [webpage](https://stanfordmlgroup.github.io/competitions/chexpert/), write a registration form to download the CheXpert dataset.
-You will receive a link to the download over email. Right-click your mouse on the download link(439GB or 11GB) and click 'Copy link address'.
+You will receive an email with the download link. Right-click your mouse on the download link (439GB or 11GB) and click 'Copy link address'.
 
-Then, open Git Bash to run the following command. Paste your link address inside the double quotation marks(RUN WITH QUOTATION MARKS). It will take a while even for the downsampled(11GB) dataset. In this experiment, I used the downsampled dataset.
+Then, open Git Bash to run the following command. Paste your link address inside the double quotation marks (PLEASE RUN WITH QUOTATION MARKS). It will take a while even for the downsampled (11GB) dataset. In this experiment, I used the downsampled dataset.
 
 ```bash
 wget "link_address_you_copied"
@@ -33,20 +34,44 @@ After you downloaded the dataset, run the following command to unzip the `.zip` 
 unzip CheXpert-v1.0-small.zip
 ```
 
-Now the dataset is ready. You have to place `CheXpert-v1.0-small` directory and `CheXpert_DenseNet121.ipynb` file(or `_ALL` & `_FL` files) at the same location unless you modify the path in the source code.
+Now the dataset is ready. As you see this repository structure, you have to place the `CheXpert-v1.0-small` directory and the rest `.py` files at the same location unless you modify the path in the source code.
 
 # 2. Run the Code
-Maybe you need to install `PyTorch` and `barbar` packages before you run the code.
-* Train with 10% of dataset: Use `CheXpert_DenseNet121_10%.ipynb` file.
+You may need to install the `PyTorch` library before you run the code.
+1. Data Preprocessing
+In the current version, I set the model to use only frontal images. So, you MUST run the following code before training the model.
+```bash
+python3 run_preprocessing.py
+```
 
-* Train with 100% of dataset: Use `CheXpert_DenseNet121_ALL.ipynb` file.
+2. Run the Model
+You can give several options to run the model.
+Options | Shortcut | Description
+:-: | :-: | :-:
+--policy | -p | Uncertain label policy.
+--ratio | -r | Training data ratio.
+--output_path| -o | Path to save models and ROC curve plot.
+--random_seed | -s | Random seed for reproduction.
 
-* Train with 100% of dataset(using federated learning): Use `CheXpert_DenseNet121_FL.ipynb` file. You can modify federated learning hyperparameters.
+If you want to use 1% of training set to train the model with `policy = ones`, run like below.
+```bash
+python3 run_chexpert.py \
+  --policy = ones \
+  --ratio = 0.01 \
+  --output_path = results \
+  --random_seed = 1
+```
 
-You can also try the Grad-CAM method on test dataset with `Grad-CAM.ipynb` file after you get the trained model.
+I recommend to use `nohup` command if you run this code on server.
+```bash
+nohup python3 run_chexpert.py > result.txt &
+```
+
+* Train using the federated learning: Use `CheXpert_DenseNet121_FL.ipynb` file. You can modify federated learning hyperparameters.
+* You can also try the Grad-CAM method on test dataset with `Grad-CAM.ipynb` file after you get the trained model.
 
 # 3. Results
-You may get training & validation losses and ROC curves for results. You can also check the computational costs. Saved model and ROC curve `.png` files are saved in the `Results` directory(I manually moved saved model and `.png` files after creating `Results` directory). Let me just show you the ROC curves here.
+You may get training and validation losses, as well as the test accuracy like ROC curves. You can also check the computational costs. Saved model and ROC curve `.png` files are saved in the `Results` directory(I manually moved saved model and `.png` files after creating `Results` directory). Let me just show you the ROC curves here.
 
 ![](https://github.com/Stomper10/CheXpert/blob/master/Results/ROCfor100%25.png)
 
@@ -63,7 +88,7 @@ Pleural Effusion | 0.89 | 0.97 | -0.08
 For those who want to compare the running environment, mine was as below(used GPU server).
 * Intel Xeon Silver 4216 CPU
 * 512GB memory
-* Nvidia Titan RTX GPU
+* Four Nvidia Titan RTX GPUs
 
 # 4. Task Lists
 - [x] Use subset of training dataset(10%) to check computational costs and performances.
