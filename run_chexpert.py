@@ -36,7 +36,7 @@ use_gpu = torch.cuda.is_available()
 parser = argparse.ArgumentParser(formatter_class = argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument('-p', '--policy', required = False, help = 'Define uncertain label policy.', default = 'ones')
 parser.add_argument('-r', '--ratio', required = False, help = 'Training data ratio.', default = 1)
-parser.add_argument('-o', '--output_path', required = False, help = 'Path to save models and ROC curve plot.', default = 'Results')
+parser.add_argument('-o', '--output_path', required = False, help = 'Path to save models and ROC curve plot.', default = 'results')
 parser.add_argument('-s', '--random_seed', required = False, help = 'Random seed for reproduction.')
 args = parser.parse_args()
 
