@@ -38,13 +38,13 @@ Now the dataset is ready. As you see this repository structure, you have to plac
 
 # 2. Run the Code
 You may need to install the `PyTorch` library before you run the code.
-1. Data Preprocessing
+## 1. Data Preprocessing
 In the current version, I set the model to use only frontal images. So, you MUST run the following code before training the model.
 ```bash
 python3 run_preprocessing.py
 ```
 
-2. Run the Model
+## 2. Run the Model
 You can give several options to run the model.
 Options | Shortcut | Description
 :-: | :-: | :-:
