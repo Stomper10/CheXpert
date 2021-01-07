@@ -1,17 +1,18 @@
 # CheXpert: A Large Chest X-Ray Dataset and Competitions
 > CheXpert is a large dataset of chest X-rays and competition for automated chest X-ray interpretation, which features uncertainty labels and radiologist-labeled reference standard evaluation sets. *- from the CheXpert [webpage](https://stanfordmlgroup.github.io/competitions/chexpert/) description*
 
-This repository aims to reproduce CheXpert [paper](https://arxiv.org/pdf/1901.07031.pdf)'s results using the PyTorch library.
-So I tried to use the same model(DenseNet121) and the parameters as the paper.
+This repository aims to reproduce and improve CheXpert [paper](https://arxiv.org/pdf/1901.07031.pdf)'s results using the PyTorch library.
+For the baseline, I tried to use the same model(DenseNet121) and the same parameters as the paper.
 
 This repository especially referenced [here](https://github.com/gaetandi/cheXpert) for the coding part.  
 You can easily run the code with the following instructions.
-This code is written for the GPU environment.
+This code is written for the GPU environment. It would be hard to run this code in CPU environment.
 
 
 
 # 0. Prerequisites
-- Python3
+- Python 3.6+
+- PyTorch (1.7.1 in my case)
 - Git Bash (whatever can handle git)
 
 Open Git Bash and use `git clone` command to download this repository.
@@ -45,7 +46,7 @@ Now the dataset is ready. As you see this repository structure, you have to plac
 # 2. Run the Code
 You may need to install the `PyTorch` library before you run the code.
 ## Data Preprocessing
-In the current version, I set the model to use only frontal images. So, you MUST run the following code before training the model.
+In the current version, I set the model to use only frontal images. You MUST run the following code before training the model.
 ```bash
 python3 run_preprocessing.py
 ```
@@ -74,28 +75,29 @@ nohup python3 run_chexpert.py > result.txt &
 ```
 
 ### This part is optional
+* You can do apply deep ensembles with `run_ensembles.py` file. (to be added soon)
 * Train using the federated learning: Use `CheXpert_DenseNet121_FL.ipynb` file. You can modify federated learning hyperparameters.
 * You can also try the Grad-CAM method on test dataset with `Grad-CAM.ipynb` file after you get the trained model.
-* You can do ensemble experiments with `run_ensembles.py` file. (to be added soon)
 
 
 
 # 3. Results
-You may get training and validation losses, as well as the test accuracy like ROC curves. You can also check the computational costs. Saved model and ROC curve `.png` files will be saved in the `results` directory. Let me just show you the ROC curves here.
+You may get training and validation losses, as well as the test accuracy like ROC curves. You can also check the computational costs. Models(`*.pth.tar`) and ROC curve(`.png`) files will be saved in the `results` directory. Let me just show you the ROC curves here(100 ensembles).
 
-![](https://github.com/Stomper10/CheXpert/blob/master/Results/ROCfor100%25.png)
+![ROC_ensem_mean](https://user-images.githubusercontent.com/43818471/103856596-408c9a80-50f8-11eb-9be5-41b38847998f.png)
 
 This table shows a comparison with original paper results(used 100% of the training dataset).
 
-* AUROC mean = 0.785
+* Stanford Baseline(ensemble) AUC = 0.907
+* My Baseline(ensemble) AUC = 0.790 (Note that testset is different!)
 
-Observation | Experiment AUROC | Paper AUROC | Difference
+Observation | Experiment AUC | Paper AUC | Difference
 :-: | :-: | :-: | :-:
-Atelectasis | 0.75 | 0.85 | -0.11
-Cardiomegaly | 0.87 | 0.90 | -0.04
-Consolidation | 0.77 | 0.90 | -0.14
+Atelectasis | 0.74 | 0.85 | -0.11
+Cardiomegaly | 0.87 | 0.90 | -0.03
+Consolidation | 0.76 | 0.90 | -0.14
 Edema | 0.84 | 0.92 | -0.08
-Pleural Effusion | 0.89 | 0.97 | -0.08
+Pleural Effusion | 0.90 | 0.97 | -0.07
 
 For those who want to compare the running environment, mine was as below(used GPU server).
 * Intel Xeon Silver 4216 CPU
