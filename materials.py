@@ -1,10 +1,41 @@
-'''Material classes for 'run_chexpert.py' & some leftover objects...'''
+'''Material classes for 'run_chexpert.py'''
+
+###################
+## Prerequisites ##
+###################
+import time
+import pickle
+import random
+import csv
+import os
+import argparse
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from PIL import Image
+
+import torch
+import torch.nn as nn
+import torch.optim as optim
+import torch.backends.cudnn as cudnn
+import torchvision
+import torchvision.transforms as transforms
+from torch.utils.data import Dataset
+from torch.utils.data import DataLoader
+from torch.utils.data.dataset import random_split
+
+import sklearn.metrics as metrics
+from sklearn.metrics import roc_auc_score
+
+use_gpu = torch.cuda.is_available()
+
+
 
 ######################
 ## Create a Dataset ##
 ######################
 class CheXpertDataSet(Dataset):
-    def __init__(self, data_PATH, transform = None, policy = 'ones', nnClassCount = 14):
+    def __init__(self, data_PATH, nnClassCount, transform = None, policy = 'ones'):
         """
         data_PATH: path to the file containing images with corresponding labels.
         transform: optional transform to be applied on a sample.
@@ -61,7 +92,7 @@ class CheXpertDataSet(Dataset):
 ## Create CheXpertTrainer ##
 ############################
 class CheXpertTrainer():
-    def train(model, dataLoaderTrain, dataLoaderVal, nnClassCount, trMaxEpoch, checkpoint, PATH):
+    def train(model, dataLoaderTrain, dataLoaderVal, nnClassCount, trMaxEpoch, PATH, checkpoint):
         optimizer = optim.Adam(model.parameters(), lr = 0.0001, # setting optimizer & scheduler
                                betas = (0.9, 0.999), eps = 1e-08, weight_decay = 0) 
         loss = torch.nn.BCELoss() # setting loss function
@@ -241,21 +272,3 @@ def EnsemAgg(EnsemResult, dataLoader, nnClassCount, class_names):
         print(class_names[i], ' ', aurocIndividual[i])
 
     return outGT, outPRED
-
-
-
-######################
-## Leftover Objects ##
-######################
-# Tranform data
-IMAGENET_MEAN = [0.485, 0.456, 0.406]  # mean of ImageNet dataset(for normalization)
-IMAGENET_STD = [0.229, 0.224, 0.225]   # std of ImageNet dataset(for normalization)
-normalize = transforms.Normalize(IMAGENET_MEAN, IMAGENET_STD)
-
-transformList = []
-transformList.append(transforms.Resize((imgtransCrop, imgtransCrop)))
-transformList.append(transforms.RandomResizedCrop(imgtransCrop))
-transformList.append(transforms.RandomHorizontalFlip())
-transformList.append(transforms.ToTensor())
-transformList.append(normalize)
-transformSequence = transforms.Compose(transformList)

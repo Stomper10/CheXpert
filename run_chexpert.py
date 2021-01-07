@@ -102,9 +102,9 @@ policy = args.policy # ones or zeroes
 
 # Create a dataset
 '''See 'materials.py' to check the class 'CheXpertDataSet'.'''
-datasetTrain = CheXpertDataSet(pathFileTrain, transformSequence, policy = policy, nnClassCount)
-datasetValid = CheXpertDataSet(pathFileValid, transformSequence, nnClassCount)
-datasetTest = CheXpertDataSet(pathFileTest, transformSequence, policy = policy, nnClassCount)
+datasetTrain = CheXpertDataSet(pathFileTrain, nnClassCount, transformSequence, policy = policy)
+datasetValid = CheXpertDataSet(pathFileValid, nnClassCount, transformSequence)
+datasetTest = CheXpertDataSet(pathFileTest, nnClassCount, transformSequence, policy = policy)
 
 # Use subset of datasetTrain for training
 train_ratio = float(args.ratio) # use subset of original training dataset
@@ -168,7 +168,7 @@ for i in range(nnClassCount):
     f = plt.subplot(2, 7, i+1)
 
     plt.title('ROC for: ' + class_names[i])
-    plt.plot(fpr, tpr, label = 'U-{0}: AUC = {%0.2f}'.format(policy, roc_auc))
+    plt.plot(fpr, tpr, label = 'U-%s: AUC = %0.2f' % (policy, roc_auc))
 
     plt.legend(loc = 'lower right')
     plt.plot([0, 1], [0, 1],'r--')
