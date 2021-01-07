@@ -31,17 +31,18 @@ from sklearn.metrics import roc_auc_score
 use_gpu = torch.cuda.is_available()
 
 
+
 ######################
 ## Arguments to Set ##
 ######################
 parser = argparse.ArgumentParser(formatter_class = argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument('-p', '--policy', required = False, help = 'Define uncertain label policy.', default = 'ones')
 parser.add_argument('-r', '--ratio', required = False, help = 'Training data ratio.', default = 1)
-parser.add_argument('-o', '--output_path', required = False, help = 'Path to save models and ROC curve plot.', default = './results')
+parser.add_argument('-o', '--output_path', required = False, help = 'Path to save results.', default = './results')
 parser.add_argument('-s', '--random_seed', required = False, help = 'Random seed for reproduction.')
 args = parser.parse_args()
 
-# Example commands ('nohup' command for running background on server)
+# Example running commands ('nohup' command for running background on server)
 '''
 python3 run_chexpert.py
 python3 run_chexpert.py -p ones -r 0.001 -o ensemble/experiment_01/ -s 1
@@ -167,7 +168,7 @@ for i in range(nnClassCount):
     f = plt.subplot(2, 7, i+1)
 
     plt.title('ROC for: ' + class_names[i])
-    plt.plot(fpr, tpr, label = 'U-ones: AUC = %0.2f' % roc_auc)
+    plt.plot(fpr, tpr, label = 'U-{0}: AUC = {%0.2f}'.format(policy, roc_auc))
 
     plt.legend(loc = 'lower right')
     plt.plot([0, 1], [0, 1],'r--')

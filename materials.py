@@ -215,6 +215,35 @@ class DenseNet121(nn.Module):
 
 
 
+###############################
+## Define Ensembles Function ##
+###############################
+def EnsemAgg(EnsemResult, dataLoader, nnClassCount, class_names):
+    outGT = torch.FloatTensor().cuda()
+    outPRED = torch.FloatTensor().cuda()
+    with torch.no_grad():
+        for i, (input, target) in enumerate(dataLoader):
+            target = target.cuda()
+            outGT = torch.cat((outGT, target), 0).cuda()
+            
+            bs, c, h, w = input.size()
+            varInput = input.view(-1, c, h, w)
+
+            # out = model(varInput)
+            out = torch.tensor([EnsemResult[i]]).cuda()
+            outPRED = torch.cat((outPRED, out), 0)
+    aurocIndividual = CheXpertTrainer.computeAUROC(outGT, outPRED, nnClassCount)
+    aurocMean = np.array(aurocIndividual).mean()
+    print('<<< Ensemble Test Results >>>')
+    print('AUROC mean ', aurocMean)
+
+    for i in range (0, len(aurocIndividual)):
+        print(class_names[i], ' ', aurocIndividual[i])
+
+    return outGT, outPRED
+
+
+
 ######################
 ## Leftover Objects ##
 ######################
