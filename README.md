@@ -8,7 +8,7 @@ Since I know my results are still far short of the paper's, I will do many exper
 
 This repository especially referenced [here](https://github.com/gaetandi/cheXpert) for the coding part. You can easily run the code with the following instructions.
 
-This code is written for the GPU environment. It could be hard to run this code in CPU environment.
+This code is written for the GPU environment. It could be hard to run in CPU environment.
 
 
 
@@ -27,9 +27,9 @@ git clone https://github.com/Stomper10/CheXpert.git
 
 # 1. Download the Data
 At the bottom of the CheXpert [webpage](https://stanfordmlgroup.github.io/competitions/chexpert/), write a registration form to download the CheXpert dataset.
-You will receive an email with the download link. Right-click your mouse on the download link (439GB or 11GB) and click 'Copy link address'.
+You will receive an email with the download link. Right-click your mouse on the download link(439GB or 11GB) and click 'Copy link address'.
 
-Then, open Git Bash to run the following command. Paste your link address inside the double quotation marks(PLEASE RUN WITH QUOTATION MARKS). It will take a while even for the downsampled (11GB) dataset. In this experiment, I used the downsampled dataset.
+Then, open Git Bash to run the following command. Paste your link address inside the double quotation marks(PLEASE RUN WITH QUOTATION MARKS). It will take a while even for the downsampled(11GB) dataset. In this experiment, I used the downsampled dataset.
 
 ```bash
 wget "link_address_you_copied"
@@ -41,14 +41,14 @@ After you downloaded the dataset, run the following command to unzip the `.zip` 
 unzip CheXpert-v1.0-small.zip
 ```
 
-Now the dataset is ready. As you see this repository structure, you have to place the `CheXpert-v1.0-small` directory and the rest `.py` and `.ipynb` files at the same location unless you modify the path in the source code.
+Now the dataset is ready. As you see this repository structure, you have to place the `CheXpert-v1.0-small` directory and the rest files(`.py` and `.ipynb`) at the same location unless you modify the path in the source code.
 
 
 
 # 2. Run the Code
 You may need to install the `PyTorch` library before you run the code.
 ## Data Preprocessing
-In the current version, I set the model to use only frontal images. You MUST run the following code before training the model.
+You MUST run the following code before running the model. In the current version, I set the model to use only frontal images.
 ```bash
 python3 run_preprocessing.py
 ```
@@ -71,16 +71,16 @@ python3 run_chexpert.py \
   --random_seed = 1
 ```
 
-I recommend you to use the `nohup` command if you run this code on server.
+I recommend you to use the `nohup` command if you run this code on server since it takes several hours.
 ```bash
 nohup python3 run_chexpert.py > result.txt &
 ```
 
 ### This part is optional
 * You can apply deep ensembles with `run_ensembles.py` file.
-You should place experiment output directories you want to ensemble in the `ensembles` directory.
-So, if you're planning to try ensembles, set `--output_path` in `ensembles` directory when running the `run_chexpert.py`.
-This script have `--policy` and `--output_path` options which is the same as `run_chexpert.py`. The ensemble results will be saved in `--output_path` you set.
+You should place experiment output directories you want to aggregate in the `ensembles` directory.
+When running the `run_chexpert.py`, set `--output_path` under the ensembles directory.
+`run_ensembles.py` have `--policy` and `--output_path` options which is the same as `run_chexpert.py`. The ensemble results will be saved in `--output_path` you set.
 
 * Train using the federated learning: Use `CheXpert_DenseNet121_FL.ipynb` file. You can modify federated learning hyperparameters.
 * You can also try the Grad-CAM method on test dataset with `Grad-CAM.ipynb` file after you get the trained model.
@@ -88,14 +88,14 @@ This script have `--policy` and `--output_path` options which is the same as `ru
 
 
 # 3. Results
-You may get training and validation losses, as well as the test accuracy like ROC curves. You can also check the computational costs. Models(`*.pth.tar`) and ROC curve(`.png`) files will be saved in the `results` directory. Let me just show you the ROC curves here(100 simple ensembles).
+You may get training and validation losses, as well as the test accuracy and ROC curves. You can also check the computational costs. Models(`*.pth.tar`), test set probabilities(`testPROB.txt`), and ROC curve(`ROC.png`) files will be saved in the `results` directory. If you run the code with `nohup` command, printed outputs will also be saved. Let me just show you the ROC curves here(100 simple ensembles).
 
 ![ROC_ensem_mean](https://user-images.githubusercontent.com/43818471/103856596-408c9a80-50f8-11eb-9be5-41b38847998f.png)
 
-This table shows a comparison with original paper results.
+The following table shows a comparison with original paper results.
 
 * Stanford Baseline(ensemble) AUC = 0.907
-* My Baseline(ensemble) AUC = 0.790 (Note that testset is different!)
+* My Baseline(ensemble) AUC = 0.790 (Note that test set is different!)
 
 Observation | Experiment AUC | Paper AUC | Difference
 :-: | :-: | :-: | :-:
