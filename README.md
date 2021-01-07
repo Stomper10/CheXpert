@@ -86,7 +86,7 @@ When running the `run_chexpert.py`, set `--output_path` under the ensembles dire
 `run_ensembles.py` have `--policy` and `--output_path` options just like `run_chexpert.py`. The ensemble results will be saved in `--output_path` you set.
 
 * You can try federated learning using the `CheXpert_DenseNet121_FL.ipynb` file. You can modify federated learning hyperparameters.
-* You can try the Grad-CAM method on test dataset with `Grad-CAM.ipynb` file after you get the trained model.
+* You can try the Grad-CAM method on test set with `Grad-CAM.ipynb` file after you get the trained model.
 
 
 
