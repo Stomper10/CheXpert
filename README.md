@@ -78,7 +78,7 @@ nohup python3 run_chexpert.py > result.txt &
 
 ### This part is optional
 * You can apply deep ensembles with `run_ensembles.py` file.
-You should place experiment output directories you want to aggregate in the `ensembles` directory.
+You should place experiment output directories to aggregate in the `ensembles` directory.
 When running the `run_chexpert.py`, set `--output_path` under the ensembles directory.
 `run_ensembles.py` have `--policy` and `--output_path` options which is the same as `run_chexpert.py`. The ensemble results will be saved in `--output_path` you set.
 
