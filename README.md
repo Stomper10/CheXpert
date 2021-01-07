@@ -59,7 +59,7 @@ Options | Shortcut | Description
 :-: | :-: | :-:
 --policy | -p | Uncertain label policy.
 --ratio | -r | Training data ratio.
---output_path| -o | Path to save models and ROC curve plot.
+--output_path| -o | Path to save results.
 --random_seed | -s | Random seed for reproduction.
 
 If you want to use 1% of training set to train the model with `policy = ones`, run like below.
@@ -77,7 +77,11 @@ nohup python3 run_chexpert.py > result.txt &
 ```
 
 ### This part is optional
-* You can apply deep ensembles with `run_ensembles.py` file. (to be added soon)
+* You can apply deep ensembles with `run_ensembles.py` file.
+You should place experiment output directories you want to ensemble in the `ensembles` directory.
+So, if you're planning to try ensembles, set `--output_path` in `ensembles` directory when running the `run_chexpert.py`.
+This script have `--policy` and `--output_path` options which is the same as `run_chexpert.py`. The ensemble results will be saved in `--output_path` you set.
+
 * Train using the federated learning: Use `CheXpert_DenseNet121_FL.ipynb` file. You can modify federated learning hyperparameters.
 * You can also try the Grad-CAM method on test dataset with `Grad-CAM.ipynb` file after you get the trained model.
 
