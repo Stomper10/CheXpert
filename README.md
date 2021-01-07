@@ -4,9 +4,11 @@
 This repository aims to reproduce and improve CheXpert [paper](https://arxiv.org/pdf/1901.07031.pdf)'s results using the PyTorch library.
 For the baseline, I tried to use the same model(DenseNet121) and the same parameters as the paper.
 
-This repository especially referenced [here](https://github.com/gaetandi/cheXpert) for the coding part.  
-You can easily run the code with the following instructions.
-This code is written for the GPU environment. It would be hard to run this code in CPU environment.
+Since I know my results are still far short of the paper's, I will do many experiments from now on. If you have any ideas or suggestions to improve the model, please let me know!
+
+This repository especially referenced [here](https://github.com/gaetandi/cheXpert) for the coding part. You can easily run the code with the following instructions.
+
+This code is written for the GPU environment. It could be hard to run this code in CPU environment.
 
 
 
@@ -60,7 +62,7 @@ Options | Shortcut | Description
 --output_path| -o | Path to save models and ROC curve plot.
 --random_seed | -s | Random seed for reproduction.
 
-eg.) If you want to use 1% of training set to train the model with `policy = ones`, run like below.
+If you want to use 1% of training set to train the model with `policy = ones`, run like below.
 ```bash
 python3 run_chexpert.py \
   --policy = ones \
@@ -75,18 +77,18 @@ nohup python3 run_chexpert.py > result.txt &
 ```
 
 ### This part is optional
-* You can do apply deep ensembles with `run_ensembles.py` file. (to be added soon)
+* You can apply deep ensembles with `run_ensembles.py` file. (to be added soon)
 * Train using the federated learning: Use `CheXpert_DenseNet121_FL.ipynb` file. You can modify federated learning hyperparameters.
 * You can also try the Grad-CAM method on test dataset with `Grad-CAM.ipynb` file after you get the trained model.
 
 
 
 # 3. Results
-You may get training and validation losses, as well as the test accuracy like ROC curves. You can also check the computational costs. Models(`*.pth.tar`) and ROC curve(`.png`) files will be saved in the `results` directory. Let me just show you the ROC curves here(100 ensembles).
+You may get training and validation losses, as well as the test accuracy like ROC curves. You can also check the computational costs. Models(`*.pth.tar`) and ROC curve(`.png`) files will be saved in the `results` directory. Let me just show you the ROC curves here(100 simple ensembles).
 
 ![ROC_ensem_mean](https://user-images.githubusercontent.com/43818471/103856596-408c9a80-50f8-11eb-9be5-41b38847998f.png)
 
-This table shows a comparison with original paper results(used 100% of the training dataset).
+This table shows a comparison with original paper results.
 
 * Stanford Baseline(ensemble) AUC = 0.907
 * My Baseline(ensemble) AUC = 0.790 (Note that testset is different!)
@@ -107,12 +109,12 @@ For those who want to compare the running environment, mine was as below(used GP
 # 4. Task Lists
 - [x] Use subset of training dataset(10%) to check computational costs and performances.
 - [x] Adjust the number of training data per each class.
-- [x] Use whole training dataset and compare performances.
+- [x] Use whole training dataset(frontal images).
 - [x] Try federated learning technique.
 - [x] Apply Grad-CAM method for localization.
-- [x] Try simple ensemble method.
-- [ ] Try various models to ensemble.
-- [ ] Use lateral images for training.
+- [x] Try simple ensembles.
+- [ ] Use also lateral images for training.
+- [ ] Try various models for ensembles.
 - [ ] Use original dataset for training(~439GB).
 
 # 5. References
