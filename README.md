@@ -83,7 +83,7 @@ nohup python3 run_chexpert.py > result.txt &
 * You can apply deep ensembles with `run_ensembles.py` file.
 Under the `ensembles` directory, place experiment output directories you want to aggregate.
 When running the `run_chexpert.py`, set `--output_path` under the ensembles directory.
-`run_ensembles.py` have `--policy` and `--output_path` options which is the same as `run_chexpert.py`. The ensemble results will be saved in `--output_path` you set.
+`run_ensembles.py` have `--policy` and `--output_path` options just like `run_chexpert.py`. The ensemble results will be saved in `--output_path` you set.
 
 * Train using the federated learning: Use `CheXpert_DenseNet121_FL.ipynb` file. You can modify federated learning hyperparameters.
 * You can also try the Grad-CAM method on test dataset with `Grad-CAM.ipynb` file after you get the trained model.
