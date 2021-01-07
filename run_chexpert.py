@@ -7,6 +7,7 @@ import time
 import pickle
 import random
 import csv
+import os
 import argparse
 import numpy as np
 import pandas as pd
@@ -36,7 +37,7 @@ use_gpu = torch.cuda.is_available()
 parser = argparse.ArgumentParser(formatter_class = argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument('-p', '--policy', required = False, help = 'Define uncertain label policy.', default = 'ones')
 parser.add_argument('-r', '--ratio', required = False, help = 'Training data ratio.', default = 1)
-parser.add_argument('-o', '--output_path', required = False, help = 'Path to save models and ROC curve plot.', default = 'results')
+parser.add_argument('-o', '--output_path', required = False, help = 'Path to save models and ROC curve plot.', default = './results')
 parser.add_argument('-s', '--random_seed', required = False, help = 'Random seed for reproduction.')
 args = parser.parse_args()
 
@@ -108,10 +109,10 @@ datasetTest = CheXpertDataSet(pathFileTest, transformSequence, policy = policy, 
 train_ratio = float(args.ratio) # use subset of original training dataset
 train_num = round(len(datasetTrain) * train_ratio)
 datasetTrain, datasetLeft = random_split(datasetTrain, [train_num, len(datasetTrain) - train_num])
-print("<<< Data Information >>>")
-print("Train data length:", len(datasetTrain))
-print("Valid data length:", len(datasetValid))
-print("Test data length:", len(datasetTest))
+print('<<< Data Information >>>')
+print('Train data length:', len(datasetTrain))
+print('Valid data length:', len(datasetValid))
+print('Test data length:', len(datasetTest))
 print('')
 
 # Create DataLoaders
@@ -134,12 +135,13 @@ model = torch.nn.DataParallel(model).cuda()
 # Train the model
 train_valid_start = time.time()
 PATH = args.output_path
+os.makedirs(PATH)
 '''See 'materials.py' to check the class 'CheXpertTrainer'.'''
 model_num, train_time = CheXpertTrainer.train(model, dataLoaderTrain, dataLoaderVal, nnClassCount, trMaxEpoch, checkpoint = None, PATH)
 train_valid_end = time.time()
 print('')
-print("<<< Model Trained >>>")
-print("m-epoch_ALL{0}.pth.tar".format(model_num), 'is the best model.')
+print('<<< Model Trained >>>')
+print('m-epoch_ALL{0}.pth.tar'.format(model_num), 'is the best model.')
 print('')
 
 
@@ -147,17 +149,17 @@ print('')
 ##############################
 ## Test and Draw ROC Curves ##
 ##############################
-checkpoint = PATH + "m-epoch_ALL{0}.pth.tar".format(model_num)
+checkpoint = PATH + 'm-epoch_ALL{0}.pth.tar'.format(model_num)
 '''See 'materials.py' to check the class 'CheXpertTrainer'.'''
 outGT, outPRED, outPROB = CheXpertTrainer.test(model, dataLoaderTest, nnClassCount, checkpoint, class_names)
 
 # Save the test outPROB
-with open(PATH + "testPROB.txt", "wb") as fp:
+with open(PATH + 'testPROB.txt', 'wb') as fp:
     pickle.dump(outPROB, fp)
 
 # Draw ROC curves
-fig_size = plt.rcParams["figure.figsize"]
-plt.rcParams["figure.figsize"] = (30, 10)
+fig_size = plt.rcParams['figure.figsize']
+plt.rcParams['figure.figsize'] = (30, 10)
 
 for i in range(nnClassCount):
     fpr, tpr, threshold = metrics.roc_curve(outGT.cpu()[:,i], outPRED.cpu()[:,i])
@@ -174,7 +176,7 @@ for i in range(nnClassCount):
     plt.ylabel('True Positive Rate')
     plt.xlabel('False Positive Rate')
 
-plt.savefig(PATH + "ROC.png", dpi = 1000)
+plt.savefig(PATH + 'ROC.png', dpi = 1000)
 
 
 
