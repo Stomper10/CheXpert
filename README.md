@@ -53,12 +53,11 @@ python3 run_preprocessing.py
 ```
 
 ## Run the Model
-Now you can run the model like below. **But...**
+Now you can run the model like below. **But**, I recommend you to use several options to run the model more efficiently.
 ```bash
 python3 run_chexpert.py
 ```
 
-I recommend you to use several options to run the model more efficiently.
 Options | Shortcut | Description
 :-: | :-: | :-:
 --policy | -p | Uncertain label policy.
@@ -75,14 +74,14 @@ python3 run_chexpert.py \
   --random_seed = 1
 ```
 
-I recommend you to use the `nohup` command if you run this code on server since it takes several hours.
+I also recommend you to use the `nohup` command if you run this code on server since it takes several hours.
 ```bash
 nohup python3 run_chexpert.py > result.txt &
 ```
 
 ### This part is optional
 * You can apply deep ensembles with `run_ensembles.py` file.
-In the `ensembles` directory, place experiment output directories you want to aggregate.
+Under the `ensembles` directory, place experiment output directories you want to aggregate.
 When running the `run_chexpert.py`, set `--output_path` under the ensembles directory.
 `run_ensembles.py` have `--policy` and `--output_path` options which is the same as `run_chexpert.py`. The ensemble results will be saved in `--output_path` you set.
 
