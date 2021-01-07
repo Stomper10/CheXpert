@@ -47,7 +47,6 @@ args = parser.parse_args()
 '''
 python3 run_ensembles.py
 python3 run_ensembles.py -p ones -o ensemble/ensem_results/
-nohup python3 run_ensembles.py -p ones -o ensemble/ensem_results/ > ensemble/ensem_results/ensem_result.txt &
 '''
 
 
