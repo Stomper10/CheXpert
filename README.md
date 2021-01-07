@@ -54,7 +54,12 @@ python3 run_preprocessing.py
 ```
 
 ## Run the Model
-You can give several options to run the model.
+Now you can run the model like below. **But...**
+```bash
+python3 run_chexpert.py
+```
+
+I recommend you to use several options to run the model more efficiently.
 Options | Shortcut | Description
 :-: | :-: | :-:
 --policy | -p | Uncertain label policy.
