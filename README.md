@@ -45,7 +45,7 @@ Now the dataset is ready. As you see this repository structure, you have to plac
 
 
 
-# 2. Run the Code
+# 2. Run the CheXpert
 ## Data Preprocessing
 You MUST run the following code before running the model. In the current version, I set the model to use only frontal images.
 ```bash
