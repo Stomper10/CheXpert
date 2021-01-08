@@ -119,7 +119,7 @@ class CheXpertTrainer():
                 model_num = epochID + 1
                 torch.save({'epoch': epochID + 1, 'state_dict': model.state_dict(), 
                             'best_loss': lossMIN, 'optimizer' : optimizer.state_dict()}, 
-                            '{0}m-epoch_ALL{1}.pth.tar'.format(PATH, epochID + 1))
+                            '{0}m-epoch_{1}.pth.tar'.format(PATH, epochID + 1))
                 print('Epoch ' + str(epochID + 1) + ' [save] loss = ' + str(lossv))
             else:
                 print('Epoch ' + str(epochID + 1) + ' [----] loss = ' + str(lossv))
