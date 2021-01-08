@@ -40,13 +40,13 @@ use_gpu = torch.cuda.is_available()
 ######################
 parser = argparse.ArgumentParser(formatter_class = argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument('--policy', '-p', help = 'Define uncertain label policy: "ones" or "zeroes".', default = 'ones')
-parser.add_argument('--output_path', '-o', help = 'Path to save results.', default = 'ensembles/ensem_results/')
+parser.add_argument('--output_path', '-o', help = 'Path to save results.', default = 'results/ensem_results/')
 args = parser.parse_args()
 
 # Example running commands ('nohup' command for running background on server)
 '''
 python3 run_ensembles.py
-python3 run_ensembles.py -p ones -o ensemble/ensem_results/
+python3 run_ensembles.py -p ones -o results/ensem_results/
 '''
 
 
