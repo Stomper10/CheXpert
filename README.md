@@ -68,10 +68,10 @@ Options | Shortcut | Description
 If you want to use 1% of training set to train the model with `policy = ones`, run like below.
 ```bash
 python3 run_chexpert.py \
-  --policy = ones \
-  --ratio = 0.01 \
-  --output_path = results \
-  --random_seed = 1
+  --policy=ones \
+  --ratio=0.01 \
+  --output_path=results/ \
+  --random_seed=1
 ```
 
 I also recommend you to use the `nohup` command if you run this code on server since it takes several hours.
