@@ -1,2 +1,2 @@
-# This is the 'results' directory
-If you don't set `--output_path` when running the `run_chexpert.py` in the command line, results will be saved here. Check the '[Run the Model](https://github.com/Stomper10/CheXpert#run-the-model)' part.
+# This is the 'ensembles' directory
+Place experiment output directories here that you want to aggregate. When running the run_chexpert.py, set --output_path under this directory. Check the [here](https://github.com/Stomper10/CheXpert#this-part-is-optional).
