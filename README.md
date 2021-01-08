@@ -12,17 +12,20 @@ This code is written for the GPU environment. It could be hard to run in CPU env
 
 
 
-# 0. Prerequisites
+# 0. Environment
+For those who want to compare the running environment, mine was as below(used GPU server).
 - Python 3.6+
 - PyTorch (1.7.1 in my case)
 - Git Bash (whatever can handle git)
+- Intel Xeon Silver 4216 CPU
+- 512GB memory
+- Four Nvidia Titan RTX GPUs
 
-Open Git Bash and use `git clone` command to download this repository.
+First, open Git Bash and use `git clone` command to download this repository.
 
 ```bash
 git clone https://github.com/Stomper10/CheXpert.git
 ```
-
 
 
 # 1. Download the Data
@@ -99,10 +102,6 @@ Consolidation | 0.76 | 0.90 | -0.14
 Edema | 0.84 | 0.92 | -0.08
 Pleural Effusion | 0.90 | 0.97 | -0.07
 
-For those who want to compare the running environment, mine was as below(used GPU server).
-* Intel Xeon Silver 4216 CPU
-* 512GB memory
-* Four Nvidia Titan RTX GPUs
 
 
 ## This Part is Optional
