@@ -76,7 +76,7 @@ python3 run_chexpert.py \
 
 I also recommend you to use the `nohup` command if you run this code on server since it takes several hours.
 ```bash
-nohup python3 run_chexpert.py > result.txt &
+nohup python3 run_chexpert.py > results/printed.txt &
 ```
 
 ### This part is optional
