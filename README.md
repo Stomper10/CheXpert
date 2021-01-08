@@ -65,7 +65,7 @@ Options | Shortcut | Description
 --output_path| -o | Path to save results.
 --random_seed | -s | Random seed for reproduction.
 
-If you want to use 1% of training set to train the model with `policy=one`, run like below.
+If you want to use 1% of training set to train the model with `policy=ones`, run like below.
 ```bash
 python3 run_chexpert.py \
   --policy=ones \
@@ -79,19 +79,10 @@ I also recommend you to use the `nohup` command if you run this code on server s
 nohup python3 run_chexpert.py > progress.txt &
 ```
 
-### This part is optional
-* You can try deep ensembles with `run_ensembles.py` file.
-Under the `ensembles` directory, place **ONLY** experiment output directories you want to aggregate. If you place other directories, it will throw an error.
-When running the `run_chexpert.py`, set `--output_path` under the ensembles directory.
-`run_ensembles.py` have `--policy` and `--output_path` options just like `run_chexpert.py`. The ensemble results will be saved in `--output_path` you set.
-
-* You can try federated learning using the `CheXpert_DenseNet121_FL.ipynb` file. You can modify federated learning hyperparameters. (arranged version will be provided)
-* You can try the Grad-CAM method on test set with `Grad-CAM.ipynb` file after you get the trained model. (arranged version will be provided)
-
 
 
 # 3. Results
-You may get training and validation losses, as well as the test accuracy and ROC curves. You can also check the computational costs. Models(`*.pth.tar`), test set probabilities(`testPROB.txt`), and ROC curve(`ROC.png`) files will be saved in the `results` directory. If you run the code with `nohup` command, printed outputs will also be saved. Let me just show you the ROC curves here(100 simple ensembles).
+You may get training and validation losses, as well as the test accuracy and ROC curves. You can also check the computational costs. Models(`*.pth.tar`), test set probabilities(`testPROB.txt`), ROC curve(`ROC.png`), and printed output(`printed_outputs.txt`) files will be saved in the `results` directory. If you run the code with `nohup` command, you can also save whole printed outputs. Let me just show you the ROC curves here(100 simple ensembles).
 
 ![ROC_ensem_mean](https://user-images.githubusercontent.com/43818471/103856596-408c9a80-50f8-11eb-9be5-41b38847998f.png)
 
@@ -113,6 +104,31 @@ For those who want to compare the running environment, mine was as below(used GP
 * 512GB memory
 * Four Nvidia Titan RTX GPUs
 
+
+## This Part is Optional
+### Deep Ensembles
+You can try deep ensembles with `run_ensembles.py` file.
+Under the `ensembles` directory, place **ONLY** experiment output directories you want to aggregate. If you place other directories, it will throw an error.
+When running the `run_chexpert.py`, set `--output_path` under the ensembles directory.
+`run_ensembles.py` have `--policy` and `--output_path` options just like `run_chexpert.py`. The ensemble results will be saved in `--output_path` you set.
+```bash
+python3 run_chexpert.py --policy=ones --ratio=0.01 --output_path=emsembles/experiment_01/ --random_seed=1
+python3 run_chexpert.py --policy=ones --ratio=0.01 --output_path=emsembles/experiment_02/ --random_seed=2
+python3 run_chexpert.py --policy=ones --ratio=0.01 --output_path=emsembles/experiment_03/ --random_seed=3
+
+python3 run_ensembles.py \
+  --policy=ones \
+  --output_path=results/ensem_results/
+```
+
+### Federated Learning (arranged version will be provided)
+You can try federated learning using the `CheXpert_DenseNet121_FL.ipynb` file. You can modify federated learning hyperparameters.
+
+### Grad-CAM (arranged version will be provided)
+You can try the Grad-CAM method on test set with `Grad-CAM.ipynb` file after you get the trained model.
+
+
+
 # 4. Task Lists
 - [x] Use subset of training dataset(10%) to check computational costs and performances.
 - [x] Adjust the number of training data per each class.
@@ -123,6 +139,8 @@ For those who want to compare the running environment, mine was as below(used GP
 - [ ] Use also lateral images for training.
 - [ ] Try various models for ensembles.
 - [ ] Use original dataset for training(~439GB).
+
+
 
 # 5. References
 - CheXpert: A Large Chest Radiograph Dataset with Uncertainty Labels and Expert Comparison, Irvin et al., 2019 [[arXiv:1901.07031]](https://arxiv.org/pdf/1901.07031.pdf)
