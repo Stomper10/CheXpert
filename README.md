@@ -76,12 +76,12 @@ python3 run_chexpert.py \
 
 I also recommend you to use the `nohup` command if you run this code on server since it takes several hours.
 ```bash
-nohup python3 run_chexpert.py > results/printed.txt &
+nohup python3 run_chexpert.py > progress.txt &
 ```
 
 ### This part is optional
 * You can try deep ensembles with `run_ensembles.py` file.
-Under the `ensembles` directory, place experiment output directories you want to aggregate.
+Under the `ensembles` directory, place **ONLY** experiment output directories you want to aggregate. If you place other directory, it will throw an error.
 When running the `run_chexpert.py`, set `--output_path` under the ensembles directory.
 `run_ensembles.py` have `--policy` and `--output_path` options just like `run_chexpert.py`. The ensemble results will be saved in `--output_path` you set.
 
