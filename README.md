@@ -65,7 +65,7 @@ Options | Shortcut | Description
 --output_path| -o | Path to save results.
 --random_seed | -s | Random seed for reproduction.
 
-If you want to use 1% of training set to train the model with `policy = ones`, run like below.
+If you want to use 1% of training set to train the model with `policy=one`, run like below.
 ```bash
 python3 run_chexpert.py \
   --policy=ones \
