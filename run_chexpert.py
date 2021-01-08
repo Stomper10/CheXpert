@@ -141,7 +141,7 @@ model_num, train_time = CheXpertTrainer.train(model, dataLoaderTrain, dataLoader
 train_valid_end = time.time()
 print('')
 print('<<< Model Trained >>>')
-print('m-epoch_ALL{0}.pth.tar'.format(model_num), 'is the best model.')
+print('m-epoch_{0}.pth.tar'.format(model_num), 'is the best model.')
 print('')
 
 
@@ -149,7 +149,7 @@ print('')
 ##############################
 ## Test and Draw ROC Curves ##
 ##############################
-checkpoint = PATH + 'm-epoch_ALL{0}.pth.tar'.format(model_num)
+checkpoint = PATH + 'm-epoch_{0}.pth.tar'.format(model_num)
 '''See 'materials.py' to check the class 'CheXpertTrainer'.'''
 outGT, outPRED, outPROB = CheXpertTrainer.test(model, dataLoaderTest, nnClassCount, checkpoint, class_names)
 
