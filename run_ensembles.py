@@ -40,7 +40,7 @@ use_gpu = torch.cuda.is_available()
 ######################
 parser = argparse.ArgumentParser(formatter_class = argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument('--policy', '-p', help = 'Define uncertain label policy: "ones" or "zeroes".', default = 'ones')
-parser.add_argument('--output_path', '-o', help = 'Path to save results.', default = './ensembles/ensem_results')
+parser.add_argument('--output_path', '-o', help = 'Path to save results.', default = 'ensembles/ensem_results/')
 args = parser.parse_args()
 
 # Example running commands ('nohup' command for running background on server)
@@ -86,7 +86,7 @@ policy = args.policy # ones or zeroes
 
 # Create a dataset
 '''See 'materials.py' to check the class 'CheXpertDataSet'.'''
-datasetTest = CheXpertDataSet(pathFileTest, transformSequence, policy = policy, nnClassCount)
+datasetTest = CheXpertDataSet(pathFileTest, nnClassCount, transformSequence, policy = policy)
 
 # Create DataLoaders
 dataLoaderTest = DataLoader(dataset = datasetTest, num_workers = 2, pin_memory = True)
@@ -107,12 +107,12 @@ model = torch.nn.DataParallel(model).cuda()
 ## Test Result Aggregation ##
 #############################
 # Load each experiment's test probability
-ENSEM_DIR = './ensembles/'
-experiment_dirs = [f for f in os.listdir(ENSEM_DIR) if not f.startswith('.') and os.path.isdir(f) and f.]
+ENSEM_DIR = 'ensembles/'
+experiment_dirs = [f for f in os.listdir(ENSEM_DIR) if not f.startswith('.') and os.path.isdir(os.path.join(ENSEM_DIR, f))]
 
 results = []
 for i in range(len(experiment_dirs)):
-    exPATH = './ensembles/{}/'.format(experiment_dirs[i])
+    exPATH = 'ensembles/{}/'.format(experiment_dirs[i])
     with open(exPATH + 'testPROB.txt', 'rb') as fp:
         result = pickle.load(fp)
         results.append(result)
@@ -140,8 +140,8 @@ EnsemTest = images_mean
 outGT, outPRED = EnsemAgg(EnsemTest, dataLoaderTest, nnClassCount, class_names)
 
 # Draw ROC curves
-fig_size = plt.rcParams["figure.figsize"]
-plt.rcParams["figure.figsize"] = (30, 10)
+fig_size = plt.rcParams['figure.figsize']
+plt.rcParams['figure.figsize'] = (30, 10)
 
 for i in range(nnClassCount):
     fpr, tpr, threshold = metrics.roc_curve(outGT.cpu()[:,i], outPRED.cpu()[:,i])
