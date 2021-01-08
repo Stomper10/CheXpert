@@ -112,7 +112,7 @@ experiment_dirs = [f for f in os.listdir(ENSEM_DIR) if not f.startswith('.') and
 
 results = []
 for i in range(len(experiment_dirs)):
-    exPATH = 'ensembles/{}/'.format(experiment_dirs[i])
+    exPATH = './ensembles/{}/'.format(experiment_dirs[i])
     with open(exPATH + 'testPROB.txt', 'rb') as fp:
         result = pickle.load(fp)
         results.append(result)
@@ -137,11 +137,11 @@ for i in range(len(datasetTest)):
 # Apply EnsemAgg function for aggregation
 EnsemTest = images_mean
 '''See 'materials.py' to check the function 'EnsemAgg'.'''
-outGT, outPRED = EnsemAgg(EnsemTest, dataLoaderTest, nnClassCount, class_names)
+outGT, outPRED, aurocMean, aurocIndividual= EnsemAgg(EnsemTest, dataLoaderTest, nnClassCount, class_names)
 
 # Draw ROC curves
-fig_size = plt.rcParams['figure.figsize']
-plt.rcParams['figure.figsize'] = (30, 10)
+fig_size = plt.rcParams["figure.figsize"]
+plt.rcParams["figure.figsize"] = (30, 10)
 
 for i in range(nnClassCount):
     fpr, tpr, threshold = metrics.roc_curve(outGT.cpu()[:,i], outPRED.cpu()[:,i])
@@ -162,3 +162,14 @@ for i in range(nnClassCount):
 PATH = args.output_path
 if not os.path.exists(PATH): os.makedirs(PATH)
 plt.savefig(PATH + 'ROC_ensem_mean.png', dpi = 1000)
+
+
+
+###############################
+## Save some printed outputs ##
+###############################
+with open(PATH + 'printed_outputs.txt', "w") as file:
+    file.write('<<< Ensembles Test Results >>> \n')
+    file.write('AUROC mean = {} \n'.format(aurocMean))
+    for i in range (0, len(aurocIndividual)):
+        file.write('{0} = {1} \n'.format(class_names[i], aurocIndividual[i]))

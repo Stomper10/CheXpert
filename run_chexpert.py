@@ -45,8 +45,8 @@ args = parser.parse_args()
 # Example running commands ('nohup' command for running background on server)
 '''
 python3 run_chexpert.py
-python3 run_chexpert.py -p ones -r 0.01 -o ensemble/experiment_00/ -s 0
-nohup python3 run_chexpert.py -p ones -r 1 -o ensemble/experiment_01/ -s 1 > ensemble/printed_01.txt &
+python3 run_chexpert.py -p ones -r 0.01 -o results/ -s 2021
+nohup python3 run_chexpert.py -p ones -r 1 -o ensemble/experiment_00/ -s 0 > ensemble/printed_00.txt &
 '''
 
 # Control randomness for reproduction
@@ -151,7 +151,7 @@ print('')
 ##############################
 checkpoint = PATH + 'm-epoch_{0}.pth.tar'.format(model_num)
 '''See 'materials.py' to check the class 'CheXpertTrainer'.'''
-outGT, outPRED, outPROB = CheXpertTrainer.test(model, dataLoaderTest, nnClassCount, checkpoint, class_names)
+outGT, outPRED, outPROB, aurocMean, aurocIndividual = CheXpertTrainer.test(model, dataLoaderTest, nnClassCount, checkpoint, class_names)
 
 # Save the test outPROB
 with open('{}testPROB.txt'.format(PATH), 'wb') as fp:
@@ -187,3 +187,26 @@ print('')
 print('<<< Computational Stats >>>')
 print(train_time.round(0), '/seconds per epoch.')
 print('Total', round((train_valid_end - train_valid_start) / 60), 'minutes elapsed.')
+
+
+
+###############################
+## Save some printed outputs ##
+###############################
+with open(PATH + 'printed_outputs.txt', "w") as file:
+    file.write('<<< Data Information >>> \n')
+    file.write('Train data length: {} \n'.format(len(datasetTrain)))
+    file.write('Valid data length: {} \n'.format(len(datasetValid)))
+    file.write('Test data length: {} \n'.format(len(datasetTest)))
+    file.write('\n')
+    file.write('<<< Model Trained >>> \n')
+    file.write('m-epoch_{0}.pth.tar is the best model. \n'.format(model_num))
+    file.write('\n')
+    file.write('<<< Model Test Results >>> \n')
+    file.write('AUROC mean = {} \n'.format(aurocMean))
+    for i in range (0, len(aurocIndividual)):
+        file.write('{0} = {1} \n'.format(class_names[i], aurocIndividual[i]))
+    file.write('\n')
+    file.write('<<< Computational Stats >>> \n')
+    file.write('{} /seconds per epoch. \n'.format(train_time.round(0)))
+    file.write('Total {} minutes elapsed.'.format(round((train_valid_end - train_valid_start) / 60)))
