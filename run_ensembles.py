@@ -39,8 +39,8 @@ use_gpu = torch.cuda.is_available()
 ## Arguments to Set ##
 ######################
 parser = argparse.ArgumentParser(formatter_class = argparse.ArgumentDefaultsHelpFormatter)
-parser.add_argument('-p', '--policy', required = False, help = 'Define uncertain label policy.', default = 'ones')
-parser.add_argument('-o', '--output_path', required = False, help = 'Path to save results.', default = './ensembles/ensem_results')
+parser.add_argument('--policy', '-p', help = 'Define uncertain label policy: "ones" or "zeroes".', default = 'ones')
+parser.add_argument('--output_path', '-o', help = 'Path to save results.', default = './ensembles/ensem_results')
 args = parser.parse_args()
 
 # Example running commands ('nohup' command for running background on server)
@@ -160,5 +160,5 @@ for i in range(nnClassCount):
 
 # Save ensemble results
 PATH = args.output_path
-os.makedirs(PATH)
+if not os.path.exists(PATH): os.makedirs(PATH)
 plt.savefig(PATH + 'ROC_ensem_mean.png', dpi = 1000)

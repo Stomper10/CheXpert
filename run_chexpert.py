@@ -36,10 +36,10 @@ use_gpu = torch.cuda.is_available()
 ## Arguments to Set ##
 ######################
 parser = argparse.ArgumentParser(formatter_class = argparse.ArgumentDefaultsHelpFormatter)
-parser.add_argument('-p', '--policy', required = False, help = 'Define uncertain label policy.', default = 'ones')
-parser.add_argument('-r', '--ratio', required = False, help = 'Training data ratio.', default = 1)
-parser.add_argument('-o', '--output_path', required = False, help = 'Path to save results.', default = './results')
-parser.add_argument('-s', '--random_seed', required = False, help = 'Random seed for reproduction.')
+parser.add_argument('--policy', '-p', help = 'Define uncertain label policy: "ones" or "zeroes".', default = 'ones')
+parser.add_argument('--ratio', '-r', type = float, help = 'Training data ratio: 0 < val <= 1.', default = 1)
+parser.add_argument('--output_path', '-o', help = 'Path to save results.', default = './results')
+parser.add_argument('--random_seed', '-s', type = int, help = 'Random seed for reproduction.')
 args = parser.parse_args()
 
 # Example running commands ('nohup' command for running background on server)
@@ -51,7 +51,7 @@ nohup python3 run_chexpert.py -p ones -r 1 -o ensemble/experiment_01/ -s 1 > ens
 
 # Control randomness for reproduction
 if args.random_seed:
-    random_seed = int(args.random_seed)
+    random_seed = args.random_seed
     torch.manual_seed(random_seed)
     np.random.seed(random_seed)
     random.seed(random_seed)
@@ -107,8 +107,7 @@ datasetValid = CheXpertDataSet(pathFileValid, nnClassCount, transformSequence)
 datasetTest = CheXpertDataSet(pathFileTest, nnClassCount, transformSequence, policy = policy)
 
 # Use subset of datasetTrain for training
-train_ratio = float(args.ratio) # use subset of original training dataset
-train_num = round(len(datasetTrain) * train_ratio)
+train_num = round(len(datasetTrain) * args.ratio) # use subset of original training dataset
 datasetTrain, datasetLeft = random_split(datasetTrain, [train_num, len(datasetTrain) - train_num])
 print('<<< Data Information >>>')
 print('Train data length:', len(datasetTrain))
@@ -136,9 +135,9 @@ model = torch.nn.DataParallel(model).cuda()
 # Train the model
 train_valid_start = time.time()
 PATH = args.output_path
-os.makedirs(PATH)
+if not os.path.exists(PATH): os.makedirs(PATH)
 '''See 'materials.py' to check the class 'CheXpertTrainer'.'''
-model_num, train_time = CheXpertTrainer.train(model, dataLoaderTrain, dataLoaderVal, nnClassCount, trMaxEpoch, checkpoint = None, PATH)
+model_num, train_time = CheXpertTrainer.train(model, dataLoaderTrain, dataLoaderVal, nnClassCount, trMaxEpoch, PATH, checkpoint = None)
 train_valid_end = time.time()
 print('')
 print('<<< Model Trained >>>')
@@ -155,7 +154,7 @@ checkpoint = PATH + 'm-epoch_ALL{0}.pth.tar'.format(model_num)
 outGT, outPRED, outPROB = CheXpertTrainer.test(model, dataLoaderTest, nnClassCount, checkpoint, class_names)
 
 # Save the test outPROB
-with open(PATH + 'testPROB.txt', 'wb') as fp:
+with open('{}testPROB.txt'.format(PATH), 'wb') as fp:
     pickle.dump(outPROB, fp)
 
 # Draw ROC curves
@@ -177,7 +176,7 @@ for i in range(nnClassCount):
     plt.ylabel('True Positive Rate')
     plt.xlabel('False Positive Rate')
 
-plt.savefig(PATH + 'ROC.png', dpi = 1000)
+plt.savefig('{}ROC.png'.format(PATH), dpi = 1000)
 
 
 
