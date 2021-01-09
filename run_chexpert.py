@@ -133,9 +133,14 @@ model = DenseNet121(nnClassCount).cuda()
 model = torch.nn.DataParallel(model).cuda()
 
 # Train the model
-train_valid_start = time.time()
 PATH = args.output_path
+if args.output_path[-1] != '/':
+    PATH = args.output_path + '/'
+else:
+    PATH = args.output_path
+
 if not os.path.exists(PATH): os.makedirs(PATH)
+train_valid_start = time.time()
 '''See 'materials.py' to check the class 'CheXpertTrainer'.'''
 model_num, train_time = CheXpertTrainer.train(model, dataLoaderTrain, dataLoaderVal, nnClassCount, trMaxEpoch, PATH, checkpoint = None)
 train_valid_end = time.time()

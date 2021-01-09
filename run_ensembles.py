@@ -160,6 +160,11 @@ for i in range(nnClassCount):
 
 # Save ensemble results
 PATH = args.output_path
+if args.output_path[-1] != '/':
+    PATH = args.output_path + '/'
+else:
+    PATH = args.output_path
+    
 if not os.path.exists(PATH): os.makedirs(PATH)
 plt.savefig(PATH + 'ROC_ensem_mean.png', dpi = 1000)
 
