@@ -15,13 +15,12 @@ This code is written for the GPU environment. It could be hard to run in CPU env
 # 0. Environment
 For those who want to compare the running environment, mine was as below(used GPU server).
 - Python 3.6+
-- PyTorch (1.7.1 in my case)
-- Git Bash (whatever can handle git)
+- PyTorch 1.7.1
 - Intel Xeon Silver 4216 CPU
 - 512GB memory
 - Four Nvidia Titan RTX GPUs
 
-First, open Git Bash and use `git clone` command to download this repository.
+First, use `git clone` command to download this repository.
 
 ```bash
 git clone https://github.com/Stomper10/CheXpert.git
@@ -32,7 +31,7 @@ git clone https://github.com/Stomper10/CheXpert.git
 At the bottom of the CheXpert [webpage](https://stanfordmlgroup.github.io/competitions/chexpert/), write a registration form to download the CheXpert dataset.
 You will receive an email with the download link. Right-click your mouse on the download link(439GB or 11GB) and click 'Copy link address'.
 
-Then, open Git Bash to run the following command. Paste your link address inside the double quotation marks(PLEASE RUN WITH QUOTATION MARKS). It will take a while even for the downsampled(11GB) dataset. In this experiment, I used the downsampled dataset.
+Then, run the following command. Paste your link address inside the double quotation marks(PLEASE RUN WITH QUOTATION MARKS). It will take a while even for the downsampled(11GB) dataset. In this experiment, I used the downsampled dataset.
 
 ```bash
 wget "link_address_you_copied"
@@ -50,7 +49,7 @@ Now the dataset is ready. As you see this repository structure, you have to plac
 
 # 2. Run the CheXpert
 ## Data Preprocessing
-You MUST run the following command before running the model. In the current version, I set the model to use only frontal images.
+You **MUST** run the following command before running the model. In the current version, I set the model to use only frontal images.
 ```bash
 python3 run_preprocessing.py
 ```
@@ -61,14 +60,14 @@ Now you can run the model like below. **BUT**, I recommend you to use several op
 python3 run_chexpert.py
 ```
 
-Options | Shortcut | Description
-:-: | :-: | :-:
---policy | -p | Uncertain label policy.
---ratio | -r | Training data ratio.
---output_path| -o | Path to save results.
---random_seed | -s | Random seed for reproduction.
+Options | Shortcut | Description | Default
+:-: | :-: | :-: | :-:
+--policy | -p | Uncertain label policy. | ones
+--ratio | -r | Training data ratio. | 1
+--output_path| -o | Path to save results. | results/
+--random_seed | -s | Random seed for reproduction. | -
 
-If you want to use 1% of training set to train the model with `policy=ones`, run like below.
+If you want to use 1% of training set to train the model with `policy=ones`, you can run like below.
 ```bash
 python3 run_chexpert.py \
   --policy=ones \
