@@ -40,8 +40,8 @@ parser.add_argument('--policy', '-p', help = 'Define uncertain label policy: "on
 parser.add_argument('--ratio', '-r', type = float, help = 'Training data ratio: 0 < val <= 1.', default = 1)
 parser.add_argument('--output_path', '-o', help = 'Path to save results.', default = 'results/')
 parser.add_argument('--random_seed', '-s', type = int, help = 'Random seed for reproduction.')
-parser.add_argument('--epochs', '-e', type = int, help = 'The number of training epochs.')
-parser.add_argument('--batch_size', '-b', type = int, help = 'The number of batch size.')
+parser.add_argument('--epochs', '-e', type = int, help = 'The number of training epochs.', default = 3)
+parser.add_argument('--batch_size', '-b', type = int, help = 'The number of batch size.', default = 16)
 args = parser.parse_args()
 
 # Example running commands ('nohup' command for running background on server)
