@@ -40,6 +40,8 @@ parser.add_argument('--policy', '-p', help = 'Define uncertain label policy: "on
 parser.add_argument('--ratio', '-r', type = float, help = 'Training data ratio: 0 < val <= 1.', default = 1)
 parser.add_argument('--output_path', '-o', help = 'Path to save results.', default = 'results/')
 parser.add_argument('--random_seed', '-s', type = int, help = 'Random seed for reproduction.')
+parser.add_argument('--epochs', '-e', type = int, help = 'The number of training epochs.')
+parser.add_argument('--batch_size', '-b', type = int, help = 'The number of batch size.')
 args = parser.parse_args()
 
 # Example running commands ('nohup' command for running background on server)
@@ -74,8 +76,8 @@ nnIsTrained = False # if pre-trained by ImageNet
 nnClassCount = 14   # dimension of the output
 
 # Training settings
-trBatchSize = 16    # batch size
-trMaxEpoch = 3      # maximum number of epochs
+trBatchSize = args.batch_size    # batch size
+trMaxEpoch = args.epochs      # maximum number of epochs
 
 # Parameters related to image transforms: size of the down-scaled image, cropped image
 imgtransResize = (320, 320)
