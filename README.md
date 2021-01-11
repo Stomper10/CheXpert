@@ -66,6 +66,8 @@ Options | Shortcut | Description | Default
 --ratio | -r | Training data ratio. | 1
 --output_path| -o | Path to save results. | results/
 --random_seed | -s | Random seed for reproduction. | -
+--epochs | -e | The number of training epochs. | 3
+--batch_size | -b | The number of batch size. | 16
 
 If you want to use 1% of training set to train the model with `policy=ones`, you can run like below.
 ```bash
