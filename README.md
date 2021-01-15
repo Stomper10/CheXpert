@@ -49,7 +49,8 @@ Now the dataset is ready. As you see this repository structure, you have to plac
 
 # 2. Run the CheXpert
 ## Data Preprocessing
-You **MUST** run the following command before running the model.
+You **MUST** run the following command before running the model. Running the `run_preprocessing.py` file makes the test set ready. Since the CheXpert uses a hidden test set for the official evaluation of models, I had to make the test set extracted from the training set before running the model for repetition experiments.
+
 ```bash
 python3 run_preprocessing.py
 ```
@@ -90,10 +91,10 @@ You may get training and validation losses, as well as the test accuracy and ROC
 
 ![ROC_all](https://user-images.githubusercontent.com/43818471/104684971-6db2fb80-573d-11eb-80d7-01d378d90465.png)
 
-The following table shows a comparison with original paper results.
+The following table shows a comparison with the original paper results. I know it's not an accurate comparison since the test set is different. But at least we can roughly gauge the model's performance.
 
 * Stanford Baseline(ensemble) AUC = 0.907
-* My Baseline AUC = 0.863 (Note that test set is different!)
+* My Baseline AUC = 0.863
 
 Observation | Experiment AUC | Paper AUC | Difference
 :-: | :-: | :-: | :-:
