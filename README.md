@@ -49,7 +49,7 @@ Now the dataset is ready. As you see this repository structure, you have to plac
 
 # 2. Run the CheXpert
 ## Data Preprocessing
-You **MUST** run the following command before running the model. In the current version, I set the model to use only frontal images.
+You **MUST** run the following command before running the model.
 ```bash
 python3 run_preprocessing.py
 ```
@@ -86,22 +86,23 @@ nohup python3 run_chexpert.py > progress.txt &
 
 
 # 3. Results
-You may get training and validation losses, as well as the test accuracy and ROC curves. You can also check the computational costs. Models(`*.pth.tar`), test set probabilities(`testPROB.txt`), ROC curve(`ROC.png`), and printed output(`printed_outputs.txt`) files will be saved in the `results` directory. If you run the code with `nohup` command, you can also save whole printed outputs. Let me just show you the ROC curves here(100 simple ensembles).
+You may get training and validation losses, as well as the test accuracy and ROC curves. You can also check the computational costs. Models(`*.pth.tar`), test set probabilities(`testPROB.txt`), ROC curve(`ROC.png`), and printed output(`printed_outputs.txt`) files will be saved in the `results` directory. If you run the code with `nohup` command, you can also save whole printed outputs. Let me just show you the ROC curves here.
 
-![ROC_ensem_mean](https://user-images.githubusercontent.com/43818471/103856596-408c9a80-50f8-11eb-9be5-41b38847998f.png)
+![ROC_all](https://user-images.githubusercontent.com/43818471/104684971-6db2fb80-573d-11eb-80d7-01d378d90465.png)
 
 The following table shows a comparison with original paper results.
 
 * Stanford Baseline(ensemble) AUC = 0.907
-* My Baseline(ensemble) AUC = 0.790 (Note that test set is different!)
+* My Baseline AUC = 0.863 (Note that test set is different!)
 
 Observation | Experiment AUC | Paper AUC | Difference
 :-: | :-: | :-: | :-:
-Atelectasis | 0.74 | 0.85 | -0.11
-Cardiomegaly | 0.87 | 0.90 | -0.03
-Consolidation | 0.76 | 0.90 | -0.14
-Edema | 0.84 | 0.92 | -0.08
-Pleural Effusion | 0.90 | 0.97 | -0.07
+Atelectasis | 0.81 | 0.85 | -0.04
+Cardiomegaly | 0.93 | 0.90 | +0.03
+Consolidation | 0.77 | 0.90 | -0.13
+Edema | 0.89 | 0.92 | -0.03
+Pleural Effusion | 0.92 | 0.97 | -0.05
+**Mean of 5 obs.** | **0.86** | **0.91** | **-0.05**
 
 
 
