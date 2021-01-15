@@ -49,7 +49,7 @@ Now the dataset is ready. As you see this repository structure, you have to plac
 
 # 2. Run the CheXpert
 ## Data Preprocessing
-You **MUST** run the following command before running the model. Running the `run_preprocessing.py` file makes the test set ready. Since the CheXpert uses a hidden test set for the official evaluation of models, I had to make the test set extracted from the training set before running the model for repetition experiments.
+You **MUST** run the following command before running the model. Running the `run_preprocessing.py` file makes the test set ready. Since the CheXpert uses a hidden test set for the official evaluation of models, I had to make the test set extracted from the training set for repetition experiments.
 
 ```bash
 python3 run_preprocessing.py
