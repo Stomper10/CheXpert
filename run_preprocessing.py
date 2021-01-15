@@ -12,13 +12,11 @@ import pandas as pd
 ###################
 # Each file contains pairs (path to image, output vector)
 Traindata = pd.read_csv('./CheXpert-v1.0-small/train.csv')
-Traindata = Traindata[Traindata['Path'].str.contains('frontal')] # use only frontal images
 Traindata = Traindata[500:]
 Traindata.to_csv('./CheXpert-v1.0-small/train_mod.csv', index = False)
 print('Train data length:', len(Traindata))
 
 Validdata = pd.read_csv('./CheXpert-v1.0-small/valid.csv')
-Validdata = Validdata[Validdata['Path'].str.contains('frontal')] # use only frontal images
 Validdata.to_csv('./CheXpert-v1.0-small/valid_mod.csv', index = False)
 print('Valid data length:', len(Validdata))
 
