@@ -137,7 +137,7 @@ You can try the Grad-CAM method on test set with `Grad-CAM.ipynb` file after you
 - [x] Try federated learning technique.
 - [x] Apply Grad-CAM method for localization.
 - [x] Try simple ensembles.
-- [ ] Use also lateral images for training.
+- [x] Use also lateral images for training.
 - [ ] Try various models for ensembles.
 - [ ] Use original dataset for training(~439GB).
 
