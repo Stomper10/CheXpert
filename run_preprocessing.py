@@ -18,7 +18,7 @@ test_images = []
 for i in range(len(paths) - 1):
     if paths[i][26:45] != paths[i+1][26:45]:
         studies += 1
-    if studies <= 500:
+    if studies <= 501:
         test_images.append(paths[i])
 
 Traindata = Traindata_raw[len(test_images):]
