@@ -67,9 +67,12 @@ if args.random_seed:
 #######################
 '''Should have run 'run_preprocessing.py' before this part!'''
 # Paths to the files with training, validation, and test sets.
-pathFileTrain = './CheXpert-v1.0-small/train_mod.csv'
-pathFileValid = './CheXpert-v1.0-small/valid_mod.csv'
-pathFileTest = './CheXpert-v1.0-small/test_mod.csv'
+pathFileTrain_frt = './CheXpert-v1.0-small/train_frt.csv'
+pathFileTrain_lat = './CheXpert-v1.0-small/train_lat.csv'
+pathFileValid_frt = './CheXpert-v1.0-small/valid_frt.csv'
+pathFileValid_lat = './CheXpert-v1.0-small/valid_lat.csv'
+pathFileTest_frt = './CheXpert-v1.0-small/test_frt.csv'
+pathFileTest_lat = './CheXpert-v1.0-small/test_lat.csv'
 
 # Neural network parameters
 nnIsTrained = False # if pre-trained by ImageNet
@@ -80,8 +83,7 @@ trBatchSize = args.batch_size    # batch size
 trMaxEpoch = args.epochs      # maximum number of epochs
 
 # Parameters related to image transforms: size of the down-scaled image, cropped image
-imgtransResize = (320, 320)
-imgtransCrop = 224
+imgtransResize = 320
 
 # Class names
 class_names = ['No Finding', 'Enlarged Cardiomediastinum', 'Cardiomegaly', 'Lung Opacity', 
@@ -95,7 +97,7 @@ class_names = ['No Finding', 'Enlarged Cardiomediastinum', 'Cardiomegaly', 'Lung
 ######################
 # Tranform data
 transformList = []
-transformList.append(transforms.Resize((imgtransCrop, imgtransCrop))) # 224
+transformList.append(transforms.Resize((imgtransResize, imgtransResize))) # 320
 transformList.append(transforms.ToTensor())
 transformSequence = transforms.Compose(transformList)
 
@@ -104,25 +106,38 @@ policy = args.policy # ones or zeroes
 
 # Create a dataset
 '''See 'materials.py' to check the class 'CheXpertDataSet'.'''
-datasetTrain = CheXpertDataSet(pathFileTrain, nnClassCount, transformSequence, policy = policy)
-datasetValid = CheXpertDataSet(pathFileValid, nnClassCount, transformSequence)
-datasetTest = CheXpertDataSet(pathFileTest, nnClassCount, transformSequence, policy = policy)
+datasetTrain_frt = CheXpertDataSet(pathFileTrain_frt, nnClassCount, transformSequence, policy = policy)
+datasetTrain_lat = CheXpertDataSet(pathFileTrain_lat, nnClassCount, transformSequence, policy = policy)
+datasetValid_frt = CheXpertDataSet(pathFileValid_frt, nnClassCount, transformSequence)
+datasetValid_lat = CheXpertDataSet(pathFileValid_lat, nnClassCount, transformSequence)
+datasetTest_frt = CheXpertDataSet(pathFileTest_frt, nnClassCount, transformSequence, policy = policy)
+datasetTest_lat = CheXpertDataSet(pathFileTest_lat, nnClassCount, transformSequence, policy = policy)
 
 # Use subset of datasetTrain for training
-train_num = round(len(datasetTrain) * args.ratio) # use subset of original training dataset
-datasetTrain, datasetLeft = random_split(datasetTrain, [train_num, len(datasetTrain) - train_num])
+train_num_frt = round(len(datasetTrain_frt) * args.ratio) # use subset of original training dataset
+train_num_lat = round(len(datasetTrain_lat) * args.ratio) # use subset of original training dataset
+datasetTrain_frt, _ = random_split(datasetTrain_frt, [train_num_frt, len(datasetTrain_frt) - train_num_frt])
+datasetTrain_lat, _ = random_split(datasetTrain_lat, [train_num_lat, len(datasetTrain_lat) - train_num_lat])
 print('<<< Data Information >>>')
-print('Train data length:', len(datasetTrain))
-print('Valid data length:', len(datasetValid))
-print('Test data length:', len(datasetTest))
+print('Train data length(frontal):', len(datasetTrain_frt))
+print('Train data length(lateral):', len(datasetTrain_frt))
+print('Valid data length(frontal):', len(datasetValid_frt))
+print('Valid data length(lateral):', len(datasetValid_lat))
+print('Test data length(frontal):', len(datasetTest_frt))
+print('Test data length(lateral):', len(datasetTest_lat))
 print('')
 
 # Create DataLoaders
-dataLoaderTrain = DataLoader(dataset = datasetTrain, batch_size = trBatchSize, 
-                             shuffle = True, num_workers = 2, pin_memory = True)
-dataLoaderVal = DataLoader(dataset = datasetValid, batch_size = trBatchSize, 
-                           shuffle = False, num_workers = 2, pin_memory = True)
-dataLoaderTest = DataLoader(dataset = datasetTest, num_workers = 2, pin_memory = True)
+dataLoaderTrain_frt = DataLoader(dataset = datasetTrain_frt, batch_size = trBatchSize, 
+                                 shuffle = True, num_workers = 2, pin_memory = True)
+dataLoaderTrain_lat = DataLoader(dataset = datasetTrain_lat, batch_size = trBatchSize, 
+                                 shuffle = True, num_workers = 2, pin_memory = True)
+dataLoaderVal_frt = DataLoader(dataset = datasetValid_frt, batch_size = trBatchSize, 
+                               shuffle = False, num_workers = 2, pin_memory = True)
+dataLoaderVal_lat = DataLoader(dataset = datasetValid_lat, batch_size = trBatchSize, 
+                               shuffle = False, num_workers = 2, pin_memory = True)
+dataLoaderTest_frt = DataLoader(dataset = datasetTest_frt, num_workers = 2, pin_memory = True)
+dataLoaderTest_lat = DataLoader(dataset = datasetTest_lat, num_workers = 2, pin_memory = True)
 
 
 
@@ -142,13 +157,22 @@ else:
     PATH = args.output_path
 
 if not os.path.exists(PATH): os.makedirs(PATH)
-train_valid_start = time.time()
+
+# Train frontal model
+train_valid_start_frt = time.time()
 '''See 'materials.py' to check the class 'CheXpertTrainer'.'''
-model_num, train_time = CheXpertTrainer.train(model, dataLoaderTrain, dataLoaderVal, nnClassCount, trMaxEpoch, PATH, checkpoint = None)
-train_valid_end = time.time()
+model_num_frt, train_time_frt = CheXpertTrainer.train(model, dataLoaderTrain_frt, dataLoaderVal_frt, nnClassCount, trMaxEpoch, PATH, checkpoint = None)
+train_valid_end_frt = time.time()
+
+# Train lateral model
+train_valid_start_lat = time.time()
+'''See 'materials.py' to check the class 'CheXpertTrainer'.'''
+model_num_lat, train_time_lat = CheXpertTrainer.train(model, dataLoaderTrain_lat, dataLoaderVal_lat, nnClassCount, trMaxEpoch, PATH, checkpoint = None)
+train_valid_end_lat = time.time()
 print('')
 print('<<< Model Trained >>>')
-print('m-epoch_{0}.pth.tar'.format(model_num), 'is the best model.')
+print('For frontal model,', 'm-epoch_{0}.pth.tar'.format(model_num_frt), 'is the best model.')
+print('For lateral model,', 'm-epoch_{0}.pth.tar'.format(model_num_lat), 'is the best model.')
 print('')
 
 
@@ -156,20 +180,26 @@ print('')
 ##############################
 ## Test and Draw ROC Curves ##
 ##############################
-checkpoint = PATH + 'm-epoch_{0}.pth.tar'.format(model_num)
+checkpoint_frt = PATH + 'm-epoch_{0}.pth.tar'.format(model_num_frt)
+checkpoint_lat = PATH + 'm-epoch_{0}.pth.tar'.format(model_num_lat)
 '''See 'materials.py' to check the class 'CheXpertTrainer'.'''
-outGT, outPRED, outPROB, aurocMean, aurocIndividual = CheXpertTrainer.test(model, dataLoaderTest, nnClassCount, checkpoint, class_names)
+outGT_frt, outPRED_frt, outPROB_frt, aurocMean_frt, aurocIndividual_frt = CheXpertTrainer.test(model, dataLoaderTest_frt, nnClassCount, checkpoint_frt, class_names)
+outGT_lat, outPRED_lat, outPROB_lat, aurocMean_lat, aurocIndividual_lat = CheXpertTrainer.test(model, dataLoaderTest_lat, nnClassCount, checkpoint_lat, class_names)
 
-# Save the test outPROB
-with open('{}testPROB.txt'.format(PATH), 'wb') as fp:
-    pickle.dump(outPROB, fp)
+# Save the test outPROB_frt
+with open('{}testPROB_frt.txt'.format(PATH), 'wb') as fp:
+    pickle.dump(outPROB_frt, fp)
+
+# Save the test outPROB_lat
+with open('{}testPROB_lat.txt'.format(PATH), 'wb') as fp:
+    pickle.dump(outPROB_lat, fp)
 
 # Draw ROC curves
 fig_size = plt.rcParams['figure.figsize']
 plt.rcParams['figure.figsize'] = (30, 10)
 
 for i in range(nnClassCount):
-    fpr, tpr, threshold = metrics.roc_curve(outGT.cpu()[:,i], outPRED.cpu()[:,i])
+    fpr, tpr, threshold = metrics.roc_curve(outGT_frt.cpu()[:,i], outPRED_frt.cpu()[:,i])
     roc_auc = metrics.auc(fpr, tpr)
     f = plt.subplot(2, 7, i+1)
 
@@ -183,7 +213,25 @@ for i in range(nnClassCount):
     plt.ylabel('True Positive Rate')
     plt.xlabel('False Positive Rate')
 
-plt.savefig('{}ROC.png'.format(PATH), dpi = 1000)
+plt.savefig('{}ROC_frt.png'.format(PATH), dpi = 1000)
+
+
+for i in range(nnClassCount):
+    fpr, tpr, threshold = metrics.roc_curve(outGT_lat.cpu()[:,i], outPRED_lat.cpu()[:,i])
+    roc_auc = metrics.auc(fpr, tpr)
+    f = plt.subplot(2, 7, i+1)
+
+    plt.title('ROC for: ' + class_names[i])
+    plt.plot(fpr, tpr, label = 'U-%s: AUC = %0.2f' % (policy, roc_auc))
+
+    plt.legend(loc = 'lower right')
+    plt.plot([0, 1], [0, 1],'r--')
+    plt.xlim([0, 1])
+    plt.ylim([0, 1])
+    plt.ylabel('True Positive Rate')
+    plt.xlabel('False Positive Rate')
+
+plt.savefig('{}ROC_lat.png'.format(PATH), dpi = 1000)
 
 
 
@@ -192,14 +240,17 @@ plt.savefig('{}ROC.png'.format(PATH), dpi = 1000)
 #########################
 print('')
 print('<<< Computational Stats >>>')
-print(train_time.round(0), '/seconds per epoch.')
-print('Total', round((train_valid_end - train_valid_start) / 60), 'minutes elapsed.')
+print(train_time_frt.round(0), '/seconds per epoch.')
+print(train_time_lat.round(0), '/seconds per epoch.')
+print('Total', round((train_valid_end_frt - train_valid_start_frt) / 60), 'minutes elapsed.')
+print('Total', round((train_valid_end_lat - train_valid_start_lat) / 60), 'minutes elapsed.')
 
 
 
 ###############################
 ## Save some printed outputs ##
 ###############################
+'''
 with open(PATH + 'printed_outputs.txt', "w") as file:
     file.write('<<< Data Information >>> \n')
     file.write('Train data length: {} \n'.format(len(datasetTrain)))
@@ -217,3 +268,4 @@ with open(PATH + 'printed_outputs.txt', "w") as file:
     file.write('<<< Computational Stats >>> \n')
     file.write('{} /seconds per epoch. \n'.format(train_time.round(0)))
     file.write('Total {} minutes elapsed.'.format(round((train_valid_end - train_valid_start) / 60)))
+'''
