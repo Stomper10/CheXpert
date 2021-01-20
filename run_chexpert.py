@@ -120,7 +120,7 @@ datasetTrain_frt, _ = random_split(datasetTrain_frt, [train_num_frt, len(dataset
 datasetTrain_lat, _ = random_split(datasetTrain_lat, [train_num_lat, len(datasetTrain_lat) - train_num_lat])
 print('<<< Data Information >>>')
 print('Train data length(frontal):', len(datasetTrain_frt))
-print('Train data length(lateral):', len(datasetTrain_frt))
+print('Train data length(lateral):', len(datasetTrain_lat))
 print('Valid data length(frontal):', len(datasetValid_frt))
 print('Valid data length(lateral):', len(datasetValid_lat))
 print('Test data length(frontal):', len(datasetTest_frt))
