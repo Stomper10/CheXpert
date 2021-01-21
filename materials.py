@@ -92,7 +92,7 @@ class CheXpertDataSet(Dataset):
 ## Create CheXpertTrainer ##
 ############################
 class CheXpertTrainer():
-    def train(model, dataLoaderTrain, dataLoaderVal, nnClassCount, trMaxEpoch, PATH, checkpoint):
+    def train(model, dataLoaderTrain, dataLoaderVal, nnClassCount, trMaxEpoch, PATH, f_or_l, checkpoint):
         optimizer = optim.Adam(model.parameters(), lr = 0.0001, # setting optimizer & scheduler
                                betas = (0.9, 0.999), eps = 1e-08, weight_decay = 0) 
         loss = torch.nn.BCELoss() # setting loss function
@@ -106,7 +106,7 @@ class CheXpertTrainer():
         lossMIN = 100000
         train_start = []
         train_end = []
-        print('<<< Training & Evaluating >>>')
+        print('<<< Training & Evaluating ({}) >>>'.format(f_or_l))
         for epochID in range(0, trMaxEpoch):
             train_start.append(time.time()) # training starts
             losst = CheXpertTrainer.epochTrain(model, dataLoaderTrain, optimizer, trMaxEpoch, nnClassCount, loss)
@@ -119,7 +119,7 @@ class CheXpertTrainer():
                 model_num = epochID + 1
                 torch.save({'epoch': epochID + 1, 'state_dict': model.state_dict(), 
                             'best_loss': lossMIN, 'optimizer' : optimizer.state_dict()}, 
-                            '{0}m-epoch_{1}.pth.tar'.format(PATH, epochID + 1))
+                            '{0}m-epoch_{1}_{2}.pth.tar'.format(PATH, epochID + 1, f_or_l))
                 print('Epoch ' + str(epochID + 1) + ' [save] loss = ' + str(lossv))
             else:
                 print('Epoch ' + str(epochID + 1) + ' [----] loss = ' + str(lossv))
@@ -180,7 +180,7 @@ class CheXpertTrainer():
         return outAUROC
     
     
-    def test(model, dataLoaderTest, nnClassCount, checkpoint, class_names):
+    def test(model, dataLoaderTest, nnClassCount, checkpoint, class_names, f_or_l):
         cudnn.benchmark = True
         
         if checkpoint != None and use_gpu:
@@ -213,7 +213,7 @@ class CheXpertTrainer():
                 outPRED = torch.cat((outPRED, out), 0)
         aurocIndividual = CheXpertTrainer.computeAUROC(outGT, outPRED, nnClassCount)
         aurocMean = np.array(aurocIndividual).mean()
-        print('<<< Model Test Results >>>')
+        print('<<< Model Test Results ({}) >>>'.format(f_or_l))
         print('AUROC mean ', aurocMean)
         
         for i in range (0, len(aurocIndividual)):
@@ -231,9 +231,9 @@ class DenseNet121(nn.Module):
     The architecture of this model is the same as standard DenseNet121
     except the classifier layer which has an additional sigmoid function.
     '''
-    def __init__(self, out_size):
+    def __init__(self, out_size, nnIsTrained):
         super(DenseNet121, self).__init__()
-        self.densenet121 = torchvision.models.densenet121(pretrained = False)
+        self.densenet121 = torchvision.models.densenet121(pretrained = nnIsTrained)
         num_ftrs = self.densenet121.classifier.in_features
         self.densenet121.classifier = nn.Sequential(
             nn.Linear(num_ftrs, out_size),

@@ -42,6 +42,7 @@ parser.add_argument('--output_path', '-o', help = 'Path to save results.', defau
 parser.add_argument('--random_seed', '-s', type = int, help = 'Random seed for reproduction.')
 parser.add_argument('--epochs', '-e', type = int, help = 'The number of training epochs.', default = 3)
 parser.add_argument('--batch_size', '-b', type = int, help = 'The number of batch size.', default = 16)
+parser.add_argument('--pre_trained', '-t', type = bool, help = 'Whether the model is pretrained.', default = False)
 args = parser.parse_args()
 
 # Example running commands ('nohup' command for running background on server)
@@ -75,7 +76,7 @@ pathFileTest_frt = './CheXpert-v1.0-small/test_frt.csv'
 pathFileTest_lat = './CheXpert-v1.0-small/test_lat.csv'
 
 # Neural network parameters
-nnIsTrained = False # if pre-trained by ImageNet
+nnIsTrained = args.pre_trained # if pre-trained by ImageNet
 nnClassCount = 14   # dimension of the output
 
 # Training settings
@@ -146,7 +147,7 @@ dataLoaderTest_lat = DataLoader(dataset = datasetTest_lat, num_workers = 2, pin_
 #####################
 # Initialize and load the model
 '''See 'materials.py' to check the class 'DenseNet121'.'''
-model = DenseNet121(nnClassCount).cuda()
+model = DenseNet121(nnClassCount, nnIsTrained).cuda()
 model = torch.nn.DataParallel(model).cuda()
 
 # Train the model
@@ -161,19 +162,19 @@ if not os.path.exists(PATH): os.makedirs(PATH)
 # Train frontal model
 train_valid_start_frt = time.time()
 '''See 'materials.py' to check the class 'CheXpertTrainer'.'''
-model_num_frt, train_time_frt = CheXpertTrainer.train(model, dataLoaderTrain_frt, dataLoaderVal_frt, nnClassCount, trMaxEpoch, PATH, checkpoint = None)
+model_num_frt, train_time_frt = CheXpertTrainer.train(model, dataLoaderTrain_frt, dataLoaderVal_frt, nnClassCount, trMaxEpoch, PATH, 'frt', checkpoint = None)
 train_valid_end_frt = time.time()
 print('')
 
 # Train lateral model
 train_valid_start_lat = time.time()
 '''See 'materials.py' to check the class 'CheXpertTrainer'.'''
-model_num_lat, train_time_lat = CheXpertTrainer.train(model, dataLoaderTrain_lat, dataLoaderVal_lat, nnClassCount, trMaxEpoch, PATH, checkpoint = None)
+model_num_lat, train_time_lat = CheXpertTrainer.train(model, dataLoaderTrain_lat, dataLoaderVal_lat, nnClassCount, trMaxEpoch, PATH, 'lat', checkpoint = None)
 train_valid_end_lat = time.time()
 print('')
 print('<<< Model Trained >>>')
-print('For frontal model,', 'm-epoch_{0}.pth.tar'.format(model_num_frt), 'is the best model.')
-print('For lateral model,', 'm-epoch_{0}.pth.tar'.format(model_num_lat), 'is the best model.')
+print('For frontal model,', 'm-epoch_{0}_frt.pth.tar'.format(model_num_frt), 'is the best model.')
+print('For lateral model,', 'm-epoch_{0}_lat.pth.tar'.format(model_num_lat), 'is the best model.')
 print('')
 
 
@@ -181,12 +182,12 @@ print('')
 ##############################
 ## Test and Draw ROC Curves ##
 ##############################
-checkpoint_frt = PATH + 'm-epoch_{0}.pth.tar'.format(model_num_frt)
-checkpoint_lat = PATH + 'm-epoch_{0}.pth.tar'.format(model_num_lat)
+checkpoint_frt = PATH + 'm-epoch_{0}_frt.pth.tar'.format(model_num_frt)
+checkpoint_lat = PATH + 'm-epoch_{0}_lat.pth.tar'.format(model_num_lat)
 '''See 'materials.py' to check the class 'CheXpertTrainer'.'''
-outGT_frt, outPRED_frt, outPROB_frt, aurocMean_frt, aurocIndividual_frt = CheXpertTrainer.test(model, dataLoaderTest_frt, nnClassCount, checkpoint_frt, class_names)
+outGT_frt, outPRED_frt, outPROB_frt, aurocMean_frt, aurocIndividual_frt = CheXpertTrainer.test(model, dataLoaderTest_frt, nnClassCount, checkpoint_frt, class_names, 'frt')
 print('')
-outGT_lat, outPRED_lat, outPROB_lat, aurocMean_lat, aurocIndividual_lat = CheXpertTrainer.test(model, dataLoaderTest_lat, nnClassCount, checkpoint_lat, class_names)
+outGT_lat, outPRED_lat, outPROB_lat, aurocMean_lat, aurocIndividual_lat = CheXpertTrainer.test(model, dataLoaderTest_lat, nnClassCount, checkpoint_lat, class_names, 'lat')
 
 # Save the test outPROB_frt
 with open('{}testPROB_frt.txt'.format(PATH), 'wb') as fp:
@@ -203,7 +204,7 @@ plt.rcParams['figure.figsize'] = (30, 10)
 for i in range(nnClassCount):
     fpr, tpr, threshold = metrics.roc_curve(outGT_frt.cpu()[:,i], outPRED_frt.cpu()[:,i])
     roc_auc = metrics.auc(fpr, tpr)
-    f = plt.subplot(2, 7, i+1)
+    f_frt = plt.subplot(2, 7, i+1)
 
     plt.title('ROC for: ' + class_names[i])
     plt.plot(fpr, tpr, label = 'U-%s: AUC = %0.2f' % (policy, roc_auc))
@@ -221,7 +222,7 @@ plt.savefig('{}ROC_frt.png'.format(PATH), dpi = 1000)
 for i in range(nnClassCount):
     fpr, tpr, threshold = metrics.roc_curve(outGT_lat.cpu()[:,i], outPRED_lat.cpu()[:,i])
     roc_auc = metrics.auc(fpr, tpr)
-    f = plt.subplot(2, 7, i+1)
+    f_lat = plt.subplot(2, 7, i+1)
 
     plt.title('ROC for: ' + class_names[i])
     plt.plot(fpr, tpr, label = 'U-%s: AUC = %0.2f' % (policy, roc_auc))
@@ -241,10 +242,12 @@ plt.savefig('{}ROC_lat.png'.format(PATH), dpi = 1000)
 ## Computational Stats ##
 #########################
 print('')
-print('<<< Computational Stats >>>')
+print('<<< Computational Stats (frt) >>>')
 print(train_time_frt.round(0), '/seconds per epoch.')
-print(train_time_lat.round(0), '/seconds per epoch.')
 print('Total', round((train_valid_end_frt - train_valid_start_frt) / 60), 'minutes elapsed.')
+print('')
+print('<<< Computational Stats (lat) >>>')
+print(train_time_lat.round(0), '/seconds per epoch.')
 print('Total', round((train_valid_end_lat - train_valid_start_lat) / 60), 'minutes elapsed.')
 
 
