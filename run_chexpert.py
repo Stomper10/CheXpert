@@ -163,6 +163,7 @@ train_valid_start_frt = time.time()
 '''See 'materials.py' to check the class 'CheXpertTrainer'.'''
 model_num_frt, train_time_frt = CheXpertTrainer.train(model, dataLoaderTrain_frt, dataLoaderVal_frt, nnClassCount, trMaxEpoch, PATH, checkpoint = None)
 train_valid_end_frt = time.time()
+print('')
 
 # Train lateral model
 train_valid_start_lat = time.time()
@@ -184,6 +185,7 @@ checkpoint_frt = PATH + 'm-epoch_{0}.pth.tar'.format(model_num_frt)
 checkpoint_lat = PATH + 'm-epoch_{0}.pth.tar'.format(model_num_lat)
 '''See 'materials.py' to check the class 'CheXpertTrainer'.'''
 outGT_frt, outPRED_frt, outPROB_frt, aurocMean_frt, aurocIndividual_frt = CheXpertTrainer.test(model, dataLoaderTest_frt, nnClassCount, checkpoint_frt, class_names)
+print('')
 outGT_lat, outPRED_lat, outPROB_lat, aurocMean_lat, aurocIndividual_lat = CheXpertTrainer.test(model, dataLoaderTest_lat, nnClassCount, checkpoint_lat, class_names)
 
 # Save the test outPROB_frt
