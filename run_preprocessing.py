@@ -13,15 +13,15 @@ import pandas as pd
 # Each file contains pairs (path to image, output vector)
 Traindata_raw = pd.read_csv('./CheXpert-v1.0-small/train.csv')
 paths = list(Traindata_raw['Path'])
-studies = 1
-test_images = []
-for i in range(len(paths) - 1):
-    if paths[i][26:45] != paths[i+1][26:45]:
-        studies += 1
-    if studies <= 501:
-        test_images.append(paths[i])
 
-Traindata = Traindata_raw[len(test_images):]
+for i in range(len(paths)):
+    paths[i] = paths[i][26:45]
+
+path_unique = list(dict.fromkeys(paths))
+border = path_unique[500]
+border_idx = len(paths) - 1 - paths[::-1].index(border)
+
+Traindata = Traindata_raw[border_idx:]
 Traindata_frt = Traindata[Traindata['Path'].str.contains('frontal')]
 Traindata_lat = Traindata[Traindata['Path'].str.contains('lateral')]
 Traindata_frt.to_csv('./CheXpert-v1.0-small/train_frt.csv', index = False)
@@ -37,7 +37,7 @@ Validdata_lat.to_csv('./CheXpert-v1.0-small/valid_lat.csv', index = False)
 print('Valid data length(frontal):', len(Validdata_frt))
 print('Valid data length(lateral):', len(Validdata_lat))
 
-Testdata = Traindata_raw[:len(test_images)] # use first 500 studies from training set as test set (observation ratio is almost same!)
+Testdata = Traindata_raw[:border_idx] # use first 500 studies from training set as test set (observation ratio is almost same!)
 Testdata_frt = Testdata[Testdata['Path'].str.contains('frontal')]
 Testdata_lat = Testdata[Testdata['Path'].str.contains('lateral')]
 Testdata_frt.to_csv('./CheXpert-v1.0-small/test_frt.csv', index = False)
