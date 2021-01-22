@@ -193,6 +193,7 @@ checkpoint_lat = PATH + 'm-epoch_{0}_lat.pth.tar'.format(model_num_lat)
 outGT_frt, outPRED_frt, outPROB_frt, aurocMean_frt, aurocIndividual_frt = CheXpertTrainer.test(model, dataLoaderTest_frt, nnClassCount, checkpoint_frt, class_names, 'frt')
 print('')
 outGT_lat, outPRED_lat, outPROB_lat, aurocMean_lat, aurocIndividual_lat = CheXpertTrainer.test(model, dataLoaderTest_lat, nnClassCount, checkpoint_lat, class_names, 'lat')
+print('')
 
 # Save the test outPROB_frt
 with open('{}testPROB_frt.txt'.format(PATH), 'wb') as fp:
