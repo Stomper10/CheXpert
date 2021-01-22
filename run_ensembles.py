@@ -137,7 +137,7 @@ for i in range(len(datasetTest)):
 # Apply EnsemAgg function for aggregation
 EnsemTest = images_mean
 '''See 'materials.py' to check the function 'EnsemAgg'.'''
-outGT, outPRED, aurocMean, aurocIndividual= EnsemAgg(EnsemTest, dataLoaderTest, nnClassCount, class_names)
+outGT, outPRED, aurocMean, aurocIndividual = EnsemAgg(EnsemTest, dataLoaderTest, nnClassCount, class_names)
 
 # Draw ROC curves
 fig_size = plt.rcParams["figure.figsize"]
