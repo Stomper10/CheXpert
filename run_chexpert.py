@@ -13,7 +13,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from PIL import Image
-from materials import CheXpertDataSet, CheXpertTrainer, DenseNet121
+from materials import CheXpertDataSet, CheXpertTrainer, DenseNet121, EnsemAgg
 
 import torch
 import torch.nn as nn
@@ -29,6 +29,7 @@ import sklearn.metrics as metrics
 from sklearn.metrics import roc_auc_score
 
 use_gpu = torch.cuda.is_available()
+pd.set_option('mode.chained_assignment',  None)
 
 
 
@@ -74,6 +75,7 @@ pathFileValid_frt = './CheXpert-v1.0-small/valid_frt.csv'
 pathFileValid_lat = './CheXpert-v1.0-small/valid_lat.csv'
 pathFileTest_frt = './CheXpert-v1.0-small/test_frt.csv'
 pathFileTest_lat = './CheXpert-v1.0-small/test_lat.csv'
+pathFileTest_all = './CheXpert-v1.0-small/test_500.csv'
 
 # Neural network parameters
 nnIsTrained = args.pre_trained # if pre-trained by ImageNet
@@ -113,6 +115,7 @@ datasetValid_frt = CheXpertDataSet(pathFileValid_frt, nnClassCount, transformSeq
 datasetValid_lat = CheXpertDataSet(pathFileValid_lat, nnClassCount, transformSequence)
 datasetTest_frt = CheXpertDataSet(pathFileTest_frt, nnClassCount, transformSequence, policy = policy)
 datasetTest_lat = CheXpertDataSet(pathFileTest_lat, nnClassCount, transformSequence, policy = policy)
+datasetTest_all = CheXpertDataSet(pathFileTest_all, nnClassCount, transformSequence, policy = policy)
 
 # Use subset of datasetTrain for training
 train_num_frt = round(len(datasetTrain_frt) * args.ratio) # use subset of original training dataset
@@ -126,6 +129,7 @@ print('Valid data length(frontal):', len(datasetValid_frt))
 print('Valid data length(lateral):', len(datasetValid_lat))
 print('Test data length(frontal):', len(datasetTest_frt))
 print('Test data length(lateral):', len(datasetTest_lat))
+print('Test data length(study):', len(datasetTest_all))
 print('')
 
 # Create DataLoaders
@@ -139,6 +143,7 @@ dataLoaderVal_lat = DataLoader(dataset = datasetValid_lat, batch_size = trBatchS
                                shuffle = False, num_workers = 2, pin_memory = True)
 dataLoaderTest_frt = DataLoader(dataset = datasetTest_frt, num_workers = 2, pin_memory = True)
 dataLoaderTest_lat = DataLoader(dataset = datasetTest_lat, num_workers = 2, pin_memory = True)
+dataLoaderTest_all = DataLoader(dataset = datasetTest_all, num_workers = 2, pin_memory = True)
 
 
 
@@ -197,14 +202,52 @@ with open('{}testPROB_frt.txt'.format(PATH), 'wb') as fp:
 with open('{}testPROB_lat.txt'.format(PATH), 'wb') as fp:
     pickle.dump(outPROB_lat, fp)
 
+test_frt = pd.read_csv(pathFileTest_frt)
+test_lat = pd.read_csv(pathFileTest_lat)
+
+column_names = ['Path'] + class_names
+df = pd.DataFrame(0, index = np.arange(len(test_frt) + len(test_lat)), columns = column_names)
+test_frt_list = list(test_frt['Path'])
+test_lat_list = list(test_lat['Path'])
+
+for i in range(len(test_frt_list)):
+    df['Path'][i] = test_frt_list[i][26:45]
+
+for i in range(len(test_lat_list)):
+    df['Path'][len(test_frt_list) + i] = test_lat_list[i][26:45]
+
+for i in range(len(outPROB_frt)):
+    for j in range(len(class_names)):
+        df.iloc[i, j + 1] = outPROB_frt[i][0][j]
+        
+for i in range(len(outPROB_lat)):
+    for j in range(len(class_names)):
+        df.iloc[len(outPROB_frt) + i, j + 1] = outPROB_lat[i][0][j]
+
+df_agg = df.groupby('Path').agg('max').reset_index()
+df_agg = df_agg.sort_values('Path')
+results = df_agg.drop(['Path'], axis = 1).values.tolist()
+
+# Save the test outPROB_all
+outPROB_all = []
+for i in range(len(results)):
+    outPROB_all.append([results[i]])
+
+with open('{}testPROB_all.txt'.format(PATH), 'wb') as fp:
+    pickle.dump(outPROB_all, fp)
+
 # Draw ROC curves
+EnsemTest = results
+'''See 'materials.py' to check the function 'EnsemAgg'.'''
+outGT, outPRED, aurocMean, aurocIndividual = EnsemAgg(EnsemTest, dataLoaderTest_all, nnClassCount, class_names)
+
 fig_size = plt.rcParams['figure.figsize']
 plt.rcParams['figure.figsize'] = (30, 10)
 
 for i in range(nnClassCount):
-    fpr, tpr, threshold = metrics.roc_curve(outGT_frt.cpu()[:,i], outPRED_frt.cpu()[:,i])
+    fpr, tpr, threshold = metrics.roc_curve(outGT.cpu()[:,i], outPRED.cpu()[:,i])
     roc_auc = metrics.auc(fpr, tpr)
-    f_frt = plt.subplot(2, 7, i+1)
+    f = plt.subplot(2, 7, i+1)
 
     plt.title('ROC for: ' + class_names[i])
     plt.plot(fpr, tpr, label = 'U-%s: AUC = %0.2f' % (policy, roc_auc))
@@ -216,25 +259,7 @@ for i in range(nnClassCount):
     plt.ylabel('True Positive Rate')
     plt.xlabel('False Positive Rate')
 
-plt.savefig('{}ROC_frt.png'.format(PATH), dpi = 1000)
-
-
-for i in range(nnClassCount):
-    fpr, tpr, threshold = metrics.roc_curve(outGT_lat.cpu()[:,i], outPRED_lat.cpu()[:,i])
-    roc_auc = metrics.auc(fpr, tpr)
-    f_lat = plt.subplot(2, 7, i+1)
-
-    plt.title('ROC for: ' + class_names[i])
-    plt.plot(fpr, tpr, label = 'U-%s: AUC = %0.2f' % (policy, roc_auc))
-
-    plt.legend(loc = 'lower right')
-    plt.plot([0, 1], [0, 1],'r--')
-    plt.xlim([0, 1])
-    plt.ylim([0, 1])
-    plt.ylabel('True Positive Rate')
-    plt.xlabel('False Positive Rate')
-
-plt.savefig('{}ROC_lat.png'.format(PATH), dpi = 1000)
+plt.savefig('{}ROC_all.png'.format(PATH), dpi = 1000)
 
 
 
@@ -249,28 +274,3 @@ print('')
 print('<<< Computational Stats (lat) >>>')
 print(train_time_lat.round(0), '/seconds per epoch.')
 print('Total', round((train_valid_end_lat - train_valid_start_lat) / 60), 'minutes elapsed.')
-
-
-
-###############################
-## Save some printed outputs ##
-###############################
-'''
-with open(PATH + 'printed_outputs.txt', "w") as file:
-    file.write('<<< Data Information >>> \n')
-    file.write('Train data length: {} \n'.format(len(datasetTrain)))
-    file.write('Valid data length: {} \n'.format(len(datasetValid)))
-    file.write('Test data length: {} \n'.format(len(datasetTest)))
-    file.write('\n')
-    file.write('<<< Model Trained >>> \n')
-    file.write('m-epoch_{0}.pth.tar is the best model. \n'.format(model_num))
-    file.write('\n')
-    file.write('<<< Model Test Results >>> \n')
-    file.write('AUROC mean = {} \n'.format(aurocMean))
-    for i in range (0, len(aurocIndividual)):
-        file.write('{0} = {1} \n'.format(class_names[i], aurocIndividual[i]))
-    file.write('\n')
-    file.write('<<< Computational Stats >>> \n')
-    file.write('{} /seconds per epoch. \n'.format(train_time.round(0)))
-    file.write('Total {} minutes elapsed.'.format(round((train_valid_end - train_valid_start) / 60)))
-'''
