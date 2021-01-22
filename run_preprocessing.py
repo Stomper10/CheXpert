@@ -47,3 +47,16 @@ Testdata_lat.to_csv('./CheXpert-v1.0-small/test_lat.csv', index = False)
 print('Test data length(frontal):', len(Testdata_frt))
 print('Test data length(lateral):', len(Testdata_lat))
 print('Test data length(total):', len(Testdata_frt) + len(Testdata_lat))
+
+
+# Make testset for 500 studies
+Testdata_frt['Path0'] = Testdata_frt.Path.str[:26]
+Testdata_frt['Path2'] = Testdata_frt.Path.str[45:]
+Testdata_frt['Path'] = Testdata_frt['Path'].str[26:45]
+
+Testdata_frt_agg = Testdata_frt.groupby('Path').agg('first').reset_index()
+Testdata_frt_agg = Testdata_frt_agg.sort_values('Path')
+Testdata_frt_agg['Path'] = Testdata_frt_agg['Path0'] + Testdata_frt_agg['Path'] + Testdata_frt_agg['Path2']
+Testdata_frt_agg = Testdata_frt_agg.drop(['Path0', 'Path2'], axis = 1)
+Testdata_frt_agg.to_csv('./CheXpert-v1.0-small/test_500.csv', index = False)
+print('Test data length(study):', len(Testdata_frt_agg))
