@@ -69,6 +69,7 @@ Options | Shortcut | Description | Default
 --random_seed | -s | Random seed for reproduction. | -
 --epochs | -e | The number of training epochs. | 3
 --batch_size | -b | The number of batch size. | 16
+--pre_trained | -t | Whether the model is pre-trained. | False
 
 If you want to use 1% of training set to train the model with `policy=ones`, you can run like below.
 ```bash
@@ -89,7 +90,7 @@ nohup python3 run_chexpert.py > progress.txt &
 # 3. Results
 You may get training and validation losses, as well as the test accuracy and ROC curves. You can also check the computational costs. Models(`*.pth.tar`), test set probabilities(`testPROB.txt`), ROC curve(`ROC.png`), and printed output(`printed_outputs.txt`) files will be saved in the `results` directory. If you run the code with `nohup` command, you can also save whole printed outputs. Let me just show you the ROC curves here.
 
-![ROC_all](https://user-images.githubusercontent.com/43818471/104684971-6db2fb80-573d-11eb-80d7-01d378d90465.png)
+![ROC_all_500](https://user-images.githubusercontent.com/43818471/106099756-8af4ba80-617e-11eb-838f-11c4266479d3.png)
 
 The following table shows a comparison with the original paper results. I know it's not an accurate comparison since the test set is different. But at least we can roughly gauge the model's performance.
 
@@ -98,12 +99,12 @@ The following table shows a comparison with the original paper results. I know i
 
 Observation | Experiment AUC | Paper AUC | Difference
 :-: | :-: | :-: | :-:
-Atelectasis | 0.81 | 0.85 | -0.04
-Cardiomegaly | 0.93 | 0.90 | +0.03
-Consolidation | 0.77 | 0.90 | -0.13
-Edema | 0.89 | 0.92 | -0.03
-Pleural Effusion | 0.92 | 0.97 | -0.05
-**Mean of 5 obs.** | **0.86** | **0.91** | **-0.05**
+Atelectasis | 0.70 | 0.85 | -0.15
+Cardiomegaly | 0.86 | 0.90 | -0.04
+Consolidation | 0.74 | 0.90 | -0.16
+Edema | 0.85 | 0.92 | -0.07
+Pleural Effusion | 0.88 | 0.97 | -0.09
+**Mean of 5 obs.** | **0.81** | **0.91** | **-0.10**
 
 
 
@@ -139,8 +140,12 @@ You can try the Grad-CAM method on test set with `Grad-CAM.ipynb` file after you
 - [x] Apply Grad-CAM method for localization.
 - [x] Try simple ensembles.
 - [x] Use also lateral images for training.
+- [x] Use original dataset for training(~439GB).
+- [ ] Try various data augmentations.
+- [ ] Vary uncertain policies per observation.
+- [ ] Try boosting technique.
+- [ ] Try attention technique.
 - [ ] Try various models for ensembles.
-- [ ] Use original dataset for training(~439GB).
 
 
 
