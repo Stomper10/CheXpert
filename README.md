@@ -95,7 +95,8 @@ You may get training and validation losses, as well as the test accuracy and ROC
 The following table shows a comparison with the original paper results. I know it's not an accurate comparison since the test set is different. But at least we can roughly gauge the model's performance.
 
 * Stanford Baseline(ensemble) AUC = 0.907
-* My Baseline AUC = 0.863
+* My Baseline AUC(small) = 0.806
+* My Baseline AUC(original) = 0.818
 
 Observation | Experiment AUC | Paper AUC | Difference
 :-: | :-: | :-: | :-:
