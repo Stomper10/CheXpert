@@ -1,6 +1,6 @@
 {
-    "train_csv": "/home/leelab/CheXpert/config/train.csv",
-    "dev_csv": "/home/leelab/CheXpert/config/dev.csv",
+    "train_csv": "/home/jwy4888/leelab/CheXpert/config/train.csv",
+    "dev_csv": "/home/jwy4888/leelab/CheXpert/config/dev.csv",
     "backbone": "densenet121",
     "width": 512,
     "height": 512,
