@@ -35,7 +35,7 @@ use_gpu = torch.cuda.is_available()
 ## Create a Dataset ##
 ######################
 class CheXpertDataSet(Dataset):
-    def __init__(self, data_PATH, nnClassCount, transform = None, policy = 'ones'):
+    def __init__(self, data_PATH, nnClassCount, transform = None):
         """
         data_PATH: path to the file containing images with corresponding labels.
         transform: optional transform to be applied on a sample.
@@ -57,9 +57,9 @@ class CheXpertDataSet(Dataset):
                         if a == 1:
                             label[i] = 1
                         elif a == -1:
-                            if policy == 'ones':
+                            if i == 10 or i == 13:
                                 label[i] = 1
-                            elif policy == 'zeroes':
+                            elif i == 7 or i == 11 or i == 15:
                                 label[i] = 0
                             else:
                                 label[i] = 0
