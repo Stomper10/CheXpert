@@ -235,10 +235,8 @@ class DenseNet121(nn.Module):
         super(DenseNet121, self).__init__()
         self.densenet121 = torchvision.models.densenet121(pretrained = nnIsTrained)
         num_ftrs = self.densenet121.classifier.in_features
-        out_ftrs = self.densenet121.classifier.out_features
         self.densenet121.classifier = nn.Sequential(
-            nn.Linear(num_ftrs, out_ftrs),
-            nn.Linear(out_ftrs, out_size), # add FC layer
+            nn.Linear(num_ftrs, out_size),
             nn.Sigmoid()
         )
 
