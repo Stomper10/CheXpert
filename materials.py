@@ -57,9 +57,9 @@ class CheXpertDataSet(Dataset):
                         if a == 1:
                             label[i] = 1
                         elif a == -1:
-                            if i == 10 or i == 13:
+                            if i == 5 or i == 8 or i == 10: # Edema, Atelectasis, Pleural Effusion
                                 label[i] = 1
-                            elif i == 7 or i == 11 or i == 15:
+                            elif i == 2 or i == 6:          # Cardiomegaly, Consolidation
                                 label[i] = 0
                             else:
                                 label[i] = 0
