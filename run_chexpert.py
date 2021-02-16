@@ -78,7 +78,7 @@ pathFileTest_all = './CheXpert-v1.0-small/test_500.csv'
 
 # Neural network parameters
 nnIsTrained = args.pre_trained # if pre-trained by ImageNet
-nnClassCount = 14   # dimension of the output
+nnClassCount = 5   # dimension of the output - 5: only competition obs.
 
 # Training settings
 trBatchSize = args.batch_size    # batch size
@@ -88,9 +88,7 @@ trMaxEpoch = args.epochs      # maximum number of epochs
 imgtransResize = 320
 
 # Class names
-class_names = ['No Finding', 'Enlarged Cardiomediastinum', 'Cardiomegaly', 'Lung Opacity', 
-               'Lung Lesion', 'Edema', 'Consolidation', 'Pneumonia', 'Atelectasis', 'Pneumothorax', 
-               'Pleural Effusion', 'Pleural Other', 'Fracture', 'Support Devices']
+class_names = ['Cardiomegaly', 'Edema', 'Consolidation', 'Atelectasis', 'Pleural Effusion'] # comp. obs.
 
 
 
@@ -244,7 +242,7 @@ plt.rcParams['figure.figsize'] = (30, 10)
 for i in range(nnClassCount):
     fpr, tpr, threshold = metrics.roc_curve(outGT.cpu()[:,i], outPRED.cpu()[:,i])
     roc_auc = metrics.auc(fpr, tpr)
-    f = plt.subplot(2, 7, i+1)
+    f = plt.subplot(1, 5, i+1)
 
     plt.title('ROC for: ' + class_names[i])
     plt.plot(fpr, tpr, label = 'AUC = %0.2f' % (roc_auc))

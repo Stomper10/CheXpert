@@ -49,20 +49,17 @@ class CheXpertDataSet(Dataset):
             next(csvReader, None) # skip the header
             for line in csvReader:
                 image_name = line[0]
-                label = line[5:]
-                
+                npline = np.array(line)
+                idx = [7, 10, 11, 13, 15]
+                label = list(npline[idx])
+                # label = line[5:]
                 for i in range(nnClassCount):
                     if label[i]:
                         a = float(label[i])
                         if a == 1:
                             label[i] = 1
                         elif a == -1:
-                            if i == 5 or i == 8 or i == 10: # Edema, Atelectasis, Pleural Effusion
-                                label[i] = 1
-                            elif i == 2 or i == 6:          # Cardiomegaly, Consolidation
-                                label[i] = 0
-                            else:
-                                label[i] = 0
+                            label[i] = 1 # U-Ones policy
                         else:
                             label[i] = 0
                     else:
