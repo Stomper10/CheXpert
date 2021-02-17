@@ -59,7 +59,10 @@ class CheXpertDataSet(Dataset):
                         if a == 1:
                             label[i] = 1
                         elif a == -1:
-                            label[i] = 1 # U-Ones policy
+                            if i == 1 or i == 3 or i == 4:  # Atelectasis, Edema, Pleural Effusion
+                                label[i] = 1                    # U-Ones
+                            elif i == 0 or i == 2:          # Cardiomegaly, Consolidation
+                                label[i] = 0                    # U-Zeroes
                         else:
                             label[i] = 0
                     else:
