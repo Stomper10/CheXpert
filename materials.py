@@ -35,7 +35,7 @@ use_gpu = torch.cuda.is_available()
 ## Create a Dataset ##
 ######################
 class CheXpertDataSet(Dataset):
-    def __init__(self, data_PATH, nnClassCount, transform = None, policy = 'ones'):
+    def __init__(self, data_PATH, nnClassCount, transform = None):
         """
         data_PATH: path to the file containing images with corresponding labels.
         transform: optional transform to be applied on a sample.
@@ -49,20 +49,20 @@ class CheXpertDataSet(Dataset):
             next(csvReader, None) # skip the header
             for line in csvReader:
                 image_name = line[0]
-                label = line[5:]
-                
+                npline = np.array(line)
+                idx = [7, 10, 11, 13, 15]
+                label = list(npline[idx])
+                # label = line[5:]
                 for i in range(nnClassCount):
                     if label[i]:
                         a = float(label[i])
                         if a == 1:
                             label[i] = 1
                         elif a == -1:
-                            if policy == 'ones':
-                                label[i] = 1
-                            elif policy == 'zeroes':
-                                label[i] = 0
-                            else:
-                                label[i] = 0
+                            if i == 1 or i == 3 or i == 4:  # Atelectasis, Edema, Pleural Effusion
+                                label[i] = 1                    # U-Ones
+                            elif i == 0 or i == 2:          # Cardiomegaly, Consolidation
+                                label[i] = 0                    # U-Zeroes
                         else:
                             label[i] = 0
                     else:

@@ -37,7 +37,6 @@ pd.set_option('mode.chained_assignment',  None)
 ## Arguments to Set ##
 ######################
 parser = argparse.ArgumentParser(formatter_class = argparse.ArgumentDefaultsHelpFormatter)
-parser.add_argument('--policy', '-p', help = 'Define uncertain label policy: "ones" or "zeroes".', default = 'ones')
 parser.add_argument('--ratio', '-r', type = float, help = 'Training data ratio: 0 < val <= 1.', default = 1)
 parser.add_argument('--output_path', '-o', help = 'Path to save results.', default = 'results/')
 parser.add_argument('--random_seed', '-s', type = int, help = 'Random seed for reproduction.')
@@ -79,7 +78,7 @@ pathFileTest_all = './CheXpert-v1.0-small/test_500.csv'
 
 # Neural network parameters
 nnIsTrained = args.pre_trained # if pre-trained by ImageNet
-nnClassCount = 14   # dimension of the output
+nnClassCount = 5   # dimension of the output - 5: only competition obs.
 
 # Training settings
 trBatchSize = args.batch_size    # batch size
@@ -89,9 +88,7 @@ trMaxEpoch = args.epochs      # maximum number of epochs
 imgtransResize = 320
 
 # Class names
-class_names = ['No Finding', 'Enlarged Cardiomediastinum', 'Cardiomegaly', 'Lung Opacity', 
-               'Lung Lesion', 'Edema', 'Consolidation', 'Pneumonia', 'Atelectasis', 'Pneumothorax', 
-               'Pleural Effusion', 'Pleural Other', 'Fracture', 'Support Devices']
+class_names = ['Cardiomegaly', 'Edema', 'Consolidation', 'Atelectasis', 'Pleural Effusion'] # comp. obs.
 
 
 
@@ -104,18 +101,15 @@ transformList.append(transforms.Resize((imgtransResize, imgtransResize))) # 320
 transformList.append(transforms.ToTensor())
 transformSequence = transforms.Compose(transformList)
 
-# Uncertain labeling policy
-policy = args.policy # ones or zeroes
-
 # Create a dataset
 '''See 'materials.py' to check the class 'CheXpertDataSet'.'''
-datasetTrain_frt = CheXpertDataSet(pathFileTrain_frt, nnClassCount, transformSequence, policy = policy)
-datasetTrain_lat = CheXpertDataSet(pathFileTrain_lat, nnClassCount, transformSequence, policy = policy)
+datasetTrain_frt = CheXpertDataSet(pathFileTrain_frt, nnClassCount, transformSequence)
+datasetTrain_lat = CheXpertDataSet(pathFileTrain_lat, nnClassCount, transformSequence)
 datasetValid_frt = CheXpertDataSet(pathFileValid_frt, nnClassCount, transformSequence)
 datasetValid_lat = CheXpertDataSet(pathFileValid_lat, nnClassCount, transformSequence)
-datasetTest_frt = CheXpertDataSet(pathFileTest_frt, nnClassCount, transformSequence, policy = policy)
-datasetTest_lat = CheXpertDataSet(pathFileTest_lat, nnClassCount, transformSequence, policy = policy)
-datasetTest_all = CheXpertDataSet(pathFileTest_all, nnClassCount, transformSequence, policy = policy)
+datasetTest_frt = CheXpertDataSet(pathFileTest_frt, nnClassCount, transformSequence)
+datasetTest_lat = CheXpertDataSet(pathFileTest_lat, nnClassCount, transformSequence)
+datasetTest_all = CheXpertDataSet(pathFileTest_all, nnClassCount, transformSequence)
 
 # Use subset of datasetTrain for training
 train_num_frt = round(len(datasetTrain_frt) * args.ratio) # use subset of original training dataset
@@ -248,10 +242,10 @@ plt.rcParams['figure.figsize'] = (30, 10)
 for i in range(nnClassCount):
     fpr, tpr, threshold = metrics.roc_curve(outGT.cpu()[:,i], outPRED.cpu()[:,i])
     roc_auc = metrics.auc(fpr, tpr)
-    f = plt.subplot(2, 7, i+1)
+    f = plt.subplot(1, 5, i+1)
 
     plt.title('ROC for: ' + class_names[i])
-    plt.plot(fpr, tpr, label = 'U-%s: AUC = %0.2f' % (policy, roc_auc))
+    plt.plot(fpr, tpr, label = 'AUC = %0.2f' % (roc_auc))
 
     plt.legend(loc = 'lower right')
     plt.plot([0, 1], [0, 1],'r--')
