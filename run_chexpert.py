@@ -161,19 +161,30 @@ if not os.path.exists(PATH): os.makedirs(PATH)
 # Train frontal model
 train_valid_start_frt = time.time()
 '''See 'materials.py' to check the class 'CheXpertTrainer'.'''
-model_num_frt, train_time_frt = CheXpertTrainer.train(model, dataLoaderTrain_frt, dataLoaderVal_frt, nnClassCount, trMaxEpoch, PATH, 'frt', checkpoint = None)
+model_num_frt, model_num_frt_Card, model_num_frt_Edem, model_num_frt_Cons, model_num_frt_Atel, model_num_frt_PlEf, train_time_frt = CheXpertTrainer.train(model, dataLoaderTrain_frt, dataLoaderVal_frt, nnClassCount, trMaxEpoch, PATH, 'frt', checkpoint = None)
 train_valid_end_frt = time.time()
 print('')
 
 # Train lateral model
 train_valid_start_lat = time.time()
 '''See 'materials.py' to check the class 'CheXpertTrainer'.'''
-model_num_lat, train_time_lat = CheXpertTrainer.train(model, dataLoaderTrain_lat, dataLoaderVal_lat, nnClassCount, trMaxEpoch, PATH, 'lat', checkpoint = None)
+model_num_lrt, model_num_lrt_Card, model_num_lrt_Edem, model_num_lrt_Cons, model_num_lrt_Atel, model_num_lrt_PlEf, train_time_lrt = CheXpertTrainer.train(model, dataLoaderTrain_lat, dataLoaderVal_lat, nnClassCount, trMaxEpoch, PATH, 'lat', checkpoint = None)
 train_valid_end_lat = time.time()
 print('')
 print('<<< Model Trained >>>')
 print('For frontal model,', 'm-epoch_{0}_frt.pth.tar'.format(model_num_frt), 'is the best model.')
+print('For frontal model,', 'm-epoch_{0}_frt_Card.pth.tar'.format(model_num_frt_Card), 'is the best model.')
+print('For frontal model,', 'm-epoch_{0}_frt_Edem.pth.tar'.format(model_num_frt_Edem), 'is the best model.')
+print('For frontal model,', 'm-epoch_{0}_frt_Cons.pth.tar'.format(model_num_frt_Cons), 'is the best model.')
+print('For frontal model,', 'm-epoch_{0}_frt_Atel.pth.tar'.format(model_num_frt_Atel), 'is the best model.')
+print('For frontal model,', 'm-epoch_{0}_frt_PlEf.pth.tar'.format(model_num_frt_PlEf), 'is the best model.')
+
 print('For lateral model,', 'm-epoch_{0}_lat.pth.tar'.format(model_num_lat), 'is the best model.')
+print('For lateral model,', 'm-epoch_{0}_lat_Card.pth.tar'.format(model_num_lat_Card), 'is the best model.')
+print('For lateral model,', 'm-epoch_{0}_lat_Edem.pth.tar'.format(model_num_lat_Edem), 'is the best model.')
+print('For lateral model,', 'm-epoch_{0}_lat_Cons.pth.tar'.format(model_num_lat_Cons), 'is the best model.')
+print('For lateral model,', 'm-epoch_{0}_lat_Atel.pth.tar'.format(model_num_lat_Atel), 'is the best model.')
+print('For lateral model,', 'm-epoch_{0}_lat_PlEf.pth.tar'.format(model_num_lat_PlEf), 'is the best model.')
 print('')
 
 
