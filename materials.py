@@ -224,15 +224,15 @@ class CheXpertTrainer():
                 lossVal += loss(varOutput, target)
                 lossv = lossVal / len(dataLoaderVal)
 
-                lossVal_Card += loss(varOutput, target_Card)
+                lossVal_Card += loss(varOutput_Card, target_Card)
                 lossv_Card = lossVal_Card / len(dataLoaderVal)
-                lossVal_Edem += loss(varOutput, target_Edem)
+                lossVal_Edem += loss(varOutput_Edem, target_Edem)
                 lossv_Edem = lossVal_Edem / len(dataLoaderVal)
-                lossVal_Cons += loss(varOutput, target_Cons)
+                lossVal_Cons += loss(varOutput_Cons, target_Cons)
                 lossv_Cons = lossVal_Cons / len(dataLoaderVal)
-                lossVal_Atel += loss(varOutput, target_Atel)
+                lossVal_Atel += loss(varOutput_Atel, target_Atel)
                 lossv_Atel = lossVal_Atel / len(dataLoaderVal)
-                lossVal_PlEf += loss(varOutput, target_PlEf)
+                lossVal_PlEf += loss(varOutput_PlEf, target_PlEf)
                 lossv_PlEf = lossVal_PlEf / len(dataLoaderVal)
                                 
         return lossv, lossv_Card, lossv_Edem, lossv_Cons, lossv_Atel, lossv_PlEf
