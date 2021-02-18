@@ -53,7 +53,7 @@ nohup python3 run_chexpert.py -p ones -r 1 -o ensemble/experiment_00/ -s 0 > ens
 '''
 
 # Control randomness for reproduction
-if args.random_seed:
+if args.random_seed != None:
     random_seed = args.random_seed
     torch.manual_seed(random_seed)
     torch.cuda.manual_seed(random_seed)
