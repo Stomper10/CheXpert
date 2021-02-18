@@ -168,7 +168,7 @@ print('')
 # Train lateral model
 train_valid_start_lat = time.time()
 '''See 'materials.py' to check the class 'CheXpertTrainer'.'''
-model_num_lrt, model_num_lrt_Card, model_num_lrt_Edem, model_num_lrt_Cons, model_num_lrt_Atel, model_num_lrt_PlEf, train_time_lrt = CheXpertTrainer.train(model, dataLoaderTrain_lat, dataLoaderVal_lat, nnClassCount, trMaxEpoch, PATH, 'lat', checkpoint = None)
+model_num_lat, model_num_lat_Card, model_num_lat_Edem, model_num_lat_Cons, model_num_lat_Atel, model_num_lat_PlEf, train_time_lat = CheXpertTrainer.train(model, dataLoaderTrain_lat, dataLoaderVal_lat, nnClassCount, trMaxEpoch, PATH, 'lat', checkpoint = None)
 train_valid_end_lat = time.time()
 print('')
 print('<<< Model Trained >>>')
