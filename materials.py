@@ -103,6 +103,7 @@ class CheXpertTrainer():
             
         # Train the network
         lossMIN, lossMIN_Card, lossMIN_Edem, lossMIN_Cons, lossMIN_Atel, lossMIN_PlEf = 100000, 100000, 100000, 100000, 100000, 100000
+        Card_traj, Edem_traj, Cons_traj, Atel_traj, PlEf_traj = [], [], [], [], []
         train_start = []
         train_end = []
         print('<<< Training & Evaluating ({}) >>>'.format(f_or_l))
@@ -111,6 +112,13 @@ class CheXpertTrainer():
             losst = CheXpertTrainer.epochTrain(model, dataLoaderTrain, optimizer, trMaxEpoch, nnClassCount, loss)
             train_end.append(time.time())   # training ends
             lossv, lossv_Card, lossv_Edem, lossv_Cons, lossv_Atel, lossv_PlEf = CheXpertTrainer.epochVal(model, dataLoaderVal, optimizer, trMaxEpoch, nnClassCount, loss)
+
+            Card_traj.append(lossv_Card.float())
+            Edem_traj.append(lossv_Edem.float())
+            Cons_traj.append(lossv_Cons.float())
+            Atel_traj.append(lossv_Atel.float())
+            PlEf_traj.append(lossv_PlEf.float())
+
             print("Training loss: {:.3f},".format(losst), "Valid loss: {:.3f}".format(lossv))
             
             if lossv < lossMIN:
@@ -174,6 +182,24 @@ class CheXpertTrainer():
                 print('Epoch ' + str(epochID + 1) + ' [----] loss PlEf = ' + str(lossv_PlEf))
 
         train_time = np.array(train_end) - np.array(train_start)
+
+        traj_all = [Card_traj, Edem_traj, Cons_traj, Atel_traj, PlEf_traj]
+        names = ['Card', 'Edem', 'Cons', 'Atel', 'PlEf']
+        xlab = list(range(1, trMaxEpoch + 1))
+        for i in range(5):
+            f = plt.subplot(1, 5, i+1)
+
+            plt.title('Valid loss trajectory: ' + names[i])
+            plt.plot(xlab, traj_all[i])
+
+            plt.plot([0, 1], [0, 1], 'r--')
+            plt.xlim([0, trMaxEpoch + 1])
+            plt.ylim([0, 1])
+            plt.ylabel('Epoch Number')
+            plt.xlabel('Valid loss')
+
+        plt.savefig('{}traj_all.png'.format(PATH), dpi = 1000)
+
         return model_num, model_num_Card, model_num_Edem, model_num_Cons, model_num_Atel, model_num_PlEf, train_time
        
         
