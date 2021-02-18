@@ -190,12 +190,11 @@ class CheXpertTrainer():
         for i in range(5):
             f = plt.subplot(1, 5, i+1)
 
-            plt.tight_layout()
             plt.title('Valid loss trajectory: ' + names[i])
             plt.plot(xlab, traj_all[i])
 
             plt.xlim([0, trMaxEpoch + 1])
-            plt.xticks(np.arange(0, trMaxEpoch + 1, step = 1))
+            plt.xticks(np.arange(1, trMaxEpoch + 1, step = 1))
             plt.ylim([0, 1])
             plt.ylabel('Valid loss')
             plt.xlabel('Epoch Number')
