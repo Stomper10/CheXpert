@@ -192,13 +192,13 @@ class CheXpertTrainer():
             plt.title('Valid loss trajectory: ' + names[i])
             plt.plot(xlab, traj_all[i])
 
-            plt.plot([0, 1], [0, 1], 'r--')
             plt.xlim([0, trMaxEpoch + 1])
+            plt.xticks(np.arange(0, trMaxEpoch + 1, step = 1))
             plt.ylim([0, 1])
-            plt.ylabel('Epoch Number')
-            plt.xlabel('Valid loss')
+            plt.ylabel('Valid loss')
+            plt.xlabel('Epoch Number')
 
-        plt.savefig('{}traj_all.png'.format(PATH), dpi = 1000)
+        plt.savefig('{0}_{1}_traj_all.png'.format(PATH, f_or_l), dpi = 1000)
 
         return model_num, model_num_Card, model_num_Edem, model_num_Cons, model_num_Atel, model_num_PlEf, train_time
        
