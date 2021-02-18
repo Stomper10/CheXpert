@@ -202,7 +202,7 @@ class CheXpertTrainer():
         model.eval()
         lossVal = 0
         
-        lossVal_card, lossVal_card, lossVal_card, lossVal_card, lossVal_card = 0, 0, 0, 0, 0
+        lossVal_Card, lossVal_Edem, lossVal_Cons, lossVal_Atel, lossVal_PlEf = 0, 0, 0, 0, 0
 
         with torch.no_grad():
             for i, (varInput, target) in enumerate(dataLoaderVal):
