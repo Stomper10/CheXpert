@@ -178,7 +178,7 @@ print('For frontal model,', 'm-epoch_{0}_frt_Edem.pth.tar'.format(model_num_frt_
 print('For frontal model,', 'm-epoch_{0}_frt_Cons.pth.tar'.format(model_num_frt_Cons), 'is the best model.')
 print('For frontal model,', 'm-epoch_{0}_frt_Atel.pth.tar'.format(model_num_frt_Atel), 'is the best model.')
 print('For frontal model,', 'm-epoch_{0}_frt_PlEf.pth.tar'.format(model_num_frt_PlEf), 'is the best model.')
-
+print('')
 print('For lateral model,', 'm-epoch_{0}_lat.pth.tar'.format(model_num_lat), 'is the best model.')
 print('For lateral model,', 'm-epoch_{0}_lat_Card.pth.tar'.format(model_num_lat_Card), 'is the best model.')
 print('For lateral model,', 'm-epoch_{0}_lat_Edem.pth.tar'.format(model_num_lat_Edem), 'is the best model.')
@@ -268,10 +268,8 @@ plt.close()
 #########################
 ## Computational Stats ##
 #########################
-print('<<< Computational Stats (frt) >>>')
-print(train_time_frt.round(0), '/seconds per epoch.')
+print('<<< Computational Stats >>>')
+print(train_time_frt.round(0), '/seconds per epoch. (frt)')
 print('Total', round((train_valid_end_frt - train_valid_start_frt) / 60), 'minutes elapsed.')
-print('')
-print('<<< Computational Stats (lat) >>>')
-print(train_time_lat.round(0), '/seconds per epoch.')
+print(train_time_lat.round(0), '/seconds per epoch. (lat)')
 print('Total', round((train_valid_end_lat - train_valid_start_lat) / 60), 'minutes elapsed.')
