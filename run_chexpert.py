@@ -245,28 +245,28 @@ EnsemTest = results
 '''See 'materials.py' to check the function 'EnsemAgg'.'''
 outGT, outPRED, aurocMean, aurocIndividual = EnsemAgg(EnsemTest, dataLoaderTest_all, nnClassCount, class_names)
 
-fig_size = plt.rcParams['figure.figsize']
-plt.rcParams['figure.figsize'] = (30, 10)
-
+# plt.rcParams['figure.figsize'] = (50, 10)
+fig, axes = plt.subplots(nrows = 1, ncols = 5)
+fig.set_size_inches((50, 10))
 for i in range(nnClassCount):
     fpr, tpr, threshold = metrics.roc_curve(outGT.cpu()[:, i], outPRED.cpu()[:, i])
     roc_auc = metrics.auc(fpr, tpr)
-    f = plt.subplot(1, 5, i+1)
+    # f = plt.subplot(1, 5, i+1)
 
-    plt.title('ROC for: ' + class_names[i])
-    plt.plot(fpr, tpr, label = 'AUC = %0.2f' % (roc_auc))
+    axes[i].set_title('ROC for: ' + class_names[i])
+    axes[i].plot(fpr, tpr, label = 'AUC = %0.2f' % (roc_auc))
 
-    plt.legend(loc = 'lower right')
-    plt.plot([0, 1], [0, 1],'r--')
-    plt.xlim([0, 1])
-    plt.ylim([0, 1])
-    plt.ylabel('True Positive Rate')
-    plt.xlabel('False Positive Rate')
+    axes[i].legend(loc = 'lower right')
+    axes[i].plot([0, 1], [0, 1],'r--')
+    axes[i].xlim([0, 1])
+    axes[i].ylim([0, 1])
+    axes[i].ylabel('True Positive Rate')
+    axes[i].xlabel('False Positive Rate')
 
     ratio = 1
-    xleft, xright = plt.get_xlim()
-    ybottom, ytop = plt.get_ylim()
-    plt.set_aspect(abs((xright-xleft)/(ybottom-ytop))*ratio)
+    xleft, xright = axes[i].get_xlim()
+    ybottom, ytop = axes[i].get_ylim()
+    axes[i].set_aspect(abs((xright-xleft)/(ybottom-ytop))*ratio)
 
 plt.savefig('{}ROC_5.png'.format(PATH), dpi = 1000)
 plt.close()
