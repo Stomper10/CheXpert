@@ -4,7 +4,6 @@
 ## Prerequisites ##
 ###################
 import pandas as pd
-pd.set_option('mode.chained_assignment',  None)
 
 
 
@@ -16,11 +15,11 @@ Traindata_raw = pd.read_csv('./CheXpert-v1.0-small/train.csv')
 paths = list(Traindata_raw['Path'])
 
 for i in range(len(paths)):
-    paths[i] = paths[i][26:45]
+    paths[i] = paths[i].split('/')[2] + '/' + paths[i].split('/')[3]
 
 path_unique = list(dict.fromkeys(paths))
 border = path_unique[500]
-border_idx = len(paths) - 1 - paths[::-1].index(border)
+border_idx = paths.index(border)
 
 Traindata = Traindata_raw[border_idx:]
 Traindata_frt = Traindata[Traindata['Path'].str.contains('frontal')]
@@ -31,16 +30,16 @@ print('Train data length(frontal):', len(Traindata_frt))
 print('Train data length(lateral):', len(Traindata_lat))
 print('Train data length(total):', len(Traindata_frt) + len(Traindata_lat))
 
-Validdata = pd.read_csv('./CheXpert-v1.0-small/valid.csv')
+Validdata = Traindata_raw[:border_idx] # use first 500 studies from training set as valid set (observation ratio is almost same!)
 Validdata_frt = Validdata[Validdata['Path'].str.contains('frontal')]
-Validdata_lat = Validdata[Validdata['Path'].str.contains('lateral')]
+Validdata_lat = Validdata[Testdata['Path'].str.contains('lateral')]
 Validdata_frt.to_csv('./CheXpert-v1.0-small/valid_frt.csv', index = False)
 Validdata_lat.to_csv('./CheXpert-v1.0-small/valid_lat.csv', index = False)
 print('Valid data length(frontal):', len(Validdata_frt))
 print('Valid data length(lateral):', len(Validdata_lat))
 print('Valid data length(total):', len(Validdata_frt) + len(Validdata_lat))
 
-Testdata = Traindata_raw[:border_idx] # use first 500 studies from training set as test set (observation ratio is almost same!)
+Testdata = pd.read_csv('./CheXpert-v1.0-small/valid.csv')
 Testdata_frt = Testdata[Testdata['Path'].str.contains('frontal')]
 Testdata_lat = Testdata[Testdata['Path'].str.contains('lateral')]
 Testdata_frt.to_csv('./CheXpert-v1.0-small/test_frt.csv', index = False)
@@ -49,15 +48,10 @@ print('Test data length(frontal):', len(Testdata_frt))
 print('Test data length(lateral):', len(Testdata_lat))
 print('Test data length(total):', len(Testdata_frt) + len(Testdata_lat))
 
-
-# Make testset for 500 studies
-Testdata_frt['Path0'] = Testdata_frt.Path.str[:26]
-Testdata_frt['Path2'] = Testdata_frt.Path.str[45:]
-Testdata_frt['Path'] = Testdata_frt['Path'].str[26:45]
-
-Testdata_frt_agg = Testdata_frt.groupby('Path').agg('first').reset_index()
+# Make testset for 200 studies (use given valid set as test set)
+Testdata_frt['Study'] = Testdata_frt.Path.str.split('/').str[2] + '/' + Testdata_frt.Path.str.split('/').str[3]
+Testdata_frt_agg = Testdata_frt.groupby('Study').agg('first').reset_index()
 Testdata_frt_agg = Testdata_frt_agg.sort_values('Path')
-Testdata_frt_agg['Path'] = Testdata_frt_agg['Path0'] + Testdata_frt_agg['Path'] + Testdata_frt_agg['Path2']
-Testdata_frt_agg = Testdata_frt_agg.drop(['Path0', 'Path2'], axis = 1)
-Testdata_frt_agg.to_csv('./CheXpert-v1.0-small/test_500.csv', index = False)
+Testdata_frt_agg = Testdata_frt_agg.drop('Study', axis = 1)
+Testdata_frt_agg.to_csv('./CheXpert-v1.0-small/test_200.csv', index = False)
 print('Test data length(study):', len(Testdata_frt_agg))

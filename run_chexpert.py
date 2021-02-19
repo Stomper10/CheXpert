@@ -48,8 +48,8 @@ args = parser.parse_args()
 # Example running commands ('nohup' command for running background on server)
 '''
 python3 run_chexpert.py
-python3 run_chexpert.py -p ones -r 0.01 -o results/ -s 2021
-nohup python3 run_chexpert.py -p ones -r 1 -o ensemble/experiment_00/ -s 0 > ensemble/printed_00.txt &
+python3 run_chexpert.py -r 0.01 -o results/ -s 2021
+nohup python3 run_chexpert.py -r 1 -o ensemble/experiment_00/ -s 0 > ensemble/printed_00.txt &
 '''
 
 # Control randomness for reproduction
@@ -76,7 +76,7 @@ pathFileValid_frt = './CheXpert-v1.0-small/valid_frt.csv'
 pathFileValid_lat = './CheXpert-v1.0-small/valid_lat.csv'
 pathFileTest_frt = './CheXpert-v1.0-small/test_frt.csv'
 pathFileTest_lat = './CheXpert-v1.0-small/test_lat.csv'
-pathFileTest_all = './CheXpert-v1.0-small/test_500.csv'
+pathFileTest_all = './CheXpert-v1.0-small/test_200.csv'
 
 # Neural network parameters
 nnIsTrained = args.pre_trained # if pre-trained by ImageNet
@@ -165,14 +165,12 @@ train_valid_start_frt = time.time()
 '''See 'materials.py' to check the class 'CheXpertTrainer'.'''
 model_num_frt, model_num_frt_Card, model_num_frt_Edem, model_num_frt_Cons, model_num_frt_Atel, model_num_frt_PlEf, train_time_frt = CheXpertTrainer.train(model, dataLoaderTrain_frt, dataLoaderVal_frt, nnClassCount, trMaxEpoch, PATH, 'frt', checkpoint = None)
 train_valid_end_frt = time.time()
-print('')
 
 # Train lateral model
 train_valid_start_lat = time.time()
 '''See 'materials.py' to check the class 'CheXpertTrainer'.'''
 model_num_lat, model_num_lat_Card, model_num_lat_Edem, model_num_lat_Cons, model_num_lat_Atel, model_num_lat_PlEf, train_time_lat = CheXpertTrainer.train(model, dataLoaderTrain_lat, dataLoaderVal_lat, nnClassCount, trMaxEpoch, PATH, 'lat', checkpoint = None)
 train_valid_end_lat = time.time()
-print('')
 print('<<< Model Trained >>>')
 print('For frontal model,', 'm-epoch_{0}_frt.pth.tar'.format(model_num_frt), 'is the best model.')
 print('For frontal model,', 'm-epoch_{0}_frt_Card.pth.tar'.format(model_num_frt_Card), 'is the best model.')
@@ -198,9 +196,7 @@ checkpoint_frt = PATH + 'm-epoch_{0}_frt.pth.tar'.format(model_num_frt)
 checkpoint_lat = PATH + 'm-epoch_{0}_lat.pth.tar'.format(model_num_lat)
 '''See 'materials.py' to check the class 'CheXpertTrainer'.'''
 outGT_frt, outPRED_frt, outPROB_frt, aurocMean_frt, aurocIndividual_frt = CheXpertTrainer.test(model, dataLoaderTest_frt, nnClassCount, checkpoint_frt, class_names, 'frt')
-print('')
 outGT_lat, outPRED_lat, outPROB_lat, aurocMean_lat, aurocIndividual_lat = CheXpertTrainer.test(model, dataLoaderTest_lat, nnClassCount, checkpoint_lat, class_names, 'lat')
-print('')
 
 # Save the test outPROB_frt
 with open('{}testPROB_frt.txt'.format(PATH), 'wb') as fp:
@@ -219,10 +215,10 @@ test_frt_list = list(test_frt['Path'])
 test_lat_list = list(test_lat['Path'])
 
 for i in range(len(test_frt_list)):
-    df['Path'][i] = test_frt_list[i][26:45]
+    df['Path'][i] = test_frt_list[i].split('/')[2] + '/' + test_frt_list[i].split('/')[3]
 
 for i in range(len(test_lat_list)):
-    df['Path'][len(test_frt_list) + i] = test_lat_list[i][26:45]
+    df['Path'][len(test_frt_list) + i] = test_lat_list[i].split('/')[2] + '/' + test_frt_list[i].split('/')[3]
 
 for i in range(len(outPROB_frt)):
     for j in range(len(class_names)):
@@ -253,7 +249,7 @@ fig_size = plt.rcParams['figure.figsize']
 plt.rcParams['figure.figsize'] = (30, 10)
 
 for i in range(nnClassCount):
-    fpr, tpr, threshold = metrics.roc_curve(outGT.cpu()[:,i], outPRED.cpu()[:,i])
+    fpr, tpr, threshold = metrics.roc_curve(outGT.cpu()[:, i], outPRED.cpu()[:, i])
     roc_auc = metrics.auc(fpr, tpr)
     f = plt.subplot(1, 5, i+1)
 
@@ -267,14 +263,19 @@ for i in range(nnClassCount):
     plt.ylabel('True Positive Rate')
     plt.xlabel('False Positive Rate')
 
-plt.savefig('{}ROC_all.png'.format(PATH), dpi = 1000)
+    ratio = 1
+    xleft, xright = plt.get_xlim()
+    ybottom, ytop = plt.get_ylim()
+    plt.set_aspect(abs((xright-xleft)/(ybottom-ytop))*ratio)
+
+plt.savefig('{}ROC_5.png'.format(PATH), dpi = 1000)
+plt.close()
 
 
 
 #########################
 ## Computational Stats ##
 #########################
-print('')
 print('<<< Computational Stats (frt) >>>')
 print(train_time_frt.round(0), '/seconds per epoch.')
 print('Total', round((train_valid_end_frt - train_valid_start_frt) / 60), 'minutes elapsed.')

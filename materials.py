@@ -199,8 +199,14 @@ class CheXpertTrainer():
             plt.ylabel('Valid loss')
             plt.xlabel('Epoch Number')
 
+            ratio = 0.6
+            xleft, xright = plt.get_xlim()
+            ybottom, ytop = plt.get_ylim()
+            plt.set_aspect(abs((xright-xleft)/(ybottom-ytop))*ratio)
+
         plt.savefig('{0}{1}_traj_all.png'.format(PATH, f_or_l), dpi = 1000)
         plt.close()
+        print('')
 
         return model_num, model_num_Card, model_num_Edem, model_num_Cons, model_num_Atel, model_num_PlEf, train_time
        
@@ -320,7 +326,7 @@ class CheXpertTrainer():
         
         for i in range (0, len(aurocIndividual)):
             print(class_names[i], ' ', aurocIndividual[i])
-        
+        print('')
         return outGT, outPRED, outPROB, aurocMean, aurocIndividual
 
 
@@ -372,5 +378,6 @@ def EnsemAgg(EnsemResult, dataLoader, nnClassCount, class_names):
 
     for i in range (0, len(aurocIndividual)):
         print(class_names[i], ' ', aurocIndividual[i])
+    print('')
 
     return outGT, outPRED, aurocMean, aurocIndividual
