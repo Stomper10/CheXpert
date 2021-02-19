@@ -40,8 +40,8 @@ print('Valid data length(lateral):', len(Validdata_lat))
 print('Valid data length(total):', len(Validdata_frt) + len(Validdata_lat))
 
 Testdata = pd.read_csv('./CheXpert-v1.0-small/valid.csv')
-Testdata_frt = Testdata[Testdata['Path'].str.contains('frontal')]
-Testdata_lat = Testdata[Testdata['Path'].str.contains('lateral')]
+Testdata_frt = Testdata[Testdata['Path'].str.contains('frontal')].copy()
+Testdata_lat = Testdata[Testdata['Path'].str.contains('lateral')].copy()
 Testdata_frt.to_csv('./CheXpert-v1.0-small/test_frt.csv', index = False)
 Testdata_lat.to_csv('./CheXpert-v1.0-small/test_lat.csv', index = False)
 print('Test data length(frontal):', len(Testdata_frt))
@@ -49,7 +49,7 @@ print('Test data length(lateral):', len(Testdata_lat))
 print('Test data length(total):', len(Testdata_frt) + len(Testdata_lat))
 
 # Make testset for 200 studies (use given valid set as test set)
-Testdata_frt.loc[:, 'Study'] = Testdata_frt.Path.str.split('/').str[2].copy() + '/' + Testdata_frt.Path.str.split('/').str[3].copy()
+Testdata_frt.loc[:, 'Study'] = Testdata_frt.Path.str.split('/').str[2] + '/' + Testdata_frt.Path.str.split('/').str[3]
 Testdata_frt_agg = Testdata_frt.groupby('Study').agg('first').reset_index()
 Testdata_frt_agg = Testdata_frt_agg.sort_values('Path')
 Testdata_frt_agg = Testdata_frt_agg.drop('Study', axis = 1)
