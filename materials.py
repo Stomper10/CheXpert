@@ -189,7 +189,7 @@ class CheXpertTrainer():
         
         fig, ax = plt.subplots(nrows = 1, ncols = 5)
         fig.set_size_inches((50, 10))
-        for i in range(5):
+        for i in range(nnClassCount):
             ax[i].plot(xlab, traj_all[i])
             ax[i].set_title('Valid loss trajectory: ' + names[i])
             ax[i].set_xlim([0, trMaxEpoch + 1])
