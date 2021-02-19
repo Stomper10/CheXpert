@@ -49,7 +49,7 @@ print('Test data length(lateral):', len(Testdata_lat))
 print('Test data length(total):', len(Testdata_frt) + len(Testdata_lat))
 
 # Make testset for 200 studies (use given valid set as test set)
-Testdata_frt['Study'] = Testdata_frt.Path.str.split('/').str[2] + '/' + Testdata_frt.Path.str.split('/').str[3]
+Testdata_frt['Study'] = Testdata_frt.copy().Path.str.split('/').str[2] + '/' + Testdata_frt.copy().Path.str.split('/').str[3]
 Testdata_frt_agg = Testdata_frt.copy().groupby('Study').agg('first').reset_index()
 Testdata_frt_agg = Testdata_frt_agg.sort_values('Path')
 Testdata_frt_agg = Testdata_frt_agg.drop('Study', axis = 1)
