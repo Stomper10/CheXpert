@@ -32,7 +32,7 @@ print('Train data length(total):', len(Traindata_frt) + len(Traindata_lat))
 
 Validdata = Traindata_raw[:border_idx] # use first 500 studies from training set as valid set (observation ratio is almost same!)
 Validdata_frt = Validdata[Validdata['Path'].str.contains('frontal')]
-Validdata_lat = Validdata[Testdata['Path'].str.contains('lateral')]
+Validdata_lat = Validdata[Validdata['Path'].str.contains('lateral')]
 Validdata_frt.to_csv('./CheXpert-v1.0-small/valid_frt.csv', index = False)
 Validdata_lat.to_csv('./CheXpert-v1.0-small/valid_lat.csv', index = False)
 print('Valid data length(frontal):', len(Validdata_frt))
