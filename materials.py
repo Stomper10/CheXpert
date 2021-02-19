@@ -187,24 +187,16 @@ class CheXpertTrainer():
         names = ['Card', 'Edem', 'Cons', 'Atel', 'PlEf']
         xlab = list(range(1, trMaxEpoch + 1))
         
-        fig, axes = plt.subplots(nrows = 1, ncols = 5)
+        fig, ax = plt.subplots(nrows = 1, ncols = 5)
         fig.set_size_inches((50, 10))
         for i in range(5):
-            # f = plt.subplot(1, 5, i+1)
-
-            axes[i].set_title('Valid loss trajectory: ' + names[i])
-            axes[i].plot(xlab, traj_all[i])
-
-            axes[i].xlim([0, trMaxEpoch + 1])
-            axes[i].xticks(np.arange(1, trMaxEpoch + 1, step = 1))
-            axes[i].ylim([0, 1])
-            axes[i].ylabel('Valid loss')
-            axes[i].xlabel('Epoch Number')
-
-            ratio = 0.6
-            xleft, xright = axes[i].get_xlim()
-            ybottom, ytop = axes[i].get_ylim()
-            axes[i].set_aspect(abs((xright-xleft)/(ybottom-ytop))*ratio)
+            ax[i].plot(xlab, traj_all[i])
+            ax[i].set_title('Valid loss trajectory: ' + names[i])
+            ax[i].set_xlim([0, trMaxEpoch + 1])
+            ax[i].set_xticks(np.arange(1, trMaxEpoch + 1, step = 1))
+            ax[i].set_ylim([0, 1])
+            ax[i].set_ylabel('Valid loss')
+            ax[i].set_xlabel('Epoch Number')
 
         plt.savefig('{0}{1}_traj_all.png'.format(PATH, f_or_l), dpi = 1000)
         plt.close()
