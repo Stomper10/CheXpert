@@ -198,7 +198,7 @@ class CheXpertTrainer():
             ax[i].set_ylabel('Valid loss')
             ax[i].set_xlabel('Epoch Number')
 
-        plt.savefig('{0}{1}_traj_all.png'.format(PATH, f_or_l), dpi = 1000)
+        plt.savefig('{0}{1}_traj_all.png'.format(PATH, f_or_l), dpi = 100)
         plt.close()
         print('')
 

@@ -260,7 +260,7 @@ for i in range(nnClassCount):
     ax[i].set_ylabel('True Positive Rate')
     ax[i].set_xlabel('False Positive Rate')
 
-plt.savefig('{}ROC_5.png'.format(PATH), dpi = 1000)
+plt.savefig('{}ROC_5.png'.format(PATH), dpi = 100)
 plt.close()
 
 
