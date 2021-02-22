@@ -41,6 +41,7 @@ After you downloaded the dataset, run the following command to unzip the `.zip` 
 
 ```bash
 unzip CheXpert-v1.0-small.zip
+unzip CheXpert-v1.0.zip
 ```
 
 Now the data is ready. As you see this repository structure, you have to place the `CheXpert-v1.0-small`, and `CheXpert-v1.0` directories with the rest of the files(`.py` and `.ipynb`) at the same location unless you modify the path in the source code.
