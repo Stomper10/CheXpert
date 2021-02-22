@@ -52,6 +52,7 @@ class CheXpertDataSet(Dataset):
                 #npline = np.array(line)
                 #idx = [7, 10, 11, 13, 15]
                 #label = list(npline[idx])
+                label = line[5:]
                 for i in range(nnClassCount):
                     if label[i]:
                         a = float(label[i])
