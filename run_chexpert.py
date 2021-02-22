@@ -80,7 +80,7 @@ pathFileTest_all = './CheXpert-v1.0-small/test_200.csv'
 
 # Neural network parameters
 nnIsTrained = args.pre_trained # if pre-trained by ImageNet
-nnClassCount = 5   # dimension of the output - 5: only competition obs.
+nnClassCount = 14   # dimension of the output - 5: only competition obs.
 
 # Training settings
 trBatchSize = args.batch_size    # batch size
@@ -90,7 +90,10 @@ trMaxEpoch = args.epochs      # maximum number of epochs
 imgtransResize = 320
 
 # Class names
-class_names = ['Cardiomegaly', 'Edema', 'Consolidation', 'Atelectasis', 'Pleural Effusion'] # comp. obs.
+class_names = ['No Finding', 'Enlarged Cardiomediastinum', 'Cardiomegaly', 'Lung Opacity', 
+               'Lung Lesion', 'Edema', 'Consolidation', 'Pneumonia', 'Atelectasis', 'Pneumothorax', 
+               'Pleural Effusion', 'Pleural Other', 'Fracture', 'Support Devices']
+#class_names = ['Cardiomegaly', 'Edema', 'Consolidation', 'Atelectasis', 'Pleural Effusion'] # comp. obs.
 
 
 
@@ -245,7 +248,7 @@ EnsemTest = results
 '''See 'materials.py' to check the function 'EnsemAgg'.'''
 outGT, outPRED, aurocMean, aurocIndividual = EnsemAgg(EnsemTest, dataLoaderTest_all, nnClassCount, class_names)
 
-fig, ax = plt.subplots(nrows = 1, ncols = 5)
+fig, ax = plt.subplots(nrows = 2, ncols = 7)
 fig.set_size_inches((50, 10))
 for i in range(nnClassCount):
     fpr, tpr, threshold = metrics.roc_curve(outGT.cpu()[:, i], outPRED.cpu()[:, i])

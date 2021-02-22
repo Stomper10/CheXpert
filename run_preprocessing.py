@@ -21,7 +21,7 @@ path_unique = list(dict.fromkeys(paths))
 border = path_unique[500]
 border_idx = paths.index(border)
 
-Traindata = Traindata_raw[border_idx:]
+Traindata = Traindata_raw[border_idx:].copy()
 Traindata_frt = Traindata[Traindata['Path'].str.contains('frontal')].copy()
 Traindata_lat = Traindata[Traindata['Path'].str.contains('lateral')].copy()
 Traindata_frt.to_csv('./CheXpert-v1.0-small/train_frt.csv', index = False)
@@ -30,7 +30,7 @@ print('Train data length(frontal):', len(Traindata_frt))
 print('Train data length(lateral):', len(Traindata_lat))
 print('Train data length(total):', len(Traindata_frt) + len(Traindata_lat))
 
-Validdata = Traindata_raw[:border_idx] # use first 500 studies from training set as valid set (observation ratio is almost same!)
+Validdata = Traindata_raw[:border_idx].copy() # use first 500 studies from training set as valid set (observation ratio is almost same!)
 Validdata_frt = Validdata[Validdata['Path'].str.contains('frontal')].copy()
 Validdata_lat = Validdata[Validdata['Path'].str.contains('lateral')].copy()
 Validdata_frt.to_csv('./CheXpert-v1.0-small/valid_frt.csv', index = False)
