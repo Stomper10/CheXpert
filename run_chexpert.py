@@ -224,10 +224,10 @@ test_frt_list = list(test_frt['Path'].copy())
 test_lat_list = list(test_lat['Path'].copy())
 
 for i in range(len(test_frt_list)):
-    df.loc[i, 'Path'] = test_frt_list[i].split('/')[2] + '/' + test_frt_list[i].split('/')[3]
+    df.iloc[i, 0] = test_frt_list[i].split('/')[2] + '/' + test_frt_list[i].split('/')[3]
 
 for i in range(len(test_lat_list)):
-    df.loc[len(test_frt_list) + i, 'Path'] = test_lat_list[i].split('/')[2] + '/' + test_frt_list[i].split('/')[3]
+    df.iloc[len(test_frt_list) + i, 0] = test_lat_list[i].split('/')[2] + '/' + test_frt_list[i].split('/')[3]
 
 for i in range(len(outPROB_frt)):
     for j in range(len(class_names)):
