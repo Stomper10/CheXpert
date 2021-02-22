@@ -31,7 +31,6 @@ import sklearn.metrics as metrics
 from sklearn.metrics import roc_auc_score
 
 use_gpu = torch.cuda.is_available()
-pd.set_option('mode.chained_assignment',  None)
 
 
 
@@ -39,22 +38,23 @@ pd.set_option('mode.chained_assignment',  None)
 ## Arguments to Set ##
 ######################
 parser = argparse.ArgumentParser(formatter_class = argparse.ArgumentDefaultsHelpFormatter)
-parser.add_argument('cfg_path', metavar='CFG_PATH', type = str, help = 'Path to the config file in yaml format.')
+parser.add_argument('cfg_path', metavar = 'CFG_PATH', type = str, help = 'Path to the config file in yaml format.')
 parser.add_argument('--output_path', '-o', help = 'Path to save results.', default = 'results/')
+parser.add_argument('--random_seed', '-s', type = int, help = 'Random seed for reproduction.')
 args = parser.parse_args()
 with open(args.cfg_path) as f:
     cfg = edict(json.load(f))
 
 # Example running commands ('nohup' command for running background on server)
 '''
-python3 run_chexpert.py
-python3 run_chexpert.py -r 0.01 -o results/ -s 2021
-nohup python3 run_chexpert.py -r 1 -o ensemble/experiment_00/ -s 0 > ensemble/printed_00.txt &
+python3 run_chexpert.py configuration.json 
+python3 run_chexpert.py configuration.json -o results/ -s 2021
+nohup python3 run_chexpert.py configuration.json -o ensemble/experiment_00/ -s 0 > ensemble/printed_00.txt &
 '''
 
 # Control randomness for reproduction
-if cfg.random_seed != None:
-    random_seed = cfg.random_seed
+if args.random_seed != None:
+    random_seed = args.random_seed
     torch.manual_seed(random_seed)
     torch.cuda.manual_seed(random_seed)
     torch.cuda.manual_seed_all(random_seed) # if use multi-GPU
@@ -93,8 +93,14 @@ trMaxEpoch = cfg.epochs      # maximum number of epochs
 imgtransResize = cfg.imgtransResize
 
 # Class names
-class_names = cfg.class_names # comp. obs.
-nnClassCount = len(class_names)   # dimension of the output - 5: only competition obs.
+nnClassCount = cfg.nnClassCount   # dimension of the output - 5: only competition obs.
+if nnClassCount == 5:
+    class_names = ["Cardiomegaly", "Edema", "Consolidation", "Atelectasis", "Pleural Effusion"]
+else:
+    class_names = ['No Finding', 'Enlarged Cardiomediastinum', 'Cardiomegaly', 'Lung Opacity', 
+                   'Lung Lesion', 'Edema', 'Consolidation', 'Pneumonia', 'Atelectasis', 'Pneumothorax', 
+                   'Pleural Effusion', 'Pleural Other', 'Fracture', 'Support Devices']
+
 
 
 ######################
@@ -256,7 +262,7 @@ else:
     ncols = 7
 
 fig, ax = plt.subplots(nrows = nrows, ncols = ncols)
-fig.set_size_inches((50, 10))
+fig.set_size_inches((ncols * 10, 10))
 for i in range(nnClassCount):
     fpr, tpr, threshold = metrics.roc_curve(outGT.cpu()[:, i], outPRED.cpu()[:, i])
     roc_auc = metrics.auc(fpr, tpr)
