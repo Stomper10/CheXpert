@@ -105,7 +105,7 @@ dataLoaderTest = DataLoader(dataset = datasetTest, num_workers = 2, pin_memory =
 ######################
 # Initialize and load the model
 '''See 'materials.py' to check the class 'DenseNet121'.'''
-model = DenseNet121(nnClassCount).cuda()
+model = DenseNet121(nnClassCount, nnIsTrained).cuda()
 model = torch.nn.DataParallel(model).cuda()
 
 

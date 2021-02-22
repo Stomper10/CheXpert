@@ -49,7 +49,7 @@ with open(args.cfg_path) as f:
 '''
 python3 run_chexpert.py configuration.json 
 python3 run_chexpert.py configuration.json -o results/ -s 2021
-nohup python3 run_chexpert.py configuration.json -o ensemble/experiment_00/ -s 0 > ensemble/printed_00.txt &
+nohup python3 run_chexpert.py configuration.json -o ensembles/experiment_00/ -s 0 > ensemble/printed_00.txt &
 '''
 
 # Control randomness for reproduction
@@ -181,14 +181,14 @@ train_valid_start_lat = time.time()
 model_num_lat, model_num_lat_Card, model_num_lat_Edem, model_num_lat_Cons, model_num_lat_Atel, model_num_lat_PlEf, train_time_lat = CheXpertTrainer.train(model, dataLoaderTrain_lat, dataLoaderVal_lat, nnClassCount, trMaxEpoch, PATH, 'lat', checkpoint = None, cfg = cfg)
 train_valid_end_lat = time.time()
 print('<<< Model Trained >>>')
-print('For frontal model,', 'm-epoch_{0}_frt.pth.tar'.format(model_num_frt), 'is the best model.')
+print('For frontal model,', 'm-epoch_{0}_frt.pth.tar'.format(model_num_frt), 'is the best model overall.')
 print('For frontal model,', 'm-epoch_{0}_frt_Card.pth.tar'.format(model_num_frt_Card), 'is the best model.')
 print('For frontal model,', 'm-epoch_{0}_frt_Edem.pth.tar'.format(model_num_frt_Edem), 'is the best model.')
 print('For frontal model,', 'm-epoch_{0}_frt_Cons.pth.tar'.format(model_num_frt_Cons), 'is the best model.')
 print('For frontal model,', 'm-epoch_{0}_frt_Atel.pth.tar'.format(model_num_frt_Atel), 'is the best model.')
 print('For frontal model,', 'm-epoch_{0}_frt_PlEf.pth.tar'.format(model_num_frt_PlEf), 'is the best model.')
 print('')
-print('For lateral model,', 'm-epoch_{0}_lat.pth.tar'.format(model_num_lat), 'is the best model.')
+print('For lateral model,', 'm-epoch_{0}_lat.pth.tar'.format(model_num_lat), 'is the best model overall.')
 print('For lateral model,', 'm-epoch_{0}_lat_Card.pth.tar'.format(model_num_lat_Card), 'is the best model.')
 print('For lateral model,', 'm-epoch_{0}_lat_Edem.pth.tar'.format(model_num_lat_Edem), 'is the best model.')
 print('For lateral model,', 'm-epoch_{0}_lat_Cons.pth.tar'.format(model_num_lat_Cons), 'is the best model.')
@@ -220,14 +220,14 @@ test_lat = pd.read_csv(pathFileTest_lat)
 
 column_names = ['Path'] + class_names
 df = pd.DataFrame(0, index = np.arange(len(test_frt) + len(test_lat)), columns = column_names)
-test_frt_list = list(test_frt['Path'])
-test_lat_list = list(test_lat['Path'])
+test_frt_list = list(test_frt['Path'].copy())
+test_lat_list = list(test_lat['Path'].copy())
 
 for i in range(len(test_frt_list)):
-    df['Path'][i] = test_frt_list[i].split('/')[2] + '/' + test_frt_list[i].split('/')[3]
+    df.loc[i, 'Path'] = test_frt_list[i].split('/')[2] + '/' + test_frt_list[i].split('/')[3]
 
 for i in range(len(test_lat_list)):
-    df['Path'][len(test_frt_list) + i] = test_lat_list[i].split('/')[2] + '/' + test_frt_list[i].split('/')[3]
+    df.loc[len(test_frt_list) + i, 'Path'] = test_lat_list[i].split('/')[2] + '/' + test_frt_list[i].split('/')[3]
 
 for i in range(len(outPROB_frt)):
     for j in range(len(class_names)):
