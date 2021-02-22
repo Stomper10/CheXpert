@@ -185,23 +185,23 @@ class CheXpertTrainer():
 
         train_time = np.array(train_end) - np.array(train_start)
 
-        traj_all = [Card_traj, Edem_traj, Cons_traj, Atel_traj, PlEf_traj]
-        names = ['Card', 'Edem', 'Cons', 'Atel', 'PlEf']
-        xlab = list(range(1, trMaxEpoch + 1))
+        #traj_all = [Card_traj, Edem_traj, Cons_traj, Atel_traj, PlEf_traj]
+        #names = ['Card', 'Edem', 'Cons', 'Atel', 'PlEf']
+        #xlab = list(range(1, trMaxEpoch + 1))
         
-        fig, ax = plt.subplots(nrows = 1, ncols = 5)
-        fig.set_size_inches((50, 10))
-        for i in range(nnClassCount):
-            ax[i].plot(xlab, traj_all[i])
-            ax[i].set_title('Valid loss trajectory: ' + names[i])
-            ax[i].set_xlim([0, trMaxEpoch + 1])
-            ax[i].set_xticks(np.arange(1, trMaxEpoch + 1, step = 1))
-            ax[i].set_ylim([0, 1])
-            ax[i].set_ylabel('Valid loss')
-            ax[i].set_xlabel('Epoch Number')
+        #fig, ax = plt.subplots(nrows = 1, ncols = 5)
+        #fig.set_size_inches((50, 10))
+        #for i in range(nnClassCount):
+        #    ax[i].plot(xlab, traj_all[i])
+        #    ax[i].set_title('Valid loss trajectory: ' + names[i])
+        #    ax[i].set_xlim([0, trMaxEpoch + 1])
+        #    ax[i].set_xticks(np.arange(1, trMaxEpoch + 1, step = 1))
+        #    ax[i].set_ylim([0, 1])
+        #    ax[i].set_ylabel('Valid loss')
+        #    ax[i].set_xlabel('Epoch Number')
 
-        plt.savefig('{0}{1}_traj_all.png'.format(PATH, f_or_l), dpi = 100)
-        plt.close()
+        #plt.savefig('{0}{1}_traj_all.png'.format(PATH, f_or_l), dpi = 100)
+        #plt.close()
         print('')
 
         return model_num, model_num_Card, model_num_Edem, model_num_Cons, model_num_Atel, model_num_PlEf, train_time
