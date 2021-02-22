@@ -83,7 +83,7 @@ python3 run_chexpert.py configuration.json
 Options | Shortcut | Description | Default
 :-: | :-: | :-: | :-:
 --output_path| -o | Path to save results. | results/
---random_seed | -r | Random seed for reproduction. | 0
+--random_seed | -s | Random seed for reproduction. | 0
 
 I also recommend you to use the `nohup` command if you run this code on server since it takes several hours.
 ```bash
