@@ -56,9 +56,9 @@ Name | Example | Description
 :-: | :-: | :-:
 image_type | "small" | The image type of data. <br /> For the original image (439GB), set as `""`.
 pre_trained | false | Whether the model is pre-trained.
-nnClassCount | 5 | The number of training observations. <br /> Default is set to 5 competition observations. If you want all, set as `14`.
+nnClassCount | 5 | The number of training observations. <br /> Example is set to 5 competition observations. If you want all, set as `14`.
 batch_size | 16 | The number of batch size.
-epochs | 10 | The number of training epochs.
+epochs | 3 | The number of training epochs.
 imgtransResize | 320 | Resizing image in transformation.
 train_ratio | 1 | Training data ratio.
 lr | 0.0001 | Learning rate of optimizer.
