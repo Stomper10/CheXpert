@@ -93,7 +93,7 @@ nohup python3 run_chexpert.py configuration.json > progress.txt &
 
 
 # 3. Results
-You may get training and validation losses, as well as the test accuracy and ROC curves. You can also check the computational costs. Models(`*.pth.tar`), test set probabilities(`testPROB_frt.txt`, `testPROB_lat.txt`, `testPROB_all.txt`), and ROC curve(`ROC_*.png`) files will be saved in the `results` directory. In addition, the models for each competition observation is also saved. If you run the code with `nohup` command, you can also save whole printed outputs. Let me just show you the ROC curves here.
+You may get training and validation losses, as well as the test accuracy and ROC curves. You can also check the computational costs. Models(`*.pth.tar`), test set probabilities(`testPROB_frt.txt`, `testPROB_lat.txt`, `testPROB_all.txt`), and ROC curve(`ROC_*.png`) files will be saved in the `results` directory. In addition, the best models for each competition observation is also saved. If you run the code with `nohup` command, you can also save whole printed outputs. Let me just show you the ROC curves here.
 
 ![ROC_5](https://user-images.githubusercontent.com/43818471/108703317-cc923e80-754d-11eb-928a-f624d445b3de.png)
 
