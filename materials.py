@@ -49,10 +49,11 @@ class CheXpertDataSet(Dataset):
             next(csvReader, None) # skip the header
             for line in csvReader:
                 image_name = line[0]
-                npline = np.array(line)
-                idx = [7, 10, 11, 13, 15]
-                label = list(npline[idx])
-                for i in range(nnClassCount):
+                if nnClassCount == 5:
+                    npline = np.array(line)
+                    idx = [7, 10, 11, 13, 15]
+                    label = list(npline[idx])
+                    for i in range(nnClassCount):
                     if label[i]:
                         a = float(label[i])
                         if a == 1:
@@ -66,6 +67,22 @@ class CheXpertDataSet(Dataset):
                             label[i] = 0
                     else:
                         label[i] = 0
+                else:
+                    label = label[5:]
+                    for i in range(nnClassCount):
+                        if label[i]:
+                            a = float(label[i])
+                            if a == 1:
+                                label[i] = 1
+                            elif a == -1:
+                                if i == 5 or i == 8 or i == 10:  # Atelectasis, Edema, Pleural Effusion
+                                    label[i] = 1                    # U-Ones
+                                elif i == 2 or i == 6:          # Cardiomegaly, Consolidation
+                                    label[i] = 0                    # U-Zeroes
+                            else:
+                                label[i] = 0
+                        else:
+                            label[i] = 0
                         
                 image_names.append('./' + image_name)
                 labels.append(label)
@@ -91,9 +108,9 @@ class CheXpertDataSet(Dataset):
 ## Create CheXpertTrainer ##
 ############################
 class CheXpertTrainer():
-    def train(model, dataLoaderTrain, dataLoaderVal, nnClassCount, trMaxEpoch, PATH, f_or_l, checkpoint):
-        optimizer = optim.Adam(model.parameters(), lr = 0.0001, # setting optimizer & scheduler
-                               betas = (0.9, 0.999), eps = 1e-08, weight_decay = 0) 
+    def train(model, dataLoaderTrain, dataLoaderVal, nnClassCount, trMaxEpoch, PATH, f_or_l, checkpoint, cfg):
+        optimizer = optim.Adam(model.parameters(), lr = cfg.lr, # setting optimizer & scheduler
+                               betas = tuple(cfg.betas), eps = cfg.eps, weight_decay = cfg.weight_decay) 
         loss = torch.nn.BCELoss() # setting loss function
         
         if checkpoint != None and use_gpu: # loading checkpoint
