@@ -54,19 +54,19 @@ class CheXpertDataSet(Dataset):
                     idx = [7, 10, 11, 13, 15]
                     label = list(npline[idx])
                     for i in range(nnClassCount):
-                    if label[i]:
-                        a = float(label[i])
-                        if a == 1:
-                            label[i] = 1
-                        elif a == -1:
-                            if i == 1 or i == 3 or i == 4:  # Atelectasis, Edema, Pleural Effusion
-                                label[i] = 1                    # U-Ones
-                            elif i == 0 or i == 2:          # Cardiomegaly, Consolidation
-                                label[i] = 0                    # U-Zeroes
+                        if label[i]:
+                            a = float(label[i])
+                            if a == 1:
+                                label[i] = 1
+                            elif a == -1:
+                                if i == 1 or i == 3 or i == 4:  # Atelectasis, Edema, Pleural Effusion
+                                    label[i] = 1                    # U-Ones
+                                elif i == 0 or i == 2:          # Cardiomegaly, Consolidation
+                                    label[i] = 0                    # U-Zeroes
+                            else:
+                                label[i] = 0
                         else:
                             label[i] = 0
-                    else:
-                        label[i] = 0
                 else:
                     label = label[5:]
                     for i in range(nnClassCount):
