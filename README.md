@@ -31,7 +31,7 @@ git clone https://github.com/Stomper10/CheXpert.git
 At the bottom of the CheXpert [webpage](https://stanfordmlgroup.github.io/competitions/chexpert/), write a registration form to download the CheXpert dataset.
 You will receive an email with the download link. Right-click your mouse on the download link(439GB or 11GB) and click 'Copy link address'.
 
-Then, run the following command. Paste your link address inside the double quotation marks(PLEASE RUN WITH QUOTATION MARKS). It will take a while even for the downsampled(11GB) dataset. In this experiment, I used the downsampled dataset.
+Then, run the following command. Paste your link address inside the double quotation marks(PLEASE RUN WITH QUOTATION MARKS). It will take a while even for the downsampled(11GB) dataset.
 
 ```bash
 wget "link_address_you_copied"
@@ -43,19 +43,18 @@ After you downloaded the dataset, run the following command to unzip the `.zip` 
 unzip CheXpert-v1.0-small.zip
 ```
 
-Now the dataset is ready. As you see this repository structure, you have to place the `CheXpert-v1.0-small` directory and the rest files(`.py` and `.ipynb`) at the same location unless you modify the path in the source code.
+Now the data is ready. As you see this repository structure, you have to place the `CheXpert-v1.0-small`, and `CheXpert-v1.0` directories with the rest of the files(`.py` and `.ipynb`) at the same location unless you modify the path in the source code.
 
 
 
 # 2. Run the CheXpert
-## Set Configuration
+## Set Configurations
 You can set hyperparameters in the `configuration.json` file such as maximum training epoch, type of image, batch size, etc.
 Here are some descriptions of hyperparameters.
 
 Name | Example | Description
 :-: | :-: | :-:
 image_type | "small" | The image type of data. <br /> For the original image (439GB), set as `""`.
-random_seed | 0 | Random seed for reproduction.
 pre_trained | false | Whether the model is pre-trained.
 nnClassCount | 5 | The number of training observations. <br /> Default is set to 5 competition observations. If you want all, set as `14`.
 batch_size | 16 | The number of batch size.
@@ -75,7 +74,7 @@ python3 run_preprocessing.py configuration.json
 ```
 
 ## Run the Model
-Now you can run the model like below. You can use a option to run the model more efficiently.
+Now you can run the model like below. You can use some options to run the model.
 ```bash
 python3 run_chexpert.py configuration.json
 ```
@@ -83,6 +82,7 @@ python3 run_chexpert.py configuration.json
 Options | Shortcut | Description | Default
 :-: | :-: | :-: | :-:
 --output_path| -o | Path to save results. | results/
+--random_seed | -r | Random seed for reproduction. | 0
 
 I also recommend you to use the `nohup` command if you run this code on server since it takes several hours.
 ```bash
@@ -92,24 +92,24 @@ nohup python3 run_chexpert.py configuration.json > progress.txt &
 
 
 # 3. Results
-You may get training and validation losses, as well as the test accuracy and ROC curves. You can also check the computational costs. Models(`*.pth.tar`), test set probabilities(`testPROB_frt.txt`, `testPROB_lat.txt`, `testPROB_all.txt`), and ROC curve(`ROC.png`) files will be saved in the `results` directory. In addition, the models for each competition observation is also saved. If you run the code with `nohup` command, you can also save whole printed outputs. Let me just show you the ROC curves here.
+You may get training and validation losses, as well as the test accuracy and ROC curves. You can also check the computational costs. Models(`*.pth.tar`), test set probabilities(`testPROB_frt.txt`, `testPROB_lat.txt`, `testPROB_all.txt`), and ROC curve(`ROC_*.png`) files will be saved in the `results` directory. In addition, the models for each competition observation is also saved. If you run the code with `nohup` command, you can also save whole printed outputs. Let me just show you the ROC curves here.
 
-![ROC_all_500](https://user-images.githubusercontent.com/43818471/106099756-8af4ba80-617e-11eb-838f-11c4266479d3.png)
+![ROC_5](https://user-images.githubusercontent.com/43818471/108703317-cc923e80-754d-11eb-928a-f624d445b3de.png)
 
 The following table shows a comparison with the original paper results. I know it's not an accurate comparison since the test set is different. But at least we can roughly gauge the model's performance.
 
 * Stanford Baseline(ensemble) AUC = 0.907
-* My Baseline AUC(small) = 0.806
-* My Baseline AUC(original) = 0.818
+* My Baseline AUC(small) = 0.852
+* My Baseline AUC(original) = 0.864
 
 Observation | Experiment AUC | Paper AUC | Difference
 :-: | :-: | :-: | :-:
-Atelectasis | 0.70 | 0.85 | -0.15
-Cardiomegaly | 0.86 | 0.90 | -0.04
-Consolidation | 0.74 | 0.90 | -0.16
-Edema | 0.85 | 0.92 | -0.07
-Pleural Effusion | 0.88 | 0.97 | -0.09
-**Mean of 5 obs.** | **0.81** | **0.91** | **-0.10**
+Atelectasis | 0.80 | 0.85 | -0.05
+Cardiomegaly | 0.80 | 0.90 | -0.10
+Consolidation | 0.90 | 0.90 | -0.00
+Edema | 0.90 | 0.92 | -0.02
+Pleural Effusion | 0.92 | 0.97 | -0.05
+**Mean of 5 obs.** | **0.86** | **0.91** | **-0.05**
 
 
 
@@ -118,15 +118,13 @@ Pleural Effusion | 0.88 | 0.97 | -0.09
 You can try deep ensembles with `run_ensembles.py` file.
 Under the `ensembles` directory, place **ONLY** experiment output directories you want to aggregate. If you place other directories, it will throw an error.
 When running the `run_chexpert.py`, set `--output_path` under the ensembles directory.
-`run_ensembles.py` have `--policy` and `--output_path` options just like `run_chexpert.py`. The ensemble results will be saved in `--output_path` you set.
+`run_ensembles.py` have `--output_path` option just like `run_chexpert.py`. The ensemble results will be saved in `--output_path` you set.
 ```bash
-python3 run_chexpert.py --policy=ones --ratio=0.01 --output_path=emsembles/experiment_01/ --random_seed=1
-python3 run_chexpert.py --policy=ones --ratio=0.01 --output_path=emsembles/experiment_02/ --random_seed=2
-python3 run_chexpert.py --policy=ones --ratio=0.01 --output_path=emsembles/experiment_03/ --random_seed=3
+python3 run_chexpert.py configuration.json --output_path=emsembles/experiment_01/ --random_seed=1
+python3 run_chexpert.py configuration.json --output_path=emsembles/experiment_02/ --random_seed=2
+python3 run_chexpert.py configuration.json --output_path=emsembles/experiment_03/ --random_seed=3
 
-python3 run_ensembles.py \
-  --policy=ones \
-  --output_path=results/ensem_results/
+python3 run_ensembles.py configuration.json --output_path=results/ensem_results/
 ```
 
 ### Federated Learning (arranged version will be provided)
@@ -146,8 +144,8 @@ You can try the Grad-CAM method on test set with `Grad-CAM.ipynb` file after you
 - [x] Try simple ensembles.
 - [x] Use also lateral images for training.
 - [x] Use original dataset for training(~439GB).
+- [x] Vary uncertain policies per observation.
 - [ ] Try various data augmentations.
-- [ ] Vary uncertain policies per observation.
 - [ ] Try boosting technique.
 - [ ] Try attention technique.
 - [ ] Try various models for ensembles.
