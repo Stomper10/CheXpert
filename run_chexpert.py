@@ -249,6 +249,7 @@ EnsemTest = results
 outGT, outPRED, aurocMean, aurocIndividual = EnsemAgg(EnsemTest, dataLoaderTest_all, nnClassCount, class_names)
 
 fig, ax = plt.subplots(nrows = 2, ncols = 7)
+ax = ax.flatten()
 fig.set_size_inches((50, 10))
 for i in range(nnClassCount):
     fpr, tpr, threshold = metrics.roc_curve(outGT.cpu()[:, i], outPRED.cpu()[:, i])
