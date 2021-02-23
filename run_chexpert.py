@@ -262,6 +262,7 @@ else:
     ncols = 7
 
 fig, ax = plt.subplots(nrows = nrows, ncols = ncols)
+ax = ax.flatten()
 fig.set_size_inches((ncols * 10, 10))
 for i in range(nnClassCount):
     fpr, tpr, threshold = metrics.roc_curve(outGT.cpu()[:, i], outPRED.cpu()[:, i])
