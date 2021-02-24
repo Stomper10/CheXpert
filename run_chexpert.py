@@ -80,7 +80,7 @@ pathFileTest_all = './CheXpert-v1.0-small/test_200.csv'
 
 # Neural network parameters
 nnIsTrained = args.pre_trained # if pre-trained by ImageNet
-nnClassCount = 14   # dimension of the output - 5: only competition obs.
+nnClassCount = 5   # dimension of the output - 5: only competition obs.
 
 # Training settings
 trBatchSize = args.batch_size    # batch size
