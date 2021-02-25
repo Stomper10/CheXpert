@@ -35,7 +35,7 @@ use_gpu = torch.cuda.is_available()
 ## Create a Dataset ##
 ######################
 class CheXpertDataSet(Dataset):
-    def __init__(self, data_PATH, nnClassCount, transform = None):
+    def __init__(self, data_PATH, nnClassCount, policy, transform = None):
         """
         data_PATH: path to the file containing images with corresponding labels.
         transform: optional transform to be applied on a sample.
@@ -59,10 +59,13 @@ class CheXpertDataSet(Dataset):
                             if a == 1:
                                 label[i] = 1
                             elif a == -1:
-                                if i == 1 or i == 3 or i == 4:  # Atelectasis, Edema, Pleural Effusion
-                                    label[i] = 1                    # U-Ones
-                                elif i == 0 or i == 2:          # Cardiomegaly, Consolidation
-                                    label[i] = 0                    # U-Zeroes
+                                if policy = 'diff':
+                                    if i == 1 or i == 3 or i == 4:  # Atelectasis, Edema, Pleural Effusion
+                                        label[i] = 1                    # U-Ones
+                                    elif i == 0 or i == 2:          # Cardiomegaly, Consolidation
+                                        label[i] = 0                    # U-Zeroes
+                                elif policy = 'ones':
+                                    label[i] = 1
                             else:
                                 label[i] = 0
                         else:
@@ -75,12 +78,15 @@ class CheXpertDataSet(Dataset):
                             if a == 1:
                                 label[i] = 1
                             elif a == -1:
-                                if i == 5 or i == 8 or i == 10:  # Atelectasis, Edema, Pleural Effusion
-                                    label[i] = 1                    # U-Ones
-                                elif i == 2 or i == 6:           # Cardiomegaly, Consolidation
-                                    label[i] = 0                    # U-Zeroes
-                                else:                            # else
-                                    label[i] = 1                    # U-Ones
+                                if policy = 'diff':
+                                    if i == 5 or i == 8 or i == 10:  # Atelectasis, Edema, Pleural Effusion
+                                        label[i] = 1                    # U-Ones
+                                    elif i == 2 or i == 6:           # Cardiomegaly, Consolidation
+                                        label[i] = 0                    # U-Zeroes
+                                    else:                            # else
+                                        label[i] = 1                    # U-Ones
+                                elif policy = 'ones':
+                                    label[i] = 1
                             else:
                                 label[i] = 0
                         else:

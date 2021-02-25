@@ -114,13 +114,13 @@ transformSequence = transforms.Compose(transformList)
 
 # Create a dataset
 '''See 'materials.py' to check the class 'CheXpertDataSet'.'''
-datasetTrain_frt = CheXpertDataSet(pathFileTrain_frt, nnClassCount, transformSequence)
-datasetTrain_lat = CheXpertDataSet(pathFileTrain_lat, nnClassCount, transformSequence)
-datasetValid_frt = CheXpertDataSet(pathFileValid_frt, nnClassCount, transformSequence)
-datasetValid_lat = CheXpertDataSet(pathFileValid_lat, nnClassCount, transformSequence)
-datasetTest_frt = CheXpertDataSet(pathFileTest_frt, nnClassCount, transformSequence)
-datasetTest_lat = CheXpertDataSet(pathFileTest_lat, nnClassCount, transformSequence)
-datasetTest_all = CheXpertDataSet(pathFileTest_all, nnClassCount, transformSequence)
+datasetTrain_frt = CheXpertDataSet(pathFileTrain_frt, nnClassCount, cfg.policy, transformSequence)
+datasetTrain_lat = CheXpertDataSet(pathFileTrain_lat, nnClassCount, cfg.policy, transformSequence)
+datasetValid_frt = CheXpertDataSet(pathFileValid_frt, nnClassCount, cfg.policy, transformSequence)
+datasetValid_lat = CheXpertDataSet(pathFileValid_lat, nnClassCount, cfg.policy, transformSequence)
+datasetTest_frt = CheXpertDataSet(pathFileTest_frt, nnClassCount, cfg.policy, transformSequence)
+datasetTest_lat = CheXpertDataSet(pathFileTest_lat, nnClassCount, cfg.policy, transformSequence)
+datasetTest_all = CheXpertDataSet(pathFileTest_all, nnClassCount, cfg.policy, transformSequence)
 
 # Use subset of datasetTrain for training
 train_num_frt = round(len(datasetTrain_frt) * cfg.train_ratio) # use subset of original training dataset

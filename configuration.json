@@ -2,6 +2,7 @@
     "image_type": "small",
     "pre_trained": false,
     "nnClassCount": 5,
+    "policy": "diff",
     "batch_size": 16,
     "epochs": 3,
     "imgtransResize": 320,
