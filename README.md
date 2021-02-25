@@ -58,6 +58,7 @@ Name | Example | Description
 image_type | "small" | The image type of data. <br /> For the original image (439GB), set as `""`.
 pre_trained | false | Whether the model is pre-trained.
 nnClassCount | 5 | The number of training observations. <br /> Example is set to 5 competition observations. If you want all, set as `14`.
+policy | "diff" | If set to `"diff"`, the optimal policy will be applied to each of the 5 competition observations. <br /> If set to `"ones"`, the U-Ones policy will be applied. <br /> If else, the U-Zeroes policy will be applied.
 batch_size | 16 | The number of batch size.
 epochs | 3 | The number of training epochs.
 imgtransResize | 320 | Resizing image in transformation.
