@@ -130,11 +130,11 @@ class CheXpertTrainer():
             train_end.append(time.time())   # training ends
             lossv, lossv_Card, lossv_Edem, lossv_Cons, lossv_Atel, lossv_PlEf = CheXpertTrainer.epochVal(model, dataLoaderVal, optimizer, trMaxEpoch, nnClassCount, loss)
 
-            Card_traj.append(lossv_Card.float())
-            Edem_traj.append(lossv_Edem.float())
-            Cons_traj.append(lossv_Cons.float())
-            Atel_traj.append(lossv_Atel.float())
-            PlEf_traj.append(lossv_PlEf.float())
+            Card_traj.append(lossv_Card)
+            Edem_traj.append(lossv_Edem)
+            Cons_traj.append(lossv_Cons)
+            Atel_traj.append(lossv_Atel)
+            PlEf_traj.append(lossv_PlEf)
 
             print("Training loss: {:.3f},".format(losst), "Valid loss: {:.3f}".format(lossv))
             
