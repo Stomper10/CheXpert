@@ -267,7 +267,7 @@ class CheXpertTrainer():
                 varOutput_PlEf = torch.tensor([i[4] for i in varOutput.tolist()])
                 target_PlEf = torch.tensor([i[4] for i in target.tolist()])
 
-                lossvalue += loss(varOutput, target)
+                lossvalue = loss(varOutput, target)
                 lossVal += lossvalue.item()*varInput.size(0)
                 #lossv = lossVal / len(dataLoaderVal)
 
