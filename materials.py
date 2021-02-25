@@ -226,7 +226,7 @@ class CheXpertTrainer():
     def epochTrain(model, dataLoaderTrain, optimizer, epochMax, classCount, loss):
         model.train()
         losstrain = 0
-
+        
         for batchID, (varInput, target) in enumerate(dataLoaderTrain):
             optimizer.zero_grad()
             
@@ -237,11 +237,11 @@ class CheXpertTrainer():
             lossvalue.backward()
             optimizer.step()
             
-            losstrain += lossvalue.item()
+            losstrain += lossvalue.item()*varInput.size(0)
             if batchID % 1000 == 999:
-                print('[Batch: %5d] loss: %.3f'%(batchID + 1, losstrain / 2000))
+                print('[Batch: %5d] loss: %.3f'%(batchID + 1, losstrain / 1000))
             
-        return losstrain / len(dataLoaderTrain)
+        return losstrain / len(dataLoaderTrain.dataset)
     
     
     def epochVal(model, dataLoaderVal, optimizer, epochMax, classCount, loss):
@@ -267,19 +267,22 @@ class CheXpertTrainer():
                 varOutput_PlEf = torch.tensor([i[4] for i in varOutput.tolist()])
                 target_PlEf = torch.tensor([i[4] for i in target.tolist()])
 
-                lossVal += loss(varOutput, target)
-                lossv = lossVal / len(dataLoaderVal)
+                lossvalue += loss(varOutput, target)
+                lossVal += lossvalue.item()*varInput.size(0)
+                #lossv = lossVal / len(dataLoaderVal)
 
-                lossVal_Card += loss(varOutput_Card, target_Card)
-                lossv_Card = lossVal_Card / len(dataLoaderVal)
-                lossVal_Edem += loss(varOutput_Edem, target_Edem)
-                lossv_Edem = lossVal_Edem / len(dataLoaderVal)
-                lossVal_Cons += loss(varOutput_Cons, target_Cons)
-                lossv_Cons = lossVal_Cons / len(dataLoaderVal)
-                lossVal_Atel += loss(varOutput_Atel, target_Atel)
-                lossv_Atel = lossVal_Atel / len(dataLoaderVal)
-                lossVal_PlEf += loss(varOutput_PlEf, target_PlEf)
-                lossv_PlEf = lossVal_PlEf / len(dataLoaderVal)
+                lossVal_Card += loss(varOutput_Card, target_Card).item()*varInput.size(0)
+                lossVal_Edem += loss(varOutput_Edem, target_Edem).item()*varInput.size(0)
+                lossVal_Cons += loss(varOutput_Cons, target_Cons).item()*varInput.size(0)
+                lossVal_Atel += loss(varOutput_Atel, target_Atel).item()*varInput.size(0)
+                lossVal_PlEf += loss(varOutput_PlEf, target_PlEf).item()*varInput.size(0)
+                
+            lossv = lossVal / len(dataLoaderVal.dataset)
+            lossv_Card = lossVal_Card / len(dataLoaderVal.dataset)
+            lossv_Edem = lossVal_Edem / len(dataLoaderVal.dataset)
+            lossv_Cons = lossVal_Cons / len(dataLoaderVal.dataset)
+            lossv_Atel = lossVal_Atel / len(dataLoaderVal.dataset)
+            lossv_PlEf = lossVal_PlEf / len(dataLoaderVal.dataset)
                                 
         return lossv, lossv_Card, lossv_Edem, lossv_Cons, lossv_Atel, lossv_PlEf
 
