@@ -68,7 +68,7 @@ class CheXpertDataSet(Dataset):
                         else:
                             label[i] = 0
                 else:
-                    label = label[5:]
+                    label = line[5:]
                     for i in range(nnClassCount):
                         if label[i]:
                             a = float(label[i])
