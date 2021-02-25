@@ -64,8 +64,10 @@ class CheXpertDataSet(Dataset):
                                         label[i] = 1                    # U-Ones
                                     elif i == 0 or i == 2:          # Cardiomegaly, Consolidation
                                         label[i] = 0                    # U-Zeroes
-                                elif policy == 'ones':
+                                elif policy == 'ones':              # All U-Ones
                                     label[i] = 1
+                                else:
+                                    label[i] = 0                    # All U-Zeroes
                             else:
                                 label[i] = 0
                         else:
@@ -83,10 +85,12 @@ class CheXpertDataSet(Dataset):
                                         label[i] = 1                    # U-Ones
                                     elif i == 2 or i == 6:           # Cardiomegaly, Consolidation
                                         label[i] = 0                    # U-Zeroes
-                                    else:                            # else
+                                    else:                            # else obs.
                                         label[i] = 1                    # U-Ones
-                                elif policy == 'ones':
+                                elif policy == 'ones':               # All U-Ones
                                     label[i] = 1
+                                else:
+                                    label[i] = 0                     # All U-Zeroes
                             else:
                                 label[i] = 0
                         else:
