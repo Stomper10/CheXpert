@@ -59,12 +59,12 @@ class CheXpertDataSet(Dataset):
                             if a == 1:
                                 label[i] = 1
                             elif a == -1:
-                                if policy = 'diff':
+                                if policy == 'diff':
                                     if i == 1 or i == 3 or i == 4:  # Atelectasis, Edema, Pleural Effusion
                                         label[i] = 1                    # U-Ones
                                     elif i == 0 or i == 2:          # Cardiomegaly, Consolidation
                                         label[i] = 0                    # U-Zeroes
-                                elif policy = 'ones':
+                                elif policy == 'ones':
                                     label[i] = 1
                             else:
                                 label[i] = 0
@@ -78,14 +78,14 @@ class CheXpertDataSet(Dataset):
                             if a == 1:
                                 label[i] = 1
                             elif a == -1:
-                                if policy = 'diff':
+                                if policy == 'diff':
                                     if i == 5 or i == 8 or i == 10:  # Atelectasis, Edema, Pleural Effusion
                                         label[i] = 1                    # U-Ones
                                     elif i == 2 or i == 6:           # Cardiomegaly, Consolidation
                                         label[i] = 0                    # U-Zeroes
                                     else:                            # else
                                         label[i] = 1                    # U-Ones
-                                elif policy = 'ones':
+                                elif policy == 'ones':
                                     label[i] = 1
                             else:
                                 label[i] = 0
