@@ -138,7 +138,7 @@ class CheXpertTrainer():
         print('<<< Training & Evaluating ({}) >>>'.format(f_or_l))
         for epochID in range(0, trMaxEpoch):
             train_start.append(time.time()) # training starts
-            losst = CheXpertTrainer.epochTrain(model, dataLoaderTrain, optimizer, trMaxEpoch, nnClassCount, loss)
+            losst = CheXpertTrainer.epochTrain(model, dataLoaderTrain, dataLoaderVal, optimizer, trMaxEpoch, nnClassCount, loss, PATH, f_or_l)
             train_end.append(time.time())   # training ends
             lossv, lossv_Card, lossv_Edem, lossv_Cons, lossv_Atel, lossv_PlEf = CheXpertTrainer.epochVal(model, dataLoaderVal, optimizer, trMaxEpoch, nnClassCount, loss)
 
@@ -235,10 +235,12 @@ class CheXpertTrainer():
         return model_num, model_num_Card, model_num_Edem, model_num_Cons, model_num_Atel, model_num_PlEf, train_time
        
         
-    def epochTrain(model, dataLoaderTrain, optimizer, epochMax, classCount, loss):
+    def epochTrain(model, dataLoaderTrain, dataLoaderVal, optimizer, trMaxEpoch, nnClassCount, loss, PATH, f_or_l):
         model.train()
         losstrain = 0
-        
+        Card_traj, Edem_traj, Cons_traj, Atel_traj, PlEf_traj = [], [], [], [], []
+        batch1000 = 0
+
         for batchID, (varInput, target) in enumerate(dataLoaderTrain):
             optimizer.zero_grad()
             
@@ -251,12 +253,38 @@ class CheXpertTrainer():
             
             losstrain += lossvalue.item()*varInput.size(0)
             if batchID % 1000 == 999:
+                batch1000 += 1
                 print('[Batch: %5d] loss: %.3f'%(batchID + 1, losstrain / 1000))
+                lossv, lossv_Card, lossv_Edem, lossv_Cons, lossv_Atel, lossv_PlEf = CheXpertTrainer.epochVal(model, dataLoaderVal, optimizer, trMaxEpoch, nnClassCount, loss)
+                Card_traj.append(lossv_Card)
+                Edem_traj.append(lossv_Edem)
+                Cons_traj.append(lossv_Cons)
+                Atel_traj.append(lossv_Atel)
+                PlEf_traj.append(lossv_PlEf)
             
+        traj_all = [Card_traj, Edem_traj, Cons_traj, Atel_traj, PlEf_traj]
+        names = ['Card', 'Edem', 'Cons', 'Atel', 'PlEf']
+        xlab = list(range(1, batch1000 + 1))
+        
+        if nnClassCount == 5:
+            fig, ax = plt.subplots(nrows = 1, ncols = 5)
+            fig.set_size_inches((50, 10))
+            for i in range(nnClassCount):
+                ax[i].plot(xlab, traj_all[i])
+                ax[i].set_title('Valid loss trajectory: ' + names[i])
+                ax[i].set_xlim([0, batch1000 + 1])
+                ax[i].set_xticks(np.arange(1, batch1000 + 1, step = 1))
+                ax[i].set_ylim([0, 1])
+                ax[i].set_ylabel('Valid loss')
+                ax[i].set_xlabel('Batch per 1000')
+
+            plt.savefig('{0}{1}_traj_all_batch.png'.format(PATH, f_or_l), dpi = 100)
+            plt.close()            
+
         return losstrain / len(dataLoaderTrain.dataset)
     
     
-    def epochVal(model, dataLoaderVal, optimizer, epochMax, classCount, loss):
+    def epochVal(model, dataLoaderVal, optimizer, trMaxEpoch, nnClassCount, loss):
         model.eval()
         lossVal = 0
         
@@ -299,7 +327,7 @@ class CheXpertTrainer():
         return lossv, lossv_Card, lossv_Edem, lossv_Cons, lossv_Atel, lossv_PlEf
 
     
-    def computeAUROC(dataGT, dataPRED, classCount):
+    def computeAUROC(dataGT, dataPRED, nnClassCount):
         # Computes area under ROC curve 
         # dataGT: ground truth data
         # dataPRED: predicted data
@@ -307,7 +335,7 @@ class CheXpertTrainer():
         datanpGT = dataGT.cpu().numpy()
         datanpPRED = dataPRED.cpu().numpy()
         
-        for i in range(classCount):
+        for i in range(nnClassCount):
             try:
                 outAUROC.append(roc_auc_score(datanpGT[:, i], datanpPRED[:, i]))
             except ValueError:
