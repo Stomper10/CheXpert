@@ -307,8 +307,7 @@ class CheXpertTrainer():
 
                 lossvalue = loss(varOutput, target)
                 lossVal += lossvalue.item()*varInput.size(0)
-                #lossv = lossVal / len(dataLoaderVal)
-
+                
                 lossVal_Card += loss(varOutput_Card, target_Card).item()*varInput.size(0)
                 lossVal_Edem += loss(varOutput_Edem, target_Edem).item()*varInput.size(0)
                 lossVal_Cons += loss(varOutput_Cons, target_Cons).item()*varInput.size(0)
