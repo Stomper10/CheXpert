@@ -272,6 +272,8 @@ class CheXpertTrainer():
                 PlEf_traj.append(lossv_PlEf)
             
         traj_all = [Card_traj, Edem_traj, Cons_traj, Atel_traj, PlEf_traj]
+        with open("{0}{1}_traj_batch1000.txt".format(PATH, f_or_l), "wb") as fp:
+            pickle.dump(traj_all, fp)
         names = ['Card', 'Edem', 'Cons', 'Atel', 'PlEf']
         xlab = list(range(1, 1001))
         
