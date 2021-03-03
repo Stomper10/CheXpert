@@ -129,13 +129,6 @@ class CheXpertTrainer():
             modelCheckpoint = torch.load(checkpoint)
             model.load_state_dict(modelCheckpoint['state_dict'])
             optimizer.load_state_dict(modelCheckpoint['optimizer'])
-            
-        # Train the network
-        lossMIN, lossMIN_Card, lossMIN_Edem, lossMIN_Cons, lossMIN_Atel, lossMIN_PlEf = 100000, 100000, 100000, 100000, 100000, 100000
-        Card_traj, Edem_traj, Cons_traj, Atel_traj, PlEf_traj = [], [], [], [], []
-        train_start = []
-        train_end = []
-        print('<<< Training & Evaluating ({}) >>>'.format(f_or_l))
 
         # check initial model valid set performance
         lossv1, lossv_Card1, lossv_Edem1, lossv_Cons1, lossv_Atel1, lossv_PlEf1 = CheXpertTrainer.epochVal(model, dataLoaderVal, optimizer, trMaxEpoch, nnClassCount, loss)
@@ -145,6 +138,13 @@ class CheXpertTrainer():
         print("Untrained Model Valid loss (Cons): {:.3f}".format(lossv_Cons1))
         print("Untrained Model Valid loss (Atel): {:.3f}".format(lossv_Atel1))
         print("Untrained Model Valid loss (PlEf): {:.3f}".format(lossv_PlEf1))
+
+        # Train the network
+        lossMIN, lossMIN_Card, lossMIN_Edem, lossMIN_Cons, lossMIN_Atel, lossMIN_PlEf = 100000, 100000, 100000, 100000, 100000, 100000
+        Card_traj, Edem_traj, Cons_traj, Atel_traj, PlEf_traj = [], [], [], [], []
+        train_start = []
+        train_end = []
+        print('<<< Training & Evaluating ({}) >>>'.format(f_or_l))
 
         for epochID in range(0, trMaxEpoch):
             train_start.append(time.time()) # training starts
@@ -273,7 +273,7 @@ class CheXpertTrainer():
             
         traj_all = [Card_traj, Edem_traj, Cons_traj, Atel_traj, PlEf_traj]
         names = ['Card', 'Edem', 'Cons', 'Atel', 'PlEf']
-        xlab = list(range(1, batch1000 + 1))
+        xlab = list(range(1, 1001))
         
         fig, ax = plt.subplots(nrows = 1, ncols = 5)
         fig.set_size_inches((50, 10))
