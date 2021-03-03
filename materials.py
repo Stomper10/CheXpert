@@ -136,6 +136,16 @@ class CheXpertTrainer():
         train_start = []
         train_end = []
         print('<<< Training & Evaluating ({}) >>>'.format(f_or_l))
+
+        # check initial model valid set performance
+        lossv1, lossv_Card1, lossv_Edem1, lossv_Cons1, lossv_Atel1, lossv_PlEf1 = CheXpertTrainer.epochVal(model, dataLoaderVal, optimizer, trMaxEpoch, nnClassCount, loss)
+        print("Untrained Model Valid loss (all): {:.3f}".format(lossv1))
+        print("Untrained Model Valid loss (Card): {:.3f}".format(lossv_Card1))
+        print("Untrained Model Valid loss (Edem): {:.3f}".format(lossv_Edem1))
+        print("Untrained Model Valid loss (Cons): {:.3f}".format(lossv_Cons1))
+        print("Untrained Model Valid loss (Atel): {:.3f}".format(lossv_Atel1))
+        print("Untrained Model Valid loss (PlEf): {:.3f}".format(lossv_PlEf1))
+
         for epochID in range(0, trMaxEpoch):
             train_start.append(time.time()) # training starts
             losst = CheXpertTrainer.epochTrain(model, dataLoaderTrain, dataLoaderVal, optimizer, trMaxEpoch, nnClassCount, loss, PATH, f_or_l)
@@ -238,8 +248,7 @@ class CheXpertTrainer():
         model.train()
         losstrain = 0
         Card_traj, Edem_traj, Cons_traj, Atel_traj, PlEf_traj = [], [], [], [], []
-        batch1000 = 0
-
+        
         for batchID, (varInput, target) in enumerate(dataLoaderTrain):
             optimizer.zero_grad()
             
@@ -254,6 +263,8 @@ class CheXpertTrainer():
             if batchID % 1000 == 999:
                 batch1000 += 1
                 print('[Batch: %5d] loss: %.3f'%(batchID + 1, losstrain / 1000))
+
+            if batchID < 1000:
                 lossv, lossv_Card, lossv_Edem, lossv_Cons, lossv_Atel, lossv_PlEf = CheXpertTrainer.epochVal(model, dataLoaderVal, optimizer, trMaxEpoch, nnClassCount, loss)
                 Card_traj.append(lossv_Card)
                 Edem_traj.append(lossv_Edem)
@@ -270,11 +281,11 @@ class CheXpertTrainer():
         for i in range(5):
             ax[i].plot(xlab, traj_all[i])
             ax[i].set_title('Valid loss trajectory: ' + names[i])
-            ax[i].set_xlim([0, batch1000 + 1])
-            ax[i].set_xticks(np.arange(1, batch1000 + 1, step = 1))
+            ax[i].set_xlim([0, 1001])
+            ax[i].set_xticks(np.arange(1, 1001, step = 1))
             ax[i].set_ylim([0, 1])
             ax[i].set_ylabel('Valid loss')
-            ax[i].set_xlabel('Batch per 1000')
+            ax[i].set_xlabel('Batch 1 to 1000')
 
         plt.savefig('{0}{1}_traj_all_batch.png'.format(PATH, f_or_l), dpi = 100)
         plt.close()            
