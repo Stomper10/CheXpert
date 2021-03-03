@@ -261,7 +261,6 @@ class CheXpertTrainer():
             
             losstrain += lossvalue.item()*varInput.size(0)
             if batchID % 1000 == 999:
-                batch1000 += 1
                 print('[Batch: %5d] loss: %.3f'%(batchID + 1, losstrain / 1000))
 
             if batchID < 1000:
