@@ -287,7 +287,7 @@ class CheXpertTrainer():
             ax[i].set_ylabel('Valid loss')
             ax[i].set_xlabel('Batch 1 to 1000')
 
-        plt.savefig('{0}{1}_traj_all_batch.png'.format(PATH, f_or_l), dpi = 100)
+        plt.savefig('{0}{1}_traj_batch1000.png'.format(PATH, f_or_l), dpi = 100)
         plt.close()            
 
         return losstrain / len(dataLoaderTrain.dataset)
