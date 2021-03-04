@@ -122,11 +122,11 @@ datasetTest_frt = CheXpertDataSet(pathFileTest_frt, nnClassCount, cfg.policy, tr
 datasetTest_lat = CheXpertDataSet(pathFileTest_lat, nnClassCount, cfg.policy, transformSequence)
 datasetTest_all = CheXpertDataSet(pathFileTest_all, nnClassCount, cfg.policy, transformSequence)
 
-# Use subset of datasetTrain for training
-train_num_frt = round(len(datasetTrain_frt) * cfg.train_ratio) # use subset of original training dataset
-train_num_lat = round(len(datasetTrain_lat) * cfg.train_ratio) # use subset of original training dataset
-datasetTrain_frt, _ = random_split(datasetTrain_frt, [train_num_frt, len(datasetTrain_frt) - train_num_frt])
-datasetTrain_lat, _ = random_split(datasetTrain_lat, [train_num_lat, len(datasetTrain_lat) - train_num_lat])
+# Use subset of datasetTrain for training - this process changes dataset order (even for train_ratio = 1)
+#train_num_frt = round(len(datasetTrain_frt) * cfg.train_ratio) # use subset of original training dataset
+#train_num_lat = round(len(datasetTrain_lat) * cfg.train_ratio) # use subset of original training dataset
+#datasetTrain_frt, _ = random_split(datasetTrain_frt, [train_num_frt, len(datasetTrain_frt) - train_num_frt])
+#datasetTrain_lat, _ = random_split(datasetTrain_lat, [train_num_lat, len(datasetTrain_lat) - train_num_lat])
 print('<<< Data Information >>>')
 print('Train data length(frontal):', len(datasetTrain_frt))
 print('Train data length(lateral):', len(datasetTrain_lat))
