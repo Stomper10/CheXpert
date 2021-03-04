@@ -1,0 +1,14 @@
+{
+    "image_type": "small",
+    "pre_trained": false,
+    "nnClassCount": 5,
+    "policy": "diff",
+    "batch_size": 16,
+    "epochs": 3,
+    "imgtransResize": 320,
+    "train_ratio": 1,
+    "lr": 0.0001,
+    "betas": [0.9, 0.999],
+    "eps": 1e-08,
+    "weight_decay": 0
+}

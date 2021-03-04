@@ -35,7 +35,7 @@ use_gpu = torch.cuda.is_available()
 ## Create a Dataset ##
 ######################
 class CheXpertDataSet(Dataset):
-    def __init__(self, data_PATH, nnClassCount, transform = None):
+    def __init__(self, data_PATH, nnClassCount, policy, transform = None):
         """
         data_PATH: path to the file containing images with corresponding labels.
         transform: optional transform to be applied on a sample.
@@ -49,6 +49,7 @@ class CheXpertDataSet(Dataset):
             next(csvReader, None) # skip the header
             for line in csvReader:
                 image_name = line[0]
+<<<<<<< HEAD
                 npline = np.array(line)
                 idx = [7, 10, 11, 13, 15]
                 label = list(npline[idx])
@@ -63,10 +64,54 @@ class CheXpertDataSet(Dataset):
                             #    label[i] = 1                    # U-Ones
                             #elif i == 0 or i == 2:          # Cardiomegaly, Consolidation
                             #    label[i] = 0                    # U-Zeroes
+=======
+                if nnClassCount == 5:
+                    npline = np.array(line)
+                    idx = [7, 10, 11, 13, 15]
+                    label = list(npline[idx])
+                    for i in range(nnClassCount):
+                        if label[i]:
+                            a = float(label[i])
+                            if a == 1:
+                                label[i] = 1
+                            elif a == -1:
+                                if policy == 'diff':
+                                    if i == 1 or i == 3 or i == 4:  # Atelectasis, Edema, Pleural Effusion
+                                        label[i] = 1                    # U-Ones
+                                    elif i == 0 or i == 2:          # Cardiomegaly, Consolidation
+                                        label[i] = 0                    # U-Zeroes
+                                elif policy == 'ones':              # All U-Ones
+                                    label[i] = 1
+                                else:
+                                    label[i] = 0                    # All U-Zeroes
+                            else:
+                                label[i] = 0
                         else:
                             label[i] = 0
-                    else:
-                        label[i] = 0
+                else:
+                    label = line[5:]
+                    for i in range(nnClassCount):
+                        if label[i]:
+                            a = float(label[i])
+                            if a == 1:
+                                label[i] = 1
+                            elif a == -1:
+                                if policy == 'diff':
+                                    if i == 5 or i == 8 or i == 10:  # Atelectasis, Edema, Pleural Effusion
+                                        label[i] = 1                    # U-Ones
+                                    elif i == 2 or i == 6:           # Cardiomegaly, Consolidation
+                                        label[i] = 0                    # U-Zeroes
+                                    else:                            # else obs.
+                                        label[i] = 1                    # U-Ones
+                                elif policy == 'ones':               # All U-Ones
+                                    label[i] = 1
+                                else:
+                                    label[i] = 0                     # All U-Zeroes
+                            else:
+                                label[i] = 0
+>>>>>>> origin/master
+                        else:
+                            label[i] = 0
                         
                 image_names.append('./' + image_name)
                 labels.append(label)
@@ -92,33 +137,43 @@ class CheXpertDataSet(Dataset):
 ## Create CheXpertTrainer ##
 ############################
 class CheXpertTrainer():
-    def train(model, dataLoaderTrain, dataLoaderVal, nnClassCount, trMaxEpoch, PATH, f_or_l, checkpoint):
-        optimizer = optim.Adam(model.parameters(), lr = 0.0001, # setting optimizer & scheduler
-                               betas = (0.9, 0.999), eps = 1e-08, weight_decay = 0) 
+    def train(model, dataLoaderTrain, dataLoaderVal, nnClassCount, trMaxEpoch, PATH, f_or_l, checkpoint, cfg):
+        optimizer = optim.Adam(model.parameters(), lr = cfg.lr, # setting optimizer & scheduler
+                               betas = tuple(cfg.betas), eps = cfg.eps, weight_decay = cfg.weight_decay) 
         loss = torch.nn.BCELoss() # setting loss function
         
         if checkpoint != None and use_gpu: # loading checkpoint
             modelCheckpoint = torch.load(checkpoint)
             model.load_state_dict(modelCheckpoint['state_dict'])
             optimizer.load_state_dict(modelCheckpoint['optimizer'])
-            
+
+        # check initial model valid set performance
+        lossv1, lossv_Card1, lossv_Edem1, lossv_Cons1, lossv_Atel1, lossv_PlEf1 = CheXpertTrainer.epochVal(model, dataLoaderVal, optimizer, trMaxEpoch, nnClassCount, loss)
+        print("Untrained Model Valid loss (all): {:.3f}".format(lossv1))
+        print("Untrained Model Valid loss (Card): {:.3f}".format(lossv_Card1))
+        print("Untrained Model Valid loss (Edem): {:.3f}".format(lossv_Edem1))
+        print("Untrained Model Valid loss (Cons): {:.3f}".format(lossv_Cons1))
+        print("Untrained Model Valid loss (Atel): {:.3f}".format(lossv_Atel1))
+        print("Untrained Model Valid loss (PlEf): {:.3f}".format(lossv_PlEf1))
+
         # Train the network
         lossMIN, lossMIN_Card, lossMIN_Edem, lossMIN_Cons, lossMIN_Atel, lossMIN_PlEf = 100000, 100000, 100000, 100000, 100000, 100000
         Card_traj, Edem_traj, Cons_traj, Atel_traj, PlEf_traj = [], [], [], [], []
         train_start = []
         train_end = []
         print('<<< Training & Evaluating ({}) >>>'.format(f_or_l))
+
         for epochID in range(0, trMaxEpoch):
             train_start.append(time.time()) # training starts
-            losst = CheXpertTrainer.epochTrain(model, dataLoaderTrain, optimizer, trMaxEpoch, nnClassCount, loss)
+            losst = CheXpertTrainer.epochTrain(model, dataLoaderTrain, dataLoaderVal, optimizer, trMaxEpoch, nnClassCount, loss, PATH, f_or_l)
             train_end.append(time.time())   # training ends
             lossv, lossv_Card, lossv_Edem, lossv_Cons, lossv_Atel, lossv_PlEf = CheXpertTrainer.epochVal(model, dataLoaderVal, optimizer, trMaxEpoch, nnClassCount, loss)
 
-            Card_traj.append(lossv_Card.float())
-            Edem_traj.append(lossv_Edem.float())
-            Cons_traj.append(lossv_Cons.float())
-            Atel_traj.append(lossv_Atel.float())
-            PlEf_traj.append(lossv_PlEf.float())
+            Card_traj.append(lossv_Card)
+            Edem_traj.append(lossv_Edem)
+            Cons_traj.append(lossv_Cons)
+            Atel_traj.append(lossv_Atel)
+            PlEf_traj.append(lossv_PlEf)
 
             print("Training loss: {:.3f},".format(losst), "Valid loss: {:.3f}".format(lossv))
             
@@ -190,7 +245,7 @@ class CheXpertTrainer():
         
         fig, ax = plt.subplots(nrows = 1, ncols = 5)
         fig.set_size_inches((50, 10))
-        for i in range(nnClassCount):
+        for i in range(5):
             ax[i].plot(xlab, traj_all[i])
             ax[i].set_title('Valid loss trajectory: ' + names[i])
             ax[i].set_xlim([0, trMaxEpoch + 1])
@@ -206,10 +261,11 @@ class CheXpertTrainer():
         return model_num, model_num_Card, model_num_Edem, model_num_Cons, model_num_Atel, model_num_PlEf, train_time
        
         
-    def epochTrain(model, dataLoaderTrain, optimizer, epochMax, classCount, loss):
+    def epochTrain(model, dataLoaderTrain, dataLoaderVal, optimizer, trMaxEpoch, nnClassCount, loss, PATH, f_or_l):
         model.train()
         losstrain = 0
-
+        Card_traj, Edem_traj, Cons_traj, Atel_traj, PlEf_traj = [], [], [], [], []
+        
         for batchID, (varInput, target) in enumerate(dataLoaderTrain):
             optimizer.zero_grad()
             
@@ -220,14 +276,42 @@ class CheXpertTrainer():
             lossvalue.backward()
             optimizer.step()
             
-            losstrain += lossvalue.item()
+            losstrain += lossvalue.item()*varInput.size(0)
             if batchID % 1000 == 999:
-                print('[Batch: %5d] loss: %.3f'%(batchID + 1, losstrain / 2000))
+                print('[Batch: %5d] loss: %.3f'%(batchID + 1, losstrain / 1000))
+
+            if batchID < 1000:
+                lossv, lossv_Card, lossv_Edem, lossv_Cons, lossv_Atel, lossv_PlEf = CheXpertTrainer.epochVal(model, dataLoaderVal, optimizer, trMaxEpoch, nnClassCount, loss)
+                Card_traj.append(lossv_Card)
+                Edem_traj.append(lossv_Edem)
+                Cons_traj.append(lossv_Cons)
+                Atel_traj.append(lossv_Atel)
+                PlEf_traj.append(lossv_PlEf)
             
-        return losstrain / len(dataLoaderTrain)
+        traj_all = [Card_traj, Edem_traj, Cons_traj, Atel_traj, PlEf_traj]
+        with open("{0}{1}_traj_batch1000.txt".format(PATH, f_or_l), "wb") as fp:
+            pickle.dump(traj_all, fp)
+        names = ['Card', 'Edem', 'Cons', 'Atel', 'PlEf']
+        xlab = list(range(1, 1001))
+        
+        fig, ax = plt.subplots(nrows = 1, ncols = 5)
+        fig.set_size_inches((50, 10))
+        for i in range(5):
+            ax[i].plot(xlab, traj_all[i])
+            ax[i].set_title('Valid loss trajectory: ' + names[i])
+            ax[i].set_xlim([0, 1001])
+            ax[i].set_xticks(np.arange(1, 1001, step = 1))
+            ax[i].set_ylim([0, 1])
+            ax[i].set_ylabel('Valid loss')
+            ax[i].set_xlabel('Batch 1 to 1000')
+
+        plt.savefig('{0}{1}_traj_batch1000.png'.format(PATH, f_or_l), dpi = 100)
+        plt.close()            
+
+        return losstrain / len(dataLoaderTrain.dataset)
     
     
-    def epochVal(model, dataLoaderVal, optimizer, epochMax, classCount, loss):
+    def epochVal(model, dataLoaderVal, optimizer, trMaxEpoch, nnClassCount, loss):
         model.eval()
         lossVal = 0
         
@@ -250,24 +334,26 @@ class CheXpertTrainer():
                 varOutput_PlEf = torch.tensor([i[4] for i in varOutput.tolist()])
                 target_PlEf = torch.tensor([i[4] for i in target.tolist()])
 
-                lossVal += loss(varOutput, target)
-                lossv = lossVal / len(dataLoaderVal)
-
-                lossVal_Card += loss(varOutput_Card, target_Card)
-                lossv_Card = lossVal_Card / len(dataLoaderVal)
-                lossVal_Edem += loss(varOutput_Edem, target_Edem)
-                lossv_Edem = lossVal_Edem / len(dataLoaderVal)
-                lossVal_Cons += loss(varOutput_Cons, target_Cons)
-                lossv_Cons = lossVal_Cons / len(dataLoaderVal)
-                lossVal_Atel += loss(varOutput_Atel, target_Atel)
-                lossv_Atel = lossVal_Atel / len(dataLoaderVal)
-                lossVal_PlEf += loss(varOutput_PlEf, target_PlEf)
-                lossv_PlEf = lossVal_PlEf / len(dataLoaderVal)
+                lossvalue = loss(varOutput, target)
+                lossVal += lossvalue.item()*varInput.size(0)
+                
+                lossVal_Card += loss(varOutput_Card, target_Card).item()*varInput.size(0)
+                lossVal_Edem += loss(varOutput_Edem, target_Edem).item()*varInput.size(0)
+                lossVal_Cons += loss(varOutput_Cons, target_Cons).item()*varInput.size(0)
+                lossVal_Atel += loss(varOutput_Atel, target_Atel).item()*varInput.size(0)
+                lossVal_PlEf += loss(varOutput_PlEf, target_PlEf).item()*varInput.size(0)
+                
+            lossv = lossVal / len(dataLoaderVal.dataset)
+            lossv_Card = lossVal_Card / len(dataLoaderVal.dataset)
+            lossv_Edem = lossVal_Edem / len(dataLoaderVal.dataset)
+            lossv_Cons = lossVal_Cons / len(dataLoaderVal.dataset)
+            lossv_Atel = lossVal_Atel / len(dataLoaderVal.dataset)
+            lossv_PlEf = lossVal_PlEf / len(dataLoaderVal.dataset)
                                 
         return lossv, lossv_Card, lossv_Edem, lossv_Cons, lossv_Atel, lossv_PlEf
 
     
-    def computeAUROC(dataGT, dataPRED, classCount):
+    def computeAUROC(dataGT, dataPRED, nnClassCount):
         # Computes area under ROC curve 
         # dataGT: ground truth data
         # dataPRED: predicted data
@@ -275,7 +361,7 @@ class CheXpertTrainer():
         datanpGT = dataGT.cpu().numpy()
         datanpPRED = dataPRED.cpu().numpy()
         
-        for i in range(classCount):
+        for i in range(nnClassCount):
             try:
                 outAUROC.append(roc_auc_score(datanpGT[:, i], datanpPRED[:, i]))
             except ValueError:

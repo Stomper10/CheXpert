@@ -4,6 +4,7 @@
 ## Prerequisites ##
 ###################
 import time
+import json
 import pickle
 import random
 import csv
@@ -13,6 +14,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from PIL import Image
+from easydict import EasyDict as edict
 from materials import CheXpertDataSet, CheXpertTrainer, DenseNet121, EnsemAgg
 
 import torch
@@ -29,7 +31,6 @@ import sklearn.metrics as metrics
 from sklearn.metrics import roc_auc_score
 
 use_gpu = torch.cuda.is_available()
-pd.set_option('mode.chained_assignment',  None)
 
 
 
@@ -37,19 +38,18 @@ pd.set_option('mode.chained_assignment',  None)
 ## Arguments to Set ##
 ######################
 parser = argparse.ArgumentParser(formatter_class = argparse.ArgumentDefaultsHelpFormatter)
-parser.add_argument('--ratio', '-r', type = float, help = 'Training data ratio: 0 < val <= 1.', default = 1)
+parser.add_argument('cfg_path', metavar = 'CFG_PATH', type = str, help = 'Path to the config file in yaml format.')
 parser.add_argument('--output_path', '-o', help = 'Path to save results.', default = 'results/')
 parser.add_argument('--random_seed', '-s', type = int, help = 'Random seed for reproduction.')
-parser.add_argument('--epochs', '-e', type = int, help = 'The number of training epochs.', default = 3)
-parser.add_argument('--batch_size', '-b', type = int, help = 'The number of batch size.', default = 16)
-parser.add_argument('--pre_trained', '-t', type = bool, help = 'Whether the model is pretrained.', default = False)
 args = parser.parse_args()
+with open(args.cfg_path) as f:
+    cfg = edict(json.load(f))
 
 # Example running commands ('nohup' command for running background on server)
 '''
-python3 run_chexpert.py
-python3 run_chexpert.py -r 0.01 -o results/ -s 2021
-nohup python3 run_chexpert.py -r 1 -o ensemble/experiment_00/ -s 0 > ensemble/printed_00.txt &
+python3 run_chexpert.py configuration.json 
+python3 run_chexpert.py configuration.json -o results/ -s 2021
+nohup python3 run_chexpert.py configuration.json -o ensembles/experiment_00/ -s 0 > ensemble/printed_00.txt &
 '''
 
 # Control randomness for reproduction
@@ -70,27 +70,36 @@ if args.random_seed != None:
 #######################
 '''Should have run 'run_preprocessing.py' before this part!'''
 # Paths to the files with training, validation, and test sets.
-pathFileTrain_frt = './CheXpert-v1.0-small/train_frt.csv'
-pathFileTrain_lat = './CheXpert-v1.0-small/train_lat.csv'
-pathFileValid_frt = './CheXpert-v1.0-small/valid_frt.csv'
-pathFileValid_lat = './CheXpert-v1.0-small/valid_lat.csv'
-pathFileTest_frt = './CheXpert-v1.0-small/test_frt.csv'
-pathFileTest_lat = './CheXpert-v1.0-small/test_lat.csv'
-pathFileTest_all = './CheXpert-v1.0-small/test_200.csv'
+if cfg.image_type == 'small':
+    img_type = '-small'
+else:
+    img_type = ''
+pathFileTrain_frt = './CheXpert-v1.0{0}/train_frt.csv'.format(img_type)
+pathFileTrain_lat = './CheXpert-v1.0{0}/train_lat.csv'.format(img_type)
+pathFileValid_frt = './CheXpert-v1.0{0}/valid_frt.csv'.format(img_type)
+pathFileValid_lat = './CheXpert-v1.0{0}/valid_lat.csv'.format(img_type)
+pathFileTest_frt = './CheXpert-v1.0{0}/test_frt.csv'.format(img_type)
+pathFileTest_lat = './CheXpert-v1.0{0}/test_lat.csv'.format(img_type)
+pathFileTest_all = './CheXpert-v1.0{0}/test_200.csv'.format(img_type)
 
 # Neural network parameters
-nnIsTrained = args.pre_trained # if pre-trained by ImageNet
-nnClassCount = 5   # dimension of the output - 5: only competition obs.
+nnIsTrained = cfg.pre_trained # if pre-trained by ImageNet
 
 # Training settings
-trBatchSize = args.batch_size    # batch size
-trMaxEpoch = args.epochs      # maximum number of epochs
+trBatchSize = cfg.batch_size    # batch size
+trMaxEpoch = cfg.epochs      # maximum number of epochs
 
 # Parameters related to image transforms: size of the down-scaled image, cropped image
-imgtransResize = 320
+imgtransResize = cfg.imgtransResize
 
 # Class names
-class_names = ['Cardiomegaly', 'Edema', 'Consolidation', 'Atelectasis', 'Pleural Effusion'] # comp. obs.
+nnClassCount = cfg.nnClassCount   # dimension of the output - 5: only competition obs.
+if nnClassCount == 5:
+    class_names = ["Cardiomegaly", "Edema", "Consolidation", "Atelectasis", "Pleural Effusion"]
+else:
+    class_names = ['No Finding', 'Enlarged Cardiomediastinum', 'Cardiomegaly', 'Lung Opacity', 
+                   'Lung Lesion', 'Edema', 'Consolidation', 'Pneumonia', 'Atelectasis', 'Pneumothorax', 
+                   'Pleural Effusion', 'Pleural Other', 'Fracture', 'Support Devices']
 
 
 
@@ -105,17 +114,17 @@ transformSequence = transforms.Compose(transformList)
 
 # Create a dataset
 '''See 'materials.py' to check the class 'CheXpertDataSet'.'''
-datasetTrain_frt = CheXpertDataSet(pathFileTrain_frt, nnClassCount, transformSequence)
-datasetTrain_lat = CheXpertDataSet(pathFileTrain_lat, nnClassCount, transformSequence)
-datasetValid_frt = CheXpertDataSet(pathFileValid_frt, nnClassCount, transformSequence)
-datasetValid_lat = CheXpertDataSet(pathFileValid_lat, nnClassCount, transformSequence)
-datasetTest_frt = CheXpertDataSet(pathFileTest_frt, nnClassCount, transformSequence)
-datasetTest_lat = CheXpertDataSet(pathFileTest_lat, nnClassCount, transformSequence)
-datasetTest_all = CheXpertDataSet(pathFileTest_all, nnClassCount, transformSequence)
+datasetTrain_frt = CheXpertDataSet(pathFileTrain_frt, nnClassCount, cfg.policy, transformSequence)
+datasetTrain_lat = CheXpertDataSet(pathFileTrain_lat, nnClassCount, cfg.policy, transformSequence)
+datasetValid_frt = CheXpertDataSet(pathFileValid_frt, nnClassCount, cfg.policy, transformSequence)
+datasetValid_lat = CheXpertDataSet(pathFileValid_lat, nnClassCount, cfg.policy, transformSequence)
+datasetTest_frt = CheXpertDataSet(pathFileTest_frt, nnClassCount, cfg.policy, transformSequence)
+datasetTest_lat = CheXpertDataSet(pathFileTest_lat, nnClassCount, cfg.policy, transformSequence)
+datasetTest_all = CheXpertDataSet(pathFileTest_all, nnClassCount, cfg.policy, transformSequence)
 
 # Use subset of datasetTrain for training
-train_num_frt = round(len(datasetTrain_frt) * args.ratio) # use subset of original training dataset
-train_num_lat = round(len(datasetTrain_lat) * args.ratio) # use subset of original training dataset
+train_num_frt = round(len(datasetTrain_frt) * cfg.train_ratio) # use subset of original training dataset
+train_num_lat = round(len(datasetTrain_lat) * cfg.train_ratio) # use subset of original training dataset
 datasetTrain_frt, _ = random_split(datasetTrain_frt, [train_num_frt, len(datasetTrain_frt) - train_num_frt])
 datasetTrain_lat, _ = random_split(datasetTrain_lat, [train_num_lat, len(datasetTrain_lat) - train_num_lat])
 print('<<< Data Information >>>')
@@ -163,23 +172,23 @@ if not os.path.exists(PATH): os.makedirs(PATH)
 # Train frontal model
 train_valid_start_frt = time.time()
 '''See 'materials.py' to check the class 'CheXpertTrainer'.'''
-model_num_frt, model_num_frt_Card, model_num_frt_Edem, model_num_frt_Cons, model_num_frt_Atel, model_num_frt_PlEf, train_time_frt = CheXpertTrainer.train(model, dataLoaderTrain_frt, dataLoaderVal_frt, nnClassCount, trMaxEpoch, PATH, 'frt', checkpoint = None)
+model_num_frt, model_num_frt_Card, model_num_frt_Edem, model_num_frt_Cons, model_num_frt_Atel, model_num_frt_PlEf, train_time_frt = CheXpertTrainer.train(model, dataLoaderTrain_frt, dataLoaderVal_frt, nnClassCount, trMaxEpoch, PATH, 'frt', checkpoint = None, cfg = cfg)
 train_valid_end_frt = time.time()
 
 # Train lateral model
 train_valid_start_lat = time.time()
 '''See 'materials.py' to check the class 'CheXpertTrainer'.'''
-model_num_lat, model_num_lat_Card, model_num_lat_Edem, model_num_lat_Cons, model_num_lat_Atel, model_num_lat_PlEf, train_time_lat = CheXpertTrainer.train(model, dataLoaderTrain_lat, dataLoaderVal_lat, nnClassCount, trMaxEpoch, PATH, 'lat', checkpoint = None)
+model_num_lat, model_num_lat_Card, model_num_lat_Edem, model_num_lat_Cons, model_num_lat_Atel, model_num_lat_PlEf, train_time_lat = CheXpertTrainer.train(model, dataLoaderTrain_lat, dataLoaderVal_lat, nnClassCount, trMaxEpoch, PATH, 'lat', checkpoint = None, cfg = cfg)
 train_valid_end_lat = time.time()
 print('<<< Model Trained >>>')
-print('For frontal model,', 'm-epoch_{0}_frt.pth.tar'.format(model_num_frt), 'is the best model.')
+print('For frontal model,', 'm-epoch_{0}_frt.pth.tar'.format(model_num_frt), 'is the best model overall.')
 print('For frontal model,', 'm-epoch_{0}_frt_Card.pth.tar'.format(model_num_frt_Card), 'is the best model.')
 print('For frontal model,', 'm-epoch_{0}_frt_Edem.pth.tar'.format(model_num_frt_Edem), 'is the best model.')
 print('For frontal model,', 'm-epoch_{0}_frt_Cons.pth.tar'.format(model_num_frt_Cons), 'is the best model.')
 print('For frontal model,', 'm-epoch_{0}_frt_Atel.pth.tar'.format(model_num_frt_Atel), 'is the best model.')
 print('For frontal model,', 'm-epoch_{0}_frt_PlEf.pth.tar'.format(model_num_frt_PlEf), 'is the best model.')
 print('')
-print('For lateral model,', 'm-epoch_{0}_lat.pth.tar'.format(model_num_lat), 'is the best model.')
+print('For lateral model,', 'm-epoch_{0}_lat.pth.tar'.format(model_num_lat), 'is the best model overall.')
 print('For lateral model,', 'm-epoch_{0}_lat_Card.pth.tar'.format(model_num_lat_Card), 'is the best model.')
 print('For lateral model,', 'm-epoch_{0}_lat_Edem.pth.tar'.format(model_num_lat_Edem), 'is the best model.')
 print('For lateral model,', 'm-epoch_{0}_lat_Cons.pth.tar'.format(model_num_lat_Cons), 'is the best model.')
@@ -211,14 +220,14 @@ test_lat = pd.read_csv(pathFileTest_lat)
 
 column_names = ['Path'] + class_names
 df = pd.DataFrame(0, index = np.arange(len(test_frt) + len(test_lat)), columns = column_names)
-test_frt_list = list(test_frt['Path'])
-test_lat_list = list(test_lat['Path'])
+test_frt_list = list(test_frt['Path'].copy())
+test_lat_list = list(test_lat['Path'].copy())
 
 for i in range(len(test_frt_list)):
-    df['Path'][i] = test_frt_list[i].split('/')[2] + '/' + test_frt_list[i].split('/')[3]
+    df.iloc[i, 0] = test_frt_list[i].split('/')[2] + '/' + test_frt_list[i].split('/')[3]
 
 for i in range(len(test_lat_list)):
-    df['Path'][len(test_frt_list) + i] = test_lat_list[i].split('/')[2] + '/' + test_frt_list[i].split('/')[3]
+    df.iloc[len(test_frt_list) + i, 0] = test_lat_list[i].split('/')[2] + '/' + test_frt_list[i].split('/')[3]
 
 for i in range(len(outPROB_frt)):
     for j in range(len(class_names)):
@@ -245,9 +254,22 @@ EnsemTest = results
 '''See 'materials.py' to check the function 'EnsemAgg'.'''
 outGT, outPRED, aurocMean, aurocIndividual = EnsemAgg(EnsemTest, dataLoaderTest_all, nnClassCount, class_names)
 
+<<<<<<< HEAD
 fig, ax = plt.subplots(nrows = 1, ncols = 5)
 ax = ax.flatten()
 fig.set_size_inches((50, 10))
+=======
+if nnClassCount <= 7:
+    nrows = 1
+    ncols = nnClassCount
+else:
+    nrows = 2
+    ncols = 7
+
+fig, ax = plt.subplots(nrows = nrows, ncols = ncols)
+ax = ax.flatten()
+fig.set_size_inches((ncols * 10, 10))
+>>>>>>> origin/master
 for i in range(nnClassCount):
     fpr, tpr, threshold = metrics.roc_curve(outGT.cpu()[:, i], outPRED.cpu()[:, i])
     roc_auc = metrics.auc(fpr, tpr)
@@ -261,7 +283,7 @@ for i in range(nnClassCount):
     ax[i].set_ylabel('True Positive Rate')
     ax[i].set_xlabel('False Positive Rate')
 
-plt.savefig('{}ROC_5.png'.format(PATH), dpi = 100)
+plt.savefig('{0}ROC_{1}.png'.format(PATH, nnClassCount), dpi = 100)
 plt.close()
 
 
