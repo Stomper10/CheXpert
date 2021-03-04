@@ -74,8 +74,8 @@ if cfg.image_type == 'small':
     img_type = '-small'
 else:
     img_type = ''
-pathFileTrain_frt = './CheXpert-v1.0{0}/train_frt.csv'.format(img_type)
-pathFileTrain_lat = './CheXpert-v1.0{0}/train_lat.csv'.format(img_type)
+pathFileTrain_frt = './CheXpert-v1.0{0}/train_frt_CB.csv'.format(img_type)
+pathFileTrain_lat = './CheXpert-v1.0{0}/train_lat_CB.csv'.format(img_type)
 pathFileValid_frt = './CheXpert-v1.0{0}/valid_frt.csv'.format(img_type)
 pathFileValid_lat = './CheXpert-v1.0{0}/valid_lat.csv'.format(img_type)
 pathFileTest_frt = './CheXpert-v1.0{0}/test_frt.csv'.format(img_type)
@@ -139,9 +139,9 @@ print('')
 
 # Create DataLoaders
 dataLoaderTrain_frt = DataLoader(dataset = datasetTrain_frt, batch_size = trBatchSize, 
-                                 shuffle = True, num_workers = 2, pin_memory = True)
+                                 shuffle = False, num_workers = 2, pin_memory = True)
 dataLoaderTrain_lat = DataLoader(dataset = datasetTrain_lat, batch_size = trBatchSize, 
-                                 shuffle = True, num_workers = 2, pin_memory = True)
+                                 shuffle = False, num_workers = 2, pin_memory = True)
 dataLoaderVal_frt = DataLoader(dataset = datasetValid_frt, batch_size = trBatchSize, 
                                shuffle = False, num_workers = 2, pin_memory = True)
 dataLoaderVal_lat = DataLoader(dataset = datasetValid_lat, batch_size = trBatchSize, 
@@ -150,7 +150,11 @@ dataLoaderTest_frt = DataLoader(dataset = datasetTest_frt, num_workers = 2, pin_
 dataLoaderTest_lat = DataLoader(dataset = datasetTest_lat, num_workers = 2, pin_memory = True)
 dataLoaderTest_all = DataLoader(dataset = datasetTest_all, num_workers = 2, pin_memory = True)
 
-
+# Check Cardiomegaly balanced
+for batchID, (varInput, target) in enumerate(dataLoaderTrain_frt):
+    if batchID == 0:
+        print(target)
+        break
 
 #####################
 ## Train the Model ##
@@ -254,11 +258,6 @@ EnsemTest = results
 '''See 'materials.py' to check the function 'EnsemAgg'.'''
 outGT, outPRED, aurocMean, aurocIndividual = EnsemAgg(EnsemTest, dataLoaderTest_all, nnClassCount, class_names)
 
-<<<<<<< HEAD
-fig, ax = plt.subplots(nrows = 1, ncols = 5)
-ax = ax.flatten()
-fig.set_size_inches((50, 10))
-=======
 if nnClassCount <= 7:
     nrows = 1
     ncols = nnClassCount
@@ -269,7 +268,6 @@ else:
 fig, ax = plt.subplots(nrows = nrows, ncols = ncols)
 ax = ax.flatten()
 fig.set_size_inches((ncols * 10, 10))
->>>>>>> origin/master
 for i in range(nnClassCount):
     fpr, tpr, threshold = metrics.roc_curve(outGT.cpu()[:, i], outPRED.cpu()[:, i])
     roc_auc = metrics.auc(fpr, tpr)
