@@ -275,21 +275,21 @@ class CheXpertTrainer():
         with open("{0}{1}_traj_batch1000.txt".format(PATH, f_or_l), "wb") as fp:
             pickle.dump(traj_all, fp)
         names = ['Card', 'Edem', 'Cons', 'Atel', 'PlEf']
-        xlab = list(range(1, 1001))
+        xlab = list(range(1, 624))
         
         fig, ax = plt.subplots(nrows = 1, ncols = 5)
         fig.set_size_inches((50, 10))
         for i in range(5):
             ax[i].plot(xlab, traj_all[i])
             ax[i].set_title('Valid loss trajectory: ' + names[i])
-            ax[i].set_xlim([0, 1001])
-            ax[i].set_xticks(np.arange(1, 1001, step = 1))
+            ax[i].set_xlim([0, 624])
+            ax[i].set_xticks(np.arange(1, 624, step = 1))
             ax[i].set_ylim([0, 1])
             ax[i].set_ylabel('Valid loss')
             ax[i].set_xlabel('Batch 1 to 1000')
 
         plt.savefig('{0}{1}_traj_batch1000.png'.format(PATH, f_or_l), dpi = 100)
-        plt.close()            
+        plt.close()
 
         return losstrain / len(dataLoaderTrain.dataset)
     
