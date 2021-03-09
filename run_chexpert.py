@@ -4,7 +4,7 @@
 ## Prerequisites ##
 ###################
 import os
-os.environ["CUDA_VISIBLE_DEVICES"] = '1, 2, 3'
+os.environ["CUDA_VISIBLE_DEVICES"] = '1, 2, 3' # should do this before importing torch modules!
 import time
 import json
 import pickle
@@ -152,10 +152,10 @@ dataLoaderTest_lat = DataLoader(dataset = datasetTest_lat, num_workers = 2, pin_
 dataLoaderTest_all = DataLoader(dataset = datasetTest_all, num_workers = 2, pin_memory = True)
 
 # Check Cardiomegaly balanced
-'''for batchID, (varInput, target) in enumerate(dataLoaderTrain_frt):
+for batchID, (varInput, target) in enumerate(dataLoaderTrain_frt):
     if batchID == 0:
         print(target)
-        break'''
+        break
 
 #####################
 ## Train the Model ##
