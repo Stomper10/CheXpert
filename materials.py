@@ -28,6 +28,8 @@ import sklearn.metrics as metrics
 from sklearn.metrics import roc_auc_score
 
 use_gpu = torch.cuda.is_available()
+os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+os.environ["CUDA_VISIBLE_DEVICES"] = '1, 2, 3'
 
 
 
