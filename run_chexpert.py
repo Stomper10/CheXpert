@@ -152,10 +152,10 @@ dataLoaderTest_lat = DataLoader(dataset = datasetTest_lat, num_workers = 2, pin_
 dataLoaderTest_all = DataLoader(dataset = datasetTest_all, num_workers = 2, pin_memory = True)
 
 # Check Cardiomegaly balanced
-for batchID, (varInput, target) in enumerate(dataLoaderTrain_frt):
+'''for batchID, (varInput, target) in enumerate(dataLoaderTrain_frt):
     if batchID == 0:
         print(target)
-        break
+        break'''
 
 #####################
 ## Train the Model ##
@@ -163,7 +163,7 @@ for batchID, (varInput, target) in enumerate(dataLoaderTrain_frt):
 # Initialize and load the model
 '''See 'materials.py' to check the class 'DenseNet121'.'''
 model = DenseNet121(nnClassCount, nnIsTrained).cuda()
-model = torch.nn.DataParallel(model).cuda()
+model = torch.nn.DataParallel(model, device_ids = [1, 2, 3]).cuda()
 
 # Train the model
 PATH = args.output_path
