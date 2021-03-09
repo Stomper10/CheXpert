@@ -31,6 +31,7 @@ import sklearn.metrics as metrics
 from sklearn.metrics import roc_auc_score
 
 use_gpu = torch.cuda.is_available()
+os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 os.environ["CUDA_VISIBLE_DEVICES"] = '1, 2, 3'
 
 
@@ -163,7 +164,7 @@ dataLoaderTest_all = DataLoader(dataset = datasetTest_all, num_workers = 2, pin_
 # Initialize and load the model
 '''See 'materials.py' to check the class 'DenseNet121'.'''
 model = DenseNet121(nnClassCount, nnIsTrained).cuda()
-model = torch.nn.DataParallel(model, device_ids = [1, 2, 3]).cuda()
+model = torch.nn.DataParallel(model).cuda()
 
 # Train the model
 PATH = args.output_path
