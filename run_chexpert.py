@@ -3,12 +3,13 @@
 ###################
 ## Prerequisites ##
 ###################
+import os
+os.environ["CUDA_VISIBLE_DEVICES"] = '1, 2, 3'
 import time
 import json
 import pickle
 import random
 import csv
-import os
 import argparse
 import numpy as np
 import pandas as pd
@@ -31,8 +32,6 @@ import sklearn.metrics as metrics
 from sklearn.metrics import roc_auc_score
 
 use_gpu = torch.cuda.is_available()
-os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-os.environ["CUDA_VISIBLE_DEVICES"] = '1, 2, 3'
 
 
 
