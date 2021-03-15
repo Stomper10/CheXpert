@@ -260,7 +260,7 @@ EnsemTest = results
 '''See 'materials.py' to check the function 'EnsemAgg'.'''
 outGT, outPRED, aurocMean, aurocIndividual = EnsemAgg(EnsemTest, dataLoaderTest_all, nnClassCount, class_names)
 
-if nnClassCount <= 7:
+'''if nnClassCount <= 7:
     nrows = 1
     ncols = nnClassCount
 else:
@@ -268,7 +268,7 @@ else:
     ncols = 7
 
 fig, ax = plt.subplots(nrows = nrows, ncols = ncols)
-#ax = ax.flatten()
+ax = ax.flatten()
 fig.set_size_inches((ncols * 10, 10))
 for i in range(nnClassCount):
     fpr, tpr, threshold = metrics.roc_curve(outGT.cpu()[:, i], outPRED.cpu()[:, i])
@@ -284,7 +284,7 @@ for i in range(nnClassCount):
     ax[i].set_xlabel('False Positive Rate')
 
 plt.savefig('{0}ROC_{1}.png'.format(PATH, nnClassCount), dpi = 100)
-plt.close()
+plt.close()'''
 
 
 

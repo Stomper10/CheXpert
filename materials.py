@@ -273,10 +273,10 @@ class CheXpertTrainer():
             if batchID % 1000 == 999:
                 print('[Batch: %5d] loss: %.3f'%(batchID + 1, losstrain / 1000))
 
-            if batchID < 100:
-                lossv = CheXpertTrainer.epochVal(model, dataLoaderVal, optimizer, trMaxEpoch, nnClassCount, loss)
-                lossv_traj.append(lossv)
-                '''Card_traj.append(lossv_Card)
+            lossv = CheXpertTrainer.epochVal(model, dataLoaderVal, optimizer, trMaxEpoch, nnClassCount, loss)
+            lossv_traj.append(lossv)
+            '''if batchID < 100:
+                Card_traj.append(lossv_Card)
                 Edem_traj.append(lossv_Edem)
                 Cons_traj.append(lossv_Cons)
                 Atel_traj.append(lossv_Atel)
