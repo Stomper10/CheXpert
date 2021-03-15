@@ -4,7 +4,7 @@
 ## Prerequisites ##
 ###################
 import os
-os.environ["CUDA_VISIBLE_DEVICES"] = '1, 2, 3' # should do this before importing torch modules!
+#os.environ["CUDA_VISIBLE_DEVICES"] = '1, 2, 3' # should do this before importing torch modules!
 import time
 import json
 import pickle
