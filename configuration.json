@@ -1,10 +1,10 @@
 {
     "image_type": "small",
     "pre_trained": false,
-    "nnClassCount": 5,
-    "policy": "diff",
+    "nnClassCount": 1,
+    "policy": "zeroes",
     "batch_size": 16,
-    "epochs": 3,
+    "epochs": 1,
     "imgtransResize": 320,
     "train_ratio": 1,
     "lr": 0.0001,
