@@ -3,12 +3,13 @@
 ###################
 ## Prerequisites ##
 ###################
+import os
+#os.environ["CUDA_VISIBLE_DEVICES"] = '1, 2, 3' # should do this before importing torch modules!
 import time
 import json
 import pickle
 import random
 import csv
-import os
 import argparse
 import numpy as np
 import pandas as pd
