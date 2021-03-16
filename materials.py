@@ -168,10 +168,11 @@ class CheXpertTrainer():
         train_start = []
         train_end = []
         print('<<< Training & Evaluating ({}) >>>'.format(f_or_l))
-
+        lossv_traj_epoch = []
         for epochID in range(0, trMaxEpoch):
             train_start.append(time.time()) # training starts
-            losst = CheXpertTrainer.epochTrain(model, dataLoaderTrain, dataLoaderVal, optimizer, trMaxEpoch, nnClassCount, loss, PATH, f_or_l)
+            losst, lossv_traj = CheXpertTrainer.epochTrain(model, dataLoaderTrain, dataLoaderVal, optimizer, trMaxEpoch, nnClassCount, loss, PATH, f_or_l)
+            lossv_traj_epoch.append(lossv_traj)
             train_end.append(time.time())   # training ends
             lossv = CheXpertTrainer.epochVal(model, dataLoaderVal, optimizer, trMaxEpoch, nnClassCount, loss)
 
@@ -244,7 +245,9 @@ class CheXpertTrainer():
                 print('Epoch ' + str(epochID + 1) + ' [----] loss PlEf = ' + str(lossv_PlEf))'''
 
         train_time = np.array(train_end) - np.array(train_start)
-
+        lossv_traj_epoch
+        with open("{0}{1}_traj_epoch.txt".format(PATH, f_or_l), "wb") as fp:
+            pickle.dump(lossv_traj_epoch, fp)
         '''traj_all = [Card_traj, Edem_traj, Cons_traj, Atel_traj, PlEf_traj]
         with open("{0}{1}_traj_epoch5.txt".format(PATH, f_or_l), "wb") as fp:
             pickle.dump(traj_all, fp)
@@ -283,10 +286,8 @@ class CheXpertTrainer():
                 PlEf_traj.append(lossv_PlEf)'''
             
         '''traj_all = [Card_traj, Edem_traj, Cons_traj, Atel_traj, PlEf_traj]'''
-        with open("{0}{1}_traj_batch100.txt".format(PATH, f_or_l), "wb") as fp:
-            pickle.dump(lossv_traj, fp)
 
-        return losstrain / len(dataLoaderTrain.dataset)
+        return losstrain / len(dataLoaderTrain.dataset), lossv_traj
     
     
     def epochVal(model, dataLoaderVal, optimizer, trMaxEpoch, nnClassCount, loss):
