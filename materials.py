@@ -152,8 +152,8 @@ class CheXpertTrainer():
             modelCheckpoint = torch.load(checkpoint)
             model.load_state_dict(modelCheckpoint['state_dict'])
             optimizer.load_state_dict(modelCheckpoint['optimizer'])
-            num_ftrs = model.densenet121.classifier.in_features
-            model.densenet121.classifier = nn.Sequential(
+            num_ftrs = model.classifier.in_features
+            model.classifier = nn.Sequential(
                 nn.Linear(num_ftrs, 1),
                 nn.Sigmoid()
             )            
