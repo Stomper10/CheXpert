@@ -156,6 +156,7 @@ class CheXpertTrainer():
                 nn.Linear(1024, 1),
                 nn.Sigmoid()
             )
+            model = model.cuda()
 
         # check initial model valid set performance
         lossv1 = CheXpertTrainer.epochVal(model, dataLoaderVal, optimizer, trMaxEpoch, nnClassCount, loss)
