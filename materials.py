@@ -156,7 +156,8 @@ class CheXpertTrainer():
             model.classifier = nn.Sequential(
                 nn.Linear(num_ftrs, 1),
                 nn.Sigmoid()
-            )            
+            )
+            model = torch.nn.DataParallel(model).cuda()
 
         # check initial model valid set performance
         lossv1 = CheXpertTrainer.epochVal(model, dataLoaderVal, optimizer, trMaxEpoch, nnClassCount, loss)
