@@ -245,8 +245,8 @@ class CheXpertTrainer():
                 print('Epoch ' + str(epochID + 1) + ' [----] loss PlEf = ' + str(lossv_PlEf))'''
 
         train_time = np.array(train_end) - np.array(train_start)
-        '''with open("{0}{1}_traj_epoch.txt".format(PATH, f_or_l), "wb") as fp:
-            pickle.dump(lossv_traj_epoch, fp)'''
+        with open("{0}{1}_traj_epoch.txt".format(PATH, f_or_l), "wb") as fp:
+            pickle.dump(lossv_traj_epoch, fp)
         '''traj_all = [Card_traj, Edem_traj, Cons_traj, Atel_traj, PlEf_traj]
         with open("{0}{1}_traj_epoch5.txt".format(PATH, f_or_l), "wb") as fp:
             pickle.dump(traj_all, fp)
@@ -275,8 +275,8 @@ class CheXpertTrainer():
             if batchID % 1000 == 999:
                 print('[Batch: %5d] loss: %.3f'%(batchID + 1, losstrain / 1000))
 
-            '''lossv = CheXpertTrainer.epochVal(model, dataLoaderVal, optimizer, trMaxEpoch, nnClassCount, loss)
-            lossv_traj.append(lossv)'''
+            lossv = CheXpertTrainer.epochVal(model, dataLoaderVal, optimizer, trMaxEpoch, nnClassCount, loss)
+            lossv_traj.append(lossv)
             '''if batchID < 100:
                 Card_traj.append(lossv_Card)
                 Edem_traj.append(lossv_Edem)

@@ -75,8 +75,8 @@ if cfg.image_type == 'small':
     img_type = '-small'
 else:
     img_type = ''
-pathFileTrain_frt = './CheXpert-v1.0{0}/train_frt.csv'.format(img_type)
-pathFileTrain_lat = './CheXpert-v1.0{0}/train_lat.csv'.format(img_type)
+pathFileTrain_frt = './CheXpert-v1.0{0}/train_frt_CB.csv'.format(img_type)
+pathFileTrain_lat = './CheXpert-v1.0{0}/train_lat_CB.csv'.format(img_type)
 pathFileValid_frt = './CheXpert-v1.0{0}/valid_frt.csv'.format(img_type)
 pathFileValid_lat = './CheXpert-v1.0{0}/valid_lat.csv'.format(img_type)
 pathFileTest_frt = './CheXpert-v1.0{0}/test_frt.csv'.format(img_type)
@@ -125,10 +125,10 @@ datasetTest_lat = CheXpertDataSet(pathFileTest_lat, nnClassCount, cfg.policy, tr
 datasetTest_all = CheXpertDataSet(pathFileTest_all, nnClassCount, cfg.policy, transformSequence)
 
 # Use subset of datasetTrain for training - this process changes dataset order (even for train_ratio = 1)
-train_num_frt = round(len(datasetTrain_frt) * cfg.train_ratio) # use subset of original training dataset
+'''train_num_frt = round(len(datasetTrain_frt) * cfg.train_ratio) # use subset of original training dataset
 train_num_lat = round(len(datasetTrain_lat) * cfg.train_ratio) # use subset of original training dataset
 datasetTrain_frt, _ = random_split(datasetTrain_frt, [train_num_frt, len(datasetTrain_frt) - train_num_frt])
-datasetTrain_lat, _ = random_split(datasetTrain_lat, [train_num_lat, len(datasetTrain_lat) - train_num_lat])
+datasetTrain_lat, _ = random_split(datasetTrain_lat, [train_num_lat, len(datasetTrain_lat) - train_num_lat])'''
 print('<<< Data Information >>>')
 print('Train data length(frontal):', len(datasetTrain_frt))
 print('Train data length(lateral):', len(datasetTrain_lat))
@@ -178,13 +178,15 @@ if not os.path.exists(PATH): os.makedirs(PATH)
 # Train frontal model
 train_valid_start_frt = time.time()
 '''See 'materials.py' to check the class 'CheXpertTrainer'.'''
-model_num_frt, train_time_frt = CheXpertTrainer.train(model, dataLoaderTrain_frt, dataLoaderVal_frt, nnClassCount, trMaxEpoch, PATH, 'frt', checkpoint = None, cfg = cfg)
+ckp_frt = './results/all_210322_e03_05_0_s/m-epoch_3_frt.pth.tar'
+model_num_frt, train_time_frt = CheXpertTrainer.train(model, dataLoaderTrain_frt, dataLoaderVal_frt, nnClassCount, trMaxEpoch, PATH, 'frt', checkpoint = ckp_frt, cfg = cfg)
 train_valid_end_frt = time.time()
 
 # Train lateral model
 train_valid_start_lat = time.time()
 '''See 'materials.py' to check the class 'CheXpertTrainer'.'''
-model_num_lat, train_time_lat = CheXpertTrainer.train(model, dataLoaderTrain_lat, dataLoaderVal_lat, nnClassCount, trMaxEpoch, PATH, 'lat', checkpoint = None, cfg = cfg)
+ckp_lat = './results/all_210322_e03_05_0_s/m-epoch_1_lat.pth.tar'
+model_num_lat, train_time_lat = CheXpertTrainer.train(model, dataLoaderTrain_lat, dataLoaderVal_lat, nnClassCount, trMaxEpoch, PATH, 'lat', checkpoint = ckp_lat, cfg = cfg)
 train_valid_end_lat = time.time()
 print('<<< Model Trained >>>')
 print('For frontal model,', 'm-epoch_{0}_frt.pth.tar'.format(model_num_frt), 'is the best model overall.')
