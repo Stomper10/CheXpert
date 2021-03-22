@@ -152,12 +152,11 @@ class CheXpertTrainer():
             modelCheckpoint = torch.load(checkpoint)
             model.load_state_dict(modelCheckpoint['state_dict'])
             optimizer.load_state_dict(modelCheckpoint['optimizer'])
-            num_ftrs = model.classifier.in_features
-            model.classifier = nn.Sequential(
+            num_ftrs = model.module.densenet121.classifier.in_features
+            model.module.densenet121.classifier = nn.Sequential(
                 nn.Linear(num_ftrs, 1),
                 nn.Sigmoid()
             )
-            model = torch.nn.DataParallel(model).cuda()
 
         # check initial model valid set performance
         lossv1 = CheXpertTrainer.epochVal(model, dataLoaderVal, optimizer, trMaxEpoch, nnClassCount, loss)
