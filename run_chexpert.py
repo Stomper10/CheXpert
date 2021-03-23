@@ -75,10 +75,10 @@ if cfg.image_type == 'small':
     img_type = '-small'
 else:
     img_type = ''
-pathFileTrain_frt = './CheXpert-v1.0{0}/train_frt_CB.csv'.format(img_type)
-pathFileTrain_lat = './CheXpert-v1.0{0}/train_lat_CB.csv'.format(img_type)
-pathFileValid_frt = './CheXpert-v1.0{0}/valid_frt.csv'.format(img_type)
-pathFileValid_lat = './CheXpert-v1.0{0}/valid_lat.csv'.format(img_type)
+pathFileTrain_frt = './CheXpert-v1.0{0}/train_frt.csv'.format(img_type)
+pathFileTrain_lat = './CheXpert-v1.0{0}/train_lat.csv'.format(img_type)
+pathFileValid_frt = './CheXpert-v1.0{0}/test_frt.csv'.format(img_type)
+pathFileValid_lat = './CheXpert-v1.0{0}/test_lat.csv'.format(img_type)
 pathFileTest_frt = './CheXpert-v1.0{0}/test_frt.csv'.format(img_type)
 pathFileTest_lat = './CheXpert-v1.0{0}/test_lat.csv'.format(img_type)
 pathFileTest_all = './CheXpert-v1.0{0}/test_200.csv'.format(img_type)
@@ -163,7 +163,7 @@ dataLoaderTest_all = DataLoader(dataset = datasetTest_all, num_workers = 2, pin_
 #####################
 # Initialize and load the model
 '''See 'materials.py' to check the class 'DenseNet121'.'''
-model = DenseNet121(5, nnIsTrained).cuda()
+model = DenseNet121(nnClassCount, nnIsTrained).cuda()
 model = torch.nn.DataParallel(model).cuda()
 
 # Train the model
@@ -178,15 +178,13 @@ if not os.path.exists(PATH): os.makedirs(PATH)
 # Train frontal model
 train_valid_start_frt = time.time()
 '''See 'materials.py' to check the class 'CheXpertTrainer'.'''
-ckp_frt = './results/all_210322_e03_05_0_s/m-epoch_3_frt.pth.tar'
-model_num_frt, train_time_frt = CheXpertTrainer.train(model, dataLoaderTrain_frt, dataLoaderVal_frt, nnClassCount, trMaxEpoch, PATH, 'frt', checkpoint = ckp_frt, cfg = cfg)
+model_num_frt, train_time_frt = CheXpertTrainer.train(model, dataLoaderTrain_frt, dataLoaderVal_frt, nnClassCount, trMaxEpoch, PATH, 'frt', checkpoint = None, cfg = cfg)
 train_valid_end_frt = time.time()
 
 # Train lateral model
 train_valid_start_lat = time.time()
 '''See 'materials.py' to check the class 'CheXpertTrainer'.'''
-ckp_lat = './results/all_210322_e03_05_0_s/m-epoch_1_lat.pth.tar'
-model_num_lat, train_time_lat = CheXpertTrainer.train(model, dataLoaderTrain_lat, dataLoaderVal_lat, nnClassCount, trMaxEpoch, PATH, 'lat', checkpoint = ckp_lat, cfg = cfg)
+model_num_lat, train_time_lat = CheXpertTrainer.train(model, dataLoaderTrain_lat, dataLoaderVal_lat, nnClassCount, trMaxEpoch, PATH, 'lat', checkpoint = None, cfg = cfg)
 train_valid_end_lat = time.time()
 print('<<< Model Trained >>>')
 print('For frontal model,', 'm-epoch_{0}_frt.pth.tar'.format(model_num_frt), 'is the best model overall.')
