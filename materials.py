@@ -107,6 +107,7 @@ class CheXpertTrainer():
             optimizer.load_state_dict(modelCheckpoint['optimizer'])
             model = model.cuda()
 
+        print('<<< Training & Evaluating ({}) >>>'.format(f_or_l))
         # check initial model valid set performance
         lossv1, lossv_each = CheXpertTrainer.epochVal(model, dataLoaderVal, optimizer, trMaxEpoch, nnClassCount, loss)
         print("Initial valid loss (overall): {:.3f}".format(lossv1))
@@ -119,7 +120,7 @@ class CheXpertTrainer():
         lossv_traj_epoch = np.empty((nnClassCount, 0)).tolist()
         model_num_each = [0]*5
         train_start, train_end = [], []
-        print('<<< Training & Evaluating ({}) >>>'.format(f_or_l))
+        
         for epochID in range(0, trMaxEpoch):
             train_start.append(time.time()) # training starts
             losst = CheXpertTrainer.epochTrain(model, dataLoaderTrain, optimizer, nnClassCount, loss, PATH, f_or_l)
