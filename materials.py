@@ -109,9 +109,10 @@ class CheXpertTrainer():
 
         # check initial model valid set performance
         lossv1, lossv_each = CheXpertTrainer.epochVal(model, dataLoaderVal, optimizer, trMaxEpoch, nnClassCount, loss)
-        print("Untrained Model Valid loss (all): {:.3f}".format(lossv1))
+        print("Untrained Model Valid loss (overall): {:.3f}".format(lossv1))
         for i in range(5):
             print("Untrained Model Valid loss {}: {:.3f}".format(class_names[i], lossv_each[i]))
+        print('')
 
         # Train the network
         lossMIN, lossMIN_each = 100000, [100000]*5
@@ -130,10 +131,10 @@ class CheXpertTrainer():
                 if lossv_each[i] < lossMIN_each[i]:
                     lossMIN_each[i] = lossv_each[i]
                     model_num_each[i] = epochID + 1
-                    print('Epoch ' + str(epochID + 1) + ' [save] loss {} = '.format(class_names[i]) + str(lossv_each[i]))
+                    print('Epoch ' + str(epochID + 1) + ' [improved] loss {} = '.format(class_names[i]) + str(lossv_each[i]))
+                else:
+                    print('Epoch ' + str(epochID + 1) + ' [--------] loss {} = '.format(class_names[i]) + str(lossv_each[i]))
 
-            print("Training loss: {:.3f},".format(losst), "Valid loss: {:.3f}".format(lossv))
-            
             if lossv < lossMIN:
                 lossMIN = lossv
                 model_num = epochID + 1
@@ -141,10 +142,12 @@ class CheXpertTrainer():
             else:
                 print('Epoch ' + str(epochID + 1) + ' [--------] loss = ' + str(lossv))
 
+            print("Training loss: {:.3f},".format(losst), "Valid loss: {:.3f}".format(lossv))
             torch.save({'epoch': epochID + 1, 'state_dict': model.state_dict(), 
                         'best_loss': lossMIN, 'optimizer' : optimizer.state_dict()}, 
                         '{0}m-epoch_{1}_{2}.pth.tar'.format(PATH, epochID + 1, f_or_l))
 
+        print('')
         train_time = np.array(train_end) - np.array(train_start)
         with open("{0}{1}_lossv_traj_epoch.txt".format(PATH, f_or_l), "wb") as fp:
             pickle.dump(lossv_traj_epoch, fp)
@@ -263,10 +266,10 @@ class CheXpertTrainer():
         aurocIndividual = CheXpertTrainer.computeAUROC(outGT, outPRED, nnClassCount)
         aurocMean = np.array(aurocIndividual).mean()
         print('<<< Model Test Results ({}) >>>'.format(f_or_l))
-        print('AUROC mean ', aurocMean)
+        print('AUROC mean', '{:.4f}'.format(aurocMean))
         
         for i in range (0, len(aurocIndividual)):
-            print(class_names[i], ' ', aurocIndividual[i])
+            print(class_names[i], '{:.4f}'.format(aurocIndividual[i]))
         print('')
         return outGT, outPRED, outPROB, aurocMean, aurocIndividual
 
@@ -315,10 +318,10 @@ def EnsemAgg(EnsemResult, dataLoader, nnClassCount, class_names):
     aurocIndividual = CheXpertTrainer.computeAUROC(outGT, outPRED, nnClassCount)
     aurocMean = np.array(aurocIndividual).mean()
     print('<<< Ensembles Test Results >>>')
-    print('AUROC mean ', aurocMean)
+    print('AUROC mean', '{:.4f}'.format(aurocMean))
 
     for i in range (0, len(aurocIndividual)):
-        print(class_names[i], ' ', aurocIndividual[i])
+        print(class_names[i], '{:.4f}'.format(aurocIndividual[i]))
     print('')
 
     return outGT, outPRED, aurocMean, aurocIndividual

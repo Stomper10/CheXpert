@@ -130,8 +130,7 @@ print('Valid data length(frontal):', len(datasetValid_frt))
 print('Valid data length(lateral):', len(datasetValid_lat))
 print('Test data length(frontal):', len(datasetTest_frt))
 print('Test data length(lateral):', len(datasetTest_lat))
-print('Test data length(study):', len(datasetTest_agg))
-print('')
+print('Test data length(study):', len(datasetTest_agg), '\n')
 
 # Create DataLoaders
 dataLoaderTrain_frt = DataLoader(dataset = datasetTrain_frt, batch_size = trBatchSize, 
@@ -186,6 +185,7 @@ print('')
 print('For lateral model,', 'm-epoch_{0}_lat.pth.tar'.format(model_num_lat), 'is the best model overall.')
 for i in range(5):
     print('For lateral {0},'.format(class_names[i]), 'm-epoch_{0}_lat.pth.tar'.format(model_num_lat_each[i]), 'is the best model.')
+print('')
 
 
 
@@ -247,7 +247,7 @@ outGT, outPRED, aurocMean, aurocIndividual = EnsemAgg(EnsemTest, dataLoaderTest_
 
 fig, ax = plt.subplots(nrows = 1, ncols = nnClassCount)
 ax = ax.flatten()
-fig.set_size_inches((ncols * 10, 10))
+fig.set_size_inches((nnClassCount * 10, 10))
 for i in range(nnClassCount):
     fpr, tpr, threshold = metrics.roc_curve(outGT.cpu()[:, i], outPRED.cpu()[:, i])
     roc_auc = metrics.auc(fpr, tpr)
