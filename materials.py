@@ -111,7 +111,7 @@ class CheXpertTrainer():
         lossv1, lossv_each = CheXpertTrainer.epochVal(model, dataLoaderVal, optimizer, trMaxEpoch, nnClassCount, loss)
         print("Untrained Model Valid loss (all): {:.3f}".format(lossv1))
         for i in range(5):
-            print("Untrained Model Valid loss {}}: {:.3f}".format(class_names[i], lossv_each[i]))
+            print("Untrained Model Valid loss {}: {:.3f}".format(class_names[i], lossv_each[i]))
 
         # Train the network
         lossMIN, lossMIN_each = 100000, [100000]*5
@@ -130,7 +130,7 @@ class CheXpertTrainer():
                 if lossv_each[i] < lossMIN_each[i]:
                     lossMIN_each[i] = lossv_each[i]
                     model_num_each[i] = epochID + 1
-                    print('Epoch ' + str(epochID + 1) + ' [save] loss {}} = '.format(class_names[i]) + str(lossv_each[i]))
+                    print('Epoch ' + str(epochID + 1) + ' [save] loss {} = '.format(class_names[i]) + str(lossv_each[i]))
 
             print("Training loss: {:.3f},".format(losst), "Valid loss: {:.3f}".format(lossv))
             
