@@ -265,11 +265,11 @@ class CheXpertTrainer():
                 outPRED = torch.cat((outPRED, out), 0)
         aurocIndividual = CheXpertTrainer.computeAUROC(outGT, outPRED, nnClassCount)
         aurocMean = np.array(aurocIndividual).mean()
-        print('<<< Model Test Results ({}) >>>'.format(f_or_l))
-        print('AUROC mean', '{:.4f}'.format(aurocMean))
+        print('<<< Model Test Results: AUROC ({}) >>>'.format(f_or_l))
+        print('MEAN', ': {:.4f}'.format(aurocMean))
         
         for i in range (0, len(aurocIndividual)):
-            print(class_names[i], '{:.4f}'.format(aurocIndividual[i]))
+            print(class_names[i], ': {:.4f}'.format(aurocIndividual[i]))
         print('')
         return outGT, outPRED, outPROB, aurocMean, aurocIndividual
 
@@ -317,9 +317,8 @@ def EnsemAgg(EnsemResult, dataLoader, nnClassCount, class_names):
             outPRED = torch.cat((outPRED, out), 0)
     aurocIndividual = CheXpertTrainer.computeAUROC(outGT, outPRED, nnClassCount)
     aurocMean = np.array(aurocIndividual).mean()
-    print('<<< Ensembles Test Results >>>')
-    print('AUROC mean', '{:.4f}'.format(aurocMean))
-
+    print('<<< Ensembles Test Results: AUROC >>>')
+    print('MEAN', ': {:.4f}'.format(aurocMean))
     for i in range (0, len(aurocIndividual)):
         print(class_names[i], '{:.4f}'.format(aurocIndividual[i]))
     print('')
