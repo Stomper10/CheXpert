@@ -96,7 +96,7 @@ class CheXpertDataSet(Dataset):
 ## Create CheXpertTrainer ##
 ############################
 class CheXpertTrainer():
-    def train(model, dataLoaderTrain, dataLoaderVal, nnClassCount, class_names, trMaxEpoch, PATH, f_or_l, checkpoint, cfg):
+    def train(model, dataLoaderTrain, dataLoaderVal, class_names, nnClassCount, trMaxEpoch, PATH, f_or_l, checkpoint, cfg):
         optimizer = optim.Adam(model.parameters(), lr = cfg.lr, # setting optimizer & scheduler
                                betas = tuple(cfg.betas), eps = cfg.eps, weight_decay = cfg.weight_decay) 
         loss = torch.nn.BCELoss() # setting loss function
@@ -109,10 +109,9 @@ class CheXpertTrainer():
 
         # check initial model valid set performance
         lossv1, lossv_each = CheXpertTrainer.epochVal(model, dataLoaderVal, optimizer, trMaxEpoch, nnClassCount, loss)
-        print(lossv_each)
         print("Untrained Model Valid loss (all): {:.3f}".format(lossv1))
         for i in range(5):
-            print("Untrained Model Valid loss {0}}: {:.3f}".format(class_names[i], lossv_each[i]))
+            print("Untrained Model Valid loss {}}: {:.3f}".format(class_names[i], lossv_each[i]))
 
         # Train the network
         lossMIN, lossMIN_each = 100000, [100000]*5
