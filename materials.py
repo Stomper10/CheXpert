@@ -109,9 +109,9 @@ class CheXpertTrainer():
 
         # check initial model valid set performance
         lossv1, lossv_each = CheXpertTrainer.epochVal(model, dataLoaderVal, optimizer, trMaxEpoch, nnClassCount, loss)
-        print("Untrained Model Valid loss (overall): {:.3f}".format(lossv1))
+        print("Initial valid loss (overall): {:.3f}".format(lossv1))
         for i in range(5):
-            print("Untrained Model Valid loss {}: {:.3f}".format(class_names[i], lossv_each[i]))
+            print("Initial valid loss {}: {:.3f}".format(class_names[i], lossv_each[i]))
         print('')
 
         # Train the network
@@ -131,16 +131,16 @@ class CheXpertTrainer():
                 if lossv_each[i] < lossMIN_each[i]:
                     lossMIN_each[i] = lossv_each[i]
                     model_num_each[i] = epochID + 1
-                    print('Epoch ' + str(epochID + 1) + ' [improved] loss {} = '.format(class_names[i]) + str(lossv_each[i]))
+                    print('Epoch ' + str(epochID + 1) + ' [IMPR] lossv {} = {:.3f}'.format(class_names[i], lossv_each[i]))
                 else:
-                    print('Epoch ' + str(epochID + 1) + ' [--------] loss {} = '.format(class_names[i]) + str(lossv_each[i]))
+                    print('Epoch ' + str(epochID + 1) + ' [----] lossv {} = {:.3f}'.format(class_names[i], lossv_each[i]))
 
             if lossv < lossMIN:
                 lossMIN = lossv
                 model_num = epochID + 1
-                print('Epoch ' + str(epochID + 1) + ' [improved] loss = ' + str(lossv))
+                print('Epoch ' + str(epochID + 1) + ' [IMPR] loss = {:.3f}'.format(lossv))
             else:
-                print('Epoch ' + str(epochID + 1) + ' [--------] loss = ' + str(lossv))
+                print('Epoch ' + str(epochID + 1) + ' [----] loss = {:.3f}'.format(lossv))
 
             print("Training loss: {:.3f},".format(losst), "Valid loss: {:.3f}".format(lossv))
             torch.save({'epoch': epochID + 1, 'state_dict': model.state_dict(), 
@@ -320,7 +320,7 @@ def EnsemAgg(EnsemResult, dataLoader, nnClassCount, class_names):
     print('<<< Ensembles Test Results: AUROC >>>')
     print('MEAN', ': {:.4f}'.format(aurocMean))
     for i in range (0, len(aurocIndividual)):
-        print(class_names[i], '{:.4f}'.format(aurocIndividual[i]))
+        print(class_names[i], ': {:.4f}'.format(aurocIndividual[i]))
     print('')
 
     return outGT, outPRED, aurocMean, aurocIndividual

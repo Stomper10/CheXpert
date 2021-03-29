@@ -124,13 +124,13 @@ train_num_lat = round(len(datasetTrain_lat) * cfg.train_ratio) # use subset of o
 datasetTrain_frt, _ = random_split(datasetTrain_frt, [train_num_frt, len(datasetTrain_frt) - train_num_frt])
 datasetTrain_lat, _ = random_split(datasetTrain_lat, [train_num_lat, len(datasetTrain_lat) - train_num_lat])
 print('<<< Data Information >>>')
-print('Train data length(frontal):', len(datasetTrain_frt))
-print('Train data length(lateral):', len(datasetTrain_lat))
-print('Valid data length(frontal):', len(datasetValid_frt))
-print('Valid data length(lateral):', len(datasetValid_lat))
-print('Test data length(frontal):', len(datasetTest_frt))
-print('Test data length(lateral):', len(datasetTest_lat))
-print('Test data length(study):', len(datasetTest_agg), '\n')
+print('Train data (frontal):', len(datasetTrain_frt))
+print('Train data (lateral):', len(datasetTrain_lat))
+print('Valid data (frontal):', len(datasetValid_frt))
+print('Valid data (lateral):', len(datasetValid_lat))
+print('Test data (frontal):', len(datasetTest_frt))
+print('Test data (lateral):', len(datasetTest_lat))
+print('Test data (study):', len(datasetTest_agg), '\n')
 
 # Create DataLoaders
 dataLoaderTrain_frt = DataLoader(dataset = datasetTrain_frt, batch_size = trBatchSize, 
@@ -178,13 +178,13 @@ model_num_lat, model_num_lat_each, train_time_lat = CheXpertTrainer.train(model,
                                                                           nnClassCount, trMaxEpoch, PATH, 'lat', checkpoint = None, cfg = cfg)
 train_valid_end_lat = time.time()
 print('<<< Model Trained >>>')
-print('For frontal model,', 'm-epoch_{0}_frt.pth.tar'.format(model_num_frt), 'is the best model overall.')
+print('For frontal model,', 'm-epoch_{0}_frt.pth.tar'.format(model_num_frt), 'is the best overall.')
 for i in range(5):
-    print('For frontal {0},'.format(class_names[i]), 'm-epoch_{0}_frt.pth.tar'.format(model_num_frt_each[i]), 'is the best model.')
+    print('For frontal {0},'.format(class_names[i]), 'm-epoch_{0}_frt.pth.tar'.format(model_num_frt_each[i]), 'is the best.')
 print('')
 print('For lateral model,', 'm-epoch_{0}_lat.pth.tar'.format(model_num_lat), 'is the best model overall.')
 for i in range(5):
-    print('For lateral {0},'.format(class_names[i]), 'm-epoch_{0}_lat.pth.tar'.format(model_num_lat_each[i]), 'is the best model.')
+    print('For lateral {0},'.format(class_names[i]), 'm-epoch_{0}_lat.pth.tar'.format(model_num_lat_each[i]), 'is the best.')
 print('')
 
 
