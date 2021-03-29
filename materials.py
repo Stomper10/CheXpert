@@ -109,6 +109,7 @@ class CheXpertTrainer():
 
         # check initial model valid set performance
         lossv1, lossv_each = CheXpertTrainer.epochVal(model, dataLoaderVal, optimizer, trMaxEpoch, nnClassCount, loss)
+        print(lossv_each)
         print("Untrained Model Valid loss (all): {:.3f}".format(lossv1))
         for i in range(5):
             print("Untrained Model Valid loss {0}}: {:.3f}".format(class_names[i], lossv_each[i]))
