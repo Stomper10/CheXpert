@@ -192,8 +192,8 @@ print('')
 ##############################
 ## Test and Draw ROC Curves ##
 ##############################
-checkpoint_frt = PATH + 'm-epoch_{0}_frt.pth.tar'.format(model_num_frt)
-checkpoint_lat = PATH + 'm-epoch_{0}_lat.pth.tar'.format(model_num_lat)
+checkpoint_frt = PATH + 'm-epoch_{0}_frt.pth.tar'.format(trMaxEpoch) # Use the last model ('model_num_frt' if use valid set for model decision)
+checkpoint_lat = PATH + 'm-epoch_{0}_lat.pth.tar'.format(trMaxEpoch) # Use the last model ('model_num_lat' if use valid set for model decision)
 '''See 'materials.py' to check the class 'CheXpertTrainer'.'''
 outGT_frt, outPRED_frt, outPROB_frt, aurocMean_frt, aurocIndividual_frt = CheXpertTrainer.test(model, dataLoaderTest_frt, nnClassCount, checkpoint_frt, class_names, 'frt')
 outGT_lat, outPRED_lat, outPROB_lat, aurocMean_lat, aurocIndividual_lat = CheXpertTrainer.test(model, dataLoaderTest_lat, nnClassCount, checkpoint_lat, class_names, 'lat')
@@ -228,7 +228,7 @@ for i in range(len(outPROB_lat)):
     for j in range(len(class_names)):
         df.iloc[len(outPROB_frt) + i, j + 1] = outPROB_lat[i][0][j]
 
-df_agg = df.groupby('Path').agg('max').reset_index()
+df_agg = df.groupby('Path').agg('mean').reset_index() # max -> mean
 df_agg = df_agg.sort_values('Path')
 results = df_agg.drop(['Path'], axis = 1).values.tolist()
 
