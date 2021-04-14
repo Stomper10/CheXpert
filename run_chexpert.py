@@ -228,7 +228,7 @@ for i in range(len(outPROB_lat)):
     for j in range(len(class_names)):
         df.iloc[len(outPROB_frt) + i, j + 1] = outPROB_lat[i][0][j]
 
-df_agg = df.groupby('Path').agg('mean').reset_index() # max -> mean
+df_agg = df.groupby('Path').agg('min').reset_index() # max -> mean -> min
 df_agg = df_agg.sort_values('Path')
 results = df_agg.drop(['Path'], axis = 1).values.tolist()
 
