@@ -69,7 +69,7 @@ eps | 1e-08 | Eps of optimizer.
 weight_decay | 0 | Weight decay of optimizer.
 
 ## Data Preprocessing
-You **MUST** run the following command before running the model. Running the `run_preprocessing.py` file makes the test set ready. Since the CheXpert uses a hidden test set for the official evaluation of models, I made the given validation set as the test set to repeat experiments. Then, I made the validation set extracted from the training set.
+You **MUST** run the following command before running the model. Running the `run_preprocessing.py` file makes the test set ready. Since the CheXpert uses a hidden test set for the official evaluation of models, I made the given validation set as the test set to repeat experiments. I also used the given validation set as a validation set. (This is cheating in general, but I didn't use validation loss information for model selection. This means early stopping ain't used.)
 
 ```bash
 python3 run_preprocessing.py configuration.json
