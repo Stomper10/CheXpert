@@ -75,8 +75,16 @@ if cfg.image_type == 'small':
     img_type = '-small'
 else:
     img_type = ''
-pathFileTrain_frt = './CheXpert-v1.0{0}/train_frt.csv'.format(img_type)
-pathFileTrain_lat = './CheXpert-v1.0{0}/train_lat.csv'.format(img_type)
+
+Traindata_frt = pd.read_csv('./CheXpert-v1.0{0}/train_frt.csv'.format(img_type)) ###
+Traindata_frt = Traindata_frt.sort_values('Path').reset_index(drop=True)
+Traindata_frt.to_csv('./CheXpert-v1.0{0}/train_frt.csv'.format(img_type), index = False) ###
+Traindata_lat = pd.read_csv('./CheXpert-v1.0{0}/train_lat.csv'.format(img_type)) ###
+Traindata_lat = Traindata_lat.sort_values('Path').reset_index(drop=True)
+Traindata_lat.to_csv('./CheXpert-v1.0{0}/train_lat.csv'.format(img_type), index = False) ###
+
+pathFileTrain_frt = './CheXpert-v1.0{0}/train_frt.csv'.format(img_type) ###
+pathFileTrain_lat = './CheXpert-v1.0{0}/train_lat.csv'.format(img_type) ###
 pathFileValid_frt = './CheXpert-v1.0{0}/valid_frt.csv'.format(img_type)
 pathFileValid_lat = './CheXpert-v1.0{0}/valid_lat.csv'.format(img_type)
 pathFileTest_frt = './CheXpert-v1.0{0}/test_frt.csv'.format(img_type)
@@ -118,7 +126,7 @@ datasetTest_frt = CheXpertDataSet(pathFileTest_frt, nnClassCount, cfg.policy, tr
 datasetTest_lat = CheXpertDataSet(pathFileTest_lat, nnClassCount, cfg.policy, transformSequence)
 datasetTest_agg = CheXpertDataSet(pathFileTest_agg, nnClassCount, cfg.policy, transformSequence)
 
-# Use subset of datasetTrain for training
+# Use subset of datasetTrain for training ###
 train_num_frt = round(len(datasetTrain_frt) * cfg.train_ratio) # use subset of original training dataset
 train_num_lat = round(len(datasetTrain_lat) * cfg.train_ratio) # use subset of original training dataset
 datasetTrain_frt, _ = random_split(datasetTrain_frt, [train_num_frt, len(datasetTrain_frt) - train_num_frt])
@@ -134,9 +142,9 @@ print('Test data (study):', len(datasetTest_agg), '\n')
 
 # Create DataLoaders
 dataLoaderTrain_frt = DataLoader(dataset = datasetTrain_frt, batch_size = trBatchSize, 
-                                 shuffle = True, num_workers = 2, pin_memory = True)
+                                 shuffle = True, num_workers = 2, pin_memory = True) ###
 dataLoaderTrain_lat = DataLoader(dataset = datasetTrain_lat, batch_size = trBatchSize, 
-                                 shuffle = True, num_workers = 2, pin_memory = True)
+                                 shuffle = True, num_workers = 2, pin_memory = True) ###
 dataLoaderVal_frt = DataLoader(dataset = datasetValid_frt, batch_size = trBatchSize, 
                                shuffle = False, num_workers = 2, pin_memory = True)
 dataLoaderVal_lat = DataLoader(dataset = datasetValid_lat, batch_size = trBatchSize, 
@@ -158,9 +166,9 @@ model = torch.nn.DataParallel(model).cuda()
 # Train the model
 PATH = args.output_path
 if args.output_path[-1] != '/':
-    PATH = args.output_path + '/'
+    PATH = PATH + '/'
 else:
-    PATH = args.output_path
+    PATH = PATH
 
 if not os.path.exists(PATH): os.makedirs(PATH)
 
@@ -228,7 +236,11 @@ for i in range(len(outPROB_lat)):
     for j in range(len(class_names)):
         df.iloc[len(outPROB_frt) + i, j + 1] = outPROB_lat[i][0][j]
 
-df_agg = df.groupby('Path').agg('min').reset_index() # max -> mean -> min
+df_agg = df.groupby('Path').agg({'Card' : 'min',
+                                 'Edem' : 'max',
+                                 'Cons' : 'min',
+                                 'Atel' : 'min',
+                                 'PlEf' : 'min'}).reset_index()
 df_agg = df_agg.sort_values('Path')
 results = df_agg.drop(['Path'], axis = 1).values.tolist()
 
