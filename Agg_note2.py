@@ -405,3 +405,168 @@ for i in range(nnClassCount):
 
 #plt.savefig('{0}ROC_{1}.png'.format(PATH, nnClassCount), dpi = 100)
 plt.close()
+
+
+
+
+###################################
+## Train with only success modes ## #210908
+###################################
+img_type = '-small'
+
+# frt 0.5
+data_frt = pd.read_csv('./CheXpert-v1.0{0}/data_frt_boost1.csv'.format(img_type))
+
+data_frt['Card_diff'] = data_frt.apply(lambda row: abs(row.Card - row.Cardiomegaly), axis = 1)
+data_frt['Edem_diff'] = data_frt.apply(lambda row: abs(row.Edem - row.Edema), axis = 1)
+data_frt['Cons_diff'] = data_frt.apply(lambda row: abs(row.Cons - row.Consolidation), axis = 1)
+data_frt['Atel_diff'] = data_frt.apply(lambda row: abs(row.Atel - row.Atelectasis), axis = 1)
+data_frt['PlEf_diff'] = data_frt.apply(lambda row: abs(row.PlEf - row.Pleural_Effusion), axis = 1)
+
+data_frt['Card_flag'] = data_frt.apply(lambda row: row.Card_diff > 0.5, axis = 1)
+data_frt['Edem_flag'] = data_frt.apply(lambda row: row.Edem_diff > 0.5, axis = 1)
+data_frt['Cons_flag'] = data_frt.apply(lambda row: row.Cons_diff > 0.5, axis = 1)
+data_frt['Atel_flag'] = data_frt.apply(lambda row: row.Atel_diff > 0.5, axis = 1)
+data_frt['PlEf_flag'] = data_frt.apply(lambda row: row.PlEf_diff > 0.5, axis = 1)
+
+data_frt['Total_flag'] = data_frt.apply(lambda row: (row.Card_flag + row.Edem_flag + row.Cons_flag + row.Atel_flag + row.PlEf_flag) == 0, axis = 1)
+
+data_frt2 = data_frt[data_frt['Total_flag'] == True] # 0.5: 122671, 0.7: 62468, 0.9: 15158
+
+Traindata_frt = pd.read_csv('./CheXpert-v1.0{0}/train_frt.csv'.format(img_type)) ###
+Traindata_frt = Traindata_frt.sort_values('Path').reset_index(drop=True)
+
+data_frt3 = Traindata_frt[Traindata_frt['Path'].isin(list(data_frt2['Path']))].reset_index(drop=True)
+data_frt3.to_csv('./CheXpert-v1.0{0}/train_frt0.5s_all.csv'.format(img_type), index = False)
+
+
+# lat 0.5
+data_lat = pd.read_csv('./CheXpert-v1.0{0}/data_lat_boost1.csv'.format(img_type))
+
+data_lat['Card_diff'] = data_lat.apply(lambda row: abs(row.Card - row.Cardiomegaly), axis = 1)
+data_lat['Edem_diff'] = data_lat.apply(lambda row: abs(row.Edem - row.Edema), axis = 1)
+data_lat['Cons_diff'] = data_lat.apply(lambda row: abs(row.Cons - row.Consolidation), axis = 1)
+data_lat['Atel_diff'] = data_lat.apply(lambda row: abs(row.Atel - row.Atelectasis), axis = 1)
+data_lat['PlEf_diff'] = data_lat.apply(lambda row: abs(row.PlEf - row.Pleural_Effusion), axis = 1)
+
+data_lat['Card_flag'] = data_lat.apply(lambda row: row.Card_diff > 0.5, axis = 1)
+data_lat['Edem_flag'] = data_lat.apply(lambda row: row.Edem_diff > 0.5, axis = 1)
+data_lat['Cons_flag'] = data_lat.apply(lambda row: row.Cons_diff > 0.5, axis = 1)
+data_lat['Atel_flag'] = data_lat.apply(lambda row: row.Atel_diff > 0.5, axis = 1)
+data_lat['PlEf_flag'] = data_lat.apply(lambda row: row.PlEf_diff > 0.5, axis = 1)
+
+data_lat['Total_flag'] = data_lat.apply(lambda row: (row.Card_flag + row.Edem_flag + row.Cons_flag + row.Atel_flag + row.PlEf_flag) == 0, axis = 1)
+
+data_lat2 = data_lat[data_lat['Total_flag'] == True] # 0.5: 16686, 0.7: 10738, 0.9: 3197
+
+Traindata_lat = pd.read_csv('./CheXpert-v1.0{0}/train_lat.csv'.format(img_type))
+Traindata_lat = Traindata_lat.sort_values('Path').reset_index(drop=True)
+
+data_lat3 = Traindata_lat[Traindata_lat['Path'].isin(list(data_lat2['Path']))].reset_index(drop=True)
+data_lat3.to_csv('./CheXpert-v1.0{0}/train_lat0.5s_all.csv'.format(img_type), index = False)
+
+
+
+# frt 0.7
+data_frt = pd.read_csv('./CheXpert-v1.0{0}/data_frt_boost1.csv'.format(img_type))
+
+data_frt['Card_diff'] = data_frt.apply(lambda row: abs(row.Card - row.Cardiomegaly), axis = 1)
+data_frt['Edem_diff'] = data_frt.apply(lambda row: abs(row.Edem - row.Edema), axis = 1)
+data_frt['Cons_diff'] = data_frt.apply(lambda row: abs(row.Cons - row.Consolidation), axis = 1)
+data_frt['Atel_diff'] = data_frt.apply(lambda row: abs(row.Atel - row.Atelectasis), axis = 1)
+data_frt['PlEf_diff'] = data_frt.apply(lambda row: abs(row.PlEf - row.Pleural_Effusion), axis = 1)
+
+data_frt['Card_flag'] = data_frt.apply(lambda row: row.Card_diff > 0.7, axis = 1)
+data_frt['Edem_flag'] = data_frt.apply(lambda row: row.Edem_diff > 0.7, axis = 1)
+data_frt['Cons_flag'] = data_frt.apply(lambda row: row.Cons_diff > 0.7, axis = 1)
+data_frt['Atel_flag'] = data_frt.apply(lambda row: row.Atel_diff > 0.7, axis = 1)
+data_frt['PlEf_flag'] = data_frt.apply(lambda row: row.PlEf_diff > 0.7, axis = 1)
+
+data_frt['Total_flag'] = data_frt.apply(lambda row: (row.Card_flag + row.Edem_flag + row.Cons_flag + row.Atel_flag + row.PlEf_flag) == 0, axis = 1)
+
+data_frt2 = data_frt[data_frt['Total_flag'] == True] # 0.5: 122671, 0.7: 62468, 0.9: 15158
+
+Traindata_frt = pd.read_csv('./CheXpert-v1.0{0}/train_frt.csv'.format(img_type)) ###
+Traindata_frt = Traindata_frt.sort_values('Path').reset_index(drop=True)
+
+data_frt3 = Traindata_frt[Traindata_frt['Path'].isin(list(data_frt2['Path']))].reset_index(drop=True)
+data_frt3.to_csv('./CheXpert-v1.0{0}/train_frt0.7s_all.csv'.format(img_type), index = False)
+
+
+# lat 0.7
+data_lat = pd.read_csv('./CheXpert-v1.0{0}/data_lat_boost1.csv'.format(img_type))
+
+data_lat['Card_diff'] = data_lat.apply(lambda row: abs(row.Card - row.Cardiomegaly), axis = 1)
+data_lat['Edem_diff'] = data_lat.apply(lambda row: abs(row.Edem - row.Edema), axis = 1)
+data_lat['Cons_diff'] = data_lat.apply(lambda row: abs(row.Cons - row.Consolidation), axis = 1)
+data_lat['Atel_diff'] = data_lat.apply(lambda row: abs(row.Atel - row.Atelectasis), axis = 1)
+data_lat['PlEf_diff'] = data_lat.apply(lambda row: abs(row.PlEf - row.Pleural_Effusion), axis = 1)
+
+data_lat['Card_flag'] = data_lat.apply(lambda row: row.Card_diff > 0.7, axis = 1)
+data_lat['Edem_flag'] = data_lat.apply(lambda row: row.Edem_diff > 0.7, axis = 1)
+data_lat['Cons_flag'] = data_lat.apply(lambda row: row.Cons_diff > 0.7, axis = 1)
+data_lat['Atel_flag'] = data_lat.apply(lambda row: row.Atel_diff > 0.7, axis = 1)
+data_lat['PlEf_flag'] = data_lat.apply(lambda row: row.PlEf_diff > 0.7, axis = 1)
+
+data_lat['Total_flag'] = data_lat.apply(lambda row: (row.Card_flag + row.Edem_flag + row.Cons_flag + row.Atel_flag + row.PlEf_flag) == 0, axis = 1)
+
+data_lat2 = data_lat[data_lat['Total_flag'] == True] # 0.5: 16686, 0.7: 10738, 0.9: 3197
+
+Traindata_lat = pd.read_csv('./CheXpert-v1.0{0}/train_lat.csv'.format(img_type))
+Traindata_lat = Traindata_lat.sort_values('Path').reset_index(drop=True)
+
+data_lat3 = Traindata_lat[Traindata_lat['Path'].isin(list(data_lat2['Path']))].reset_index(drop=True)
+data_lat3.to_csv('./CheXpert-v1.0{0}/train_lat0.7s_all.csv'.format(img_type), index = False)
+
+
+
+# frt 0.9
+data_frt = pd.read_csv('./CheXpert-v1.0{0}/data_frt_boost1.csv'.format(img_type))
+
+data_frt['Card_diff'] = data_frt.apply(lambda row: abs(row.Card - row.Cardiomegaly), axis = 1)
+data_frt['Edem_diff'] = data_frt.apply(lambda row: abs(row.Edem - row.Edema), axis = 1)
+data_frt['Cons_diff'] = data_frt.apply(lambda row: abs(row.Cons - row.Consolidation), axis = 1)
+data_frt['Atel_diff'] = data_frt.apply(lambda row: abs(row.Atel - row.Atelectasis), axis = 1)
+data_frt['PlEf_diff'] = data_frt.apply(lambda row: abs(row.PlEf - row.Pleural_Effusion), axis = 1)
+
+data_frt['Card_flag'] = data_frt.apply(lambda row: row.Card_diff > 0.9, axis = 1)
+data_frt['Edem_flag'] = data_frt.apply(lambda row: row.Edem_diff > 0.9, axis = 1)
+data_frt['Cons_flag'] = data_frt.apply(lambda row: row.Cons_diff > 0.9, axis = 1)
+data_frt['Atel_flag'] = data_frt.apply(lambda row: row.Atel_diff > 0.9, axis = 1)
+data_frt['PlEf_flag'] = data_frt.apply(lambda row: row.PlEf_diff > 0.9, axis = 1)
+
+data_frt['Total_flag'] = data_frt.apply(lambda row: (row.Card_flag + row.Edem_flag + row.Cons_flag + row.Atel_flag + row.PlEf_flag) == 0, axis = 1)
+
+data_frt2 = data_frt[data_frt['Total_flag'] == True] # 0.5: 122671, 0.7: 62468, 0.9: 15158
+
+Traindata_frt = pd.read_csv('./CheXpert-v1.0{0}/train_frt.csv'.format(img_type)) ###
+Traindata_frt = Traindata_frt.sort_values('Path').reset_index(drop=True)
+
+data_frt3 = Traindata_frt[Traindata_frt['Path'].isin(list(data_frt2['Path']))].reset_index(drop=True)
+data_frt3.to_csv('./CheXpert-v1.0{0}/train_frt0.9s_all.csv'.format(img_type), index = False)
+
+
+# lat 0.9
+data_lat = pd.read_csv('./CheXpert-v1.0{0}/data_lat_boost1.csv'.format(img_type))
+
+data_lat['Card_diff'] = data_lat.apply(lambda row: abs(row.Card - row.Cardiomegaly), axis = 1)
+data_lat['Edem_diff'] = data_lat.apply(lambda row: abs(row.Edem - row.Edema), axis = 1)
+data_lat['Cons_diff'] = data_lat.apply(lambda row: abs(row.Cons - row.Consolidation), axis = 1)
+data_lat['Atel_diff'] = data_lat.apply(lambda row: abs(row.Atel - row.Atelectasis), axis = 1)
+data_lat['PlEf_diff'] = data_lat.apply(lambda row: abs(row.PlEf - row.Pleural_Effusion), axis = 1)
+
+data_lat['Card_flag'] = data_lat.apply(lambda row: row.Card_diff > 0.9, axis = 1)
+data_lat['Edem_flag'] = data_lat.apply(lambda row: row.Edem_diff > 0.9, axis = 1)
+data_lat['Cons_flag'] = data_lat.apply(lambda row: row.Cons_diff > 0.9, axis = 1)
+data_lat['Atel_flag'] = data_lat.apply(lambda row: row.Atel_diff > 0.9, axis = 1)
+data_lat['PlEf_flag'] = data_lat.apply(lambda row: row.PlEf_diff > 0.9, axis = 1)
+
+data_lat['Total_flag'] = data_lat.apply(lambda row: (row.Card_flag + row.Edem_flag + row.Cons_flag + row.Atel_flag + row.PlEf_flag) == 0, axis = 1)
+
+data_lat2 = data_lat[data_lat['Total_flag'] == True] # 0.5: 16686, 0.7: 10738, 0.9: 3197
+
+Traindata_lat = pd.read_csv('./CheXpert-v1.0{0}/train_lat.csv'.format(img_type))
+Traindata_lat = Traindata_lat.sort_values('Path').reset_index(drop=True)
+
+data_lat3 = Traindata_lat[Traindata_lat['Path'].isin(list(data_lat2['Path']))].reset_index(drop=True)
+data_lat3.to_csv('./CheXpert-v1.0{0}/train_lat0.9s_all.csv'.format(img_type), index = False)

@@ -75,19 +75,27 @@ if cfg.image_type == 'small':
     img_type = '-small'
 else:
     img_type = ''
-pathFileTrain_frt = './CheXpert-v1.0{0}/train_frt.csv'.format(img_type)
-pathFileTrain_lat = './CheXpert-v1.0{0}/train_lat.csv'.format(img_type)
-pathFileValid_frt = './CheXpert-v1.0{0}/test_frt.csv'.format(img_type)
-pathFileValid_lat = './CheXpert-v1.0{0}/test_lat.csv'.format(img_type)
+
+Traindata_frt = pd.read_csv('./CheXpert-v1.0{0}/train_frt.csv'.format(img_type)) ###
+Traindata_frt = Traindata_frt.sort_values('Path').reset_index(drop=True)
+Traindata_frt.to_csv('./CheXpert-v1.0{0}/train_frt.csv'.format(img_type), index = False) ###
+Traindata_lat = pd.read_csv('./CheXpert-v1.0{0}/train_lat.csv'.format(img_type)) ###
+Traindata_lat = Traindata_lat.sort_values('Path').reset_index(drop=True)
+Traindata_lat.to_csv('./CheXpert-v1.0{0}/train_lat.csv'.format(img_type), index = False) ###
+
+pathFileTrain_frt = './CheXpert-v1.0{0}/train_frt.csv'.format(img_type) ###
+pathFileTrain_lat = './CheXpert-v1.0{0}/train_lat.csv'.format(img_type) ###
+pathFileValid_frt = './CheXpert-v1.0{0}/valid_frt.csv'.format(img_type)
+pathFileValid_lat = './CheXpert-v1.0{0}/valid_lat.csv'.format(img_type)
 pathFileTest_frt = './CheXpert-v1.0{0}/test_frt.csv'.format(img_type)
 pathFileTest_lat = './CheXpert-v1.0{0}/test_lat.csv'.format(img_type)
-pathFileTest_all = './CheXpert-v1.0{0}/test_200.csv'.format(img_type)
+pathFileTest_agg = './CheXpert-v1.0{0}/test_agg.csv'.format(img_type)
 
 # Neural network parameters
 nnIsTrained = cfg.pre_trained # if pre-trained by ImageNet
 
 # Training settings
-trBatchSize = cfg.batch_size    # batch size
+trBatchSize = cfg.batch_size # batch size
 trMaxEpoch = cfg.epochs      # maximum number of epochs
 
 # Parameters related to image transforms: size of the down-scaled image, cropped image
@@ -95,14 +103,8 @@ imgtransResize = cfg.imgtransResize
 
 # Class names
 nnClassCount = cfg.nnClassCount   # dimension of the output - 5: only competition obs.
-if nnClassCount == 5:
-    class_names = ['Cardiomegaly', 'Edema', 'Consolidation', 'Atelectasis', 'Pleural Effusion']
-elif nnClassCount == 14:
-    class_names = ['No Finding', 'Enlarged Cardiomediastinum', 'Cardiomegaly', 'Lung Opacity', 
-                   'Lung Lesion', 'Edema', 'Consolidation', 'Pneumonia', 'Atelectasis', 'Pneumothorax', 
-                   'Pleural Effusion', 'Pleural Other', 'Fracture', 'Support Devices']
-else:
-    class_names = ['Cardiomegaly']
+class_names = ["Card", "Edem", "Cons", "Atel", "PlEf"]
+
 
 
 ######################
@@ -122,41 +124,36 @@ datasetValid_frt = CheXpertDataSet(pathFileValid_frt, nnClassCount, cfg.policy, 
 datasetValid_lat = CheXpertDataSet(pathFileValid_lat, nnClassCount, cfg.policy, transformSequence)
 datasetTest_frt = CheXpertDataSet(pathFileTest_frt, nnClassCount, cfg.policy, transformSequence)
 datasetTest_lat = CheXpertDataSet(pathFileTest_lat, nnClassCount, cfg.policy, transformSequence)
-datasetTest_all = CheXpertDataSet(pathFileTest_all, nnClassCount, cfg.policy, transformSequence)
+datasetTest_agg = CheXpertDataSet(pathFileTest_agg, nnClassCount, cfg.policy, transformSequence)
 
-# Use subset of datasetTrain for training - this process changes dataset order (even for train_ratio = 1)
-'''train_num_frt = round(len(datasetTrain_frt) * cfg.train_ratio) # use subset of original training dataset
+# Use subset of datasetTrain for training ###
+train_num_frt = round(len(datasetTrain_frt) * cfg.train_ratio) # use subset of original training dataset
 train_num_lat = round(len(datasetTrain_lat) * cfg.train_ratio) # use subset of original training dataset
 datasetTrain_frt, _ = random_split(datasetTrain_frt, [train_num_frt, len(datasetTrain_frt) - train_num_frt])
-datasetTrain_lat, _ = random_split(datasetTrain_lat, [train_num_lat, len(datasetTrain_lat) - train_num_lat])'''
+datasetTrain_lat, _ = random_split(datasetTrain_lat, [train_num_lat, len(datasetTrain_lat) - train_num_lat])
 print('<<< Data Information >>>')
-print('Train data length(frontal):', len(datasetTrain_frt))
-print('Train data length(lateral):', len(datasetTrain_lat))
-print('Valid data length(frontal):', len(datasetValid_frt))
-print('Valid data length(lateral):', len(datasetValid_lat))
-print('Test data length(frontal):', len(datasetTest_frt))
-print('Test data length(lateral):', len(datasetTest_lat))
-print('Test data length(study):', len(datasetTest_all))
-print('')
+print('Train data (frontal):', len(datasetTrain_frt))
+print('Train data (lateral):', len(datasetTrain_lat))
+print('Valid data (frontal):', len(datasetValid_frt))
+print('Valid data (lateral):', len(datasetValid_lat))
+print('Test data (frontal):', len(datasetTest_frt))
+print('Test data (lateral):', len(datasetTest_lat))
+print('Test data (study):', len(datasetTest_agg), '\n')
 
 # Create DataLoaders
 dataLoaderTrain_frt = DataLoader(dataset = datasetTrain_frt, batch_size = trBatchSize, 
-                                 shuffle = False, num_workers = 2, pin_memory = True)
+                                 shuffle = True, num_workers = 2, pin_memory = True) ###
 dataLoaderTrain_lat = DataLoader(dataset = datasetTrain_lat, batch_size = trBatchSize, 
-                                 shuffle = False, num_workers = 2, pin_memory = True)
+                                 shuffle = True, num_workers = 2, pin_memory = True) ###
 dataLoaderVal_frt = DataLoader(dataset = datasetValid_frt, batch_size = trBatchSize, 
                                shuffle = False, num_workers = 2, pin_memory = True)
 dataLoaderVal_lat = DataLoader(dataset = datasetValid_lat, batch_size = trBatchSize, 
                                shuffle = False, num_workers = 2, pin_memory = True)
 dataLoaderTest_frt = DataLoader(dataset = datasetTest_frt, num_workers = 2, pin_memory = True)
 dataLoaderTest_lat = DataLoader(dataset = datasetTest_lat, num_workers = 2, pin_memory = True)
-dataLoaderTest_all = DataLoader(dataset = datasetTest_all, num_workers = 2, pin_memory = True)
+dataLoaderTest_agg = DataLoader(dataset = datasetTest_agg, num_workers = 2, pin_memory = True)
 
-# Check Cardiomegaly balanced
-'''for batchID, (varInput, target) in enumerate(dataLoaderTrain_frt):
-    if batchID == 0:
-        print(target)
-        break'''
+
 
 #####################
 ## Train the Model ##
@@ -169,37 +166,33 @@ model = torch.nn.DataParallel(model).cuda()
 # Train the model
 PATH = args.output_path
 if args.output_path[-1] != '/':
-    PATH = args.output_path + '/'
+    PATH = PATH + '/'
 else:
-    PATH = args.output_path
+    PATH = PATH
 
 if not os.path.exists(PATH): os.makedirs(PATH)
 
 # Train frontal model
 train_valid_start_frt = time.time()
 '''See 'materials.py' to check the class 'CheXpertTrainer'.'''
-model_num_frt, train_time_frt = CheXpertTrainer.train(model, dataLoaderTrain_frt, dataLoaderVal_frt, nnClassCount, trMaxEpoch, PATH, 'frt', checkpoint = None, cfg = cfg)
+model_num_frt, model_num_frt_each, train_time_frt = CheXpertTrainer.train(model, dataLoaderTrain_frt, dataLoaderVal_frt, class_names,
+                                                                          nnClassCount, trMaxEpoch, PATH, 'frt', checkpoint = None, cfg = cfg)
 train_valid_end_frt = time.time()
 
 # Train lateral model
 train_valid_start_lat = time.time()
 '''See 'materials.py' to check the class 'CheXpertTrainer'.'''
-model_num_lat, train_time_lat = CheXpertTrainer.train(model, dataLoaderTrain_lat, dataLoaderVal_lat, nnClassCount, trMaxEpoch, PATH, 'lat', checkpoint = None, cfg = cfg)
+model_num_lat, model_num_lat_each, train_time_lat = CheXpertTrainer.train(model, dataLoaderTrain_lat, dataLoaderVal_lat, class_names,
+                                                                          nnClassCount, trMaxEpoch, PATH, 'lat', checkpoint = None, cfg = cfg)
 train_valid_end_lat = time.time()
 print('<<< Model Trained >>>')
-print('For frontal model,', 'm-epoch_{0}_frt.pth.tar'.format(model_num_frt), 'is the best model overall.')
-'''print('For frontal model,', 'm-epoch_{0}_frt_Card.pth.tar'.format(model_num_frt_Card), 'is the best model.')
-print('For frontal model,', 'm-epoch_{0}_frt_Edem.pth.tar'.format(model_num_frt_Edem), 'is the best model.')
-print('For frontal model,', 'm-epoch_{0}_frt_Cons.pth.tar'.format(model_num_frt_Cons), 'is the best model.')
-print('For frontal model,', 'm-epoch_{0}_frt_Atel.pth.tar'.format(model_num_frt_Atel), 'is the best model.')
-print('For frontal model,', 'm-epoch_{0}_frt_PlEf.pth.tar'.format(model_num_frt_PlEf), 'is the best model.')'''
+print('For frontal model,', 'm-epoch_{0}_frt.pth.tar'.format(model_num_frt), 'is the best overall.')
+for i in range(5):
+    print('For frontal {0},'.format(class_names[i]), 'm-epoch_{0}_frt.pth.tar'.format(model_num_frt_each[i]), 'is the best.')
 print('')
-print('For lateral model,', 'm-epoch_{0}_lat.pth.tar'.format(model_num_lat), 'is the best model overall.')
-'''print('For lateral model,', 'm-epoch_{0}_lat_Card.pth.tar'.format(model_num_lat_Card), 'is the best model.')
-print('For lateral model,', 'm-epoch_{0}_lat_Edem.pth.tar'.format(model_num_lat_Edem), 'is the best model.')
-print('For lateral model,', 'm-epoch_{0}_lat_Cons.pth.tar'.format(model_num_lat_Cons), 'is the best model.')
-print('For lateral model,', 'm-epoch_{0}_lat_Atel.pth.tar'.format(model_num_lat_Atel), 'is the best model.')
-print('For lateral model,', 'm-epoch_{0}_lat_PlEf.pth.tar'.format(model_num_lat_PlEf), 'is the best model.')'''
+print('For lateral model,', 'm-epoch_{0}_lat.pth.tar'.format(model_num_lat), 'is the best overall.')
+for i in range(5):
+    print('For lateral {0},'.format(class_names[i]), 'm-epoch_{0}_lat.pth.tar'.format(model_num_lat_each[i]), 'is the best.')
 print('')
 
 
@@ -207,8 +200,8 @@ print('')
 ##############################
 ## Test and Draw ROC Curves ##
 ##############################
-checkpoint_frt = PATH + 'm-epoch_{0}_frt.pth.tar'.format(model_num_frt)
-checkpoint_lat = PATH + 'm-epoch_{0}_lat.pth.tar'.format(model_num_lat)
+checkpoint_frt = PATH + 'm-epoch_{0}_frt.pth.tar'.format(trMaxEpoch) # Use the last model ('model_num_frt' if use valid set for model decision)
+checkpoint_lat = PATH + 'm-epoch_{0}_lat.pth.tar'.format(trMaxEpoch) # Use the last model ('model_num_lat' if use valid set for model decision)
 '''See 'materials.py' to check the class 'CheXpertTrainer'.'''
 outGT_frt, outPRED_frt, outPROB_frt, aurocMean_frt, aurocIndividual_frt = CheXpertTrainer.test(model, dataLoaderTest_frt, nnClassCount, checkpoint_frt, class_names, 'frt')
 outGT_lat, outPRED_lat, outPROB_lat, aurocMean_lat, aurocIndividual_lat = CheXpertTrainer.test(model, dataLoaderTest_lat, nnClassCount, checkpoint_lat, class_names, 'lat')
@@ -243,7 +236,11 @@ for i in range(len(outPROB_lat)):
     for j in range(len(class_names)):
         df.iloc[len(outPROB_frt) + i, j + 1] = outPROB_lat[i][0][j]
 
-df_agg = df.groupby('Path').agg('max').reset_index()
+df_agg = df.groupby('Path').agg({'Card' : 'min',
+                                 'Edem' : 'max',
+                                 'Cons' : 'min',
+                                 'Atel' : 'min',
+                                 'PlEf' : 'min'}).reset_index()
 df_agg = df_agg.sort_values('Path')
 results = df_agg.drop(['Path'], axis = 1).values.tolist()
 
@@ -258,18 +255,11 @@ with open('{}testPROB_all.txt'.format(PATH), 'wb') as fp:
 # Draw ROC curves
 EnsemTest = results
 '''See 'materials.py' to check the function 'EnsemAgg'.'''
-outGT, outPRED, aurocMean, aurocIndividual = EnsemAgg(EnsemTest, dataLoaderTest_all, nnClassCount, class_names)
+outGT, outPRED, aurocMean, aurocIndividual = EnsemAgg(EnsemTest, dataLoaderTest_agg, nnClassCount, class_names)
 
-'''if nnClassCount <= 7:
-    nrows = 1
-    ncols = nnClassCount
-else:
-    nrows = 2
-    ncols = 7
-
-fig, ax = plt.subplots(nrows = nrows, ncols = ncols)
+fig, ax = plt.subplots(nrows = 1, ncols = nnClassCount)
 ax = ax.flatten()
-fig.set_size_inches((ncols * 10, 10))
+fig.set_size_inches((nnClassCount * 10, 10))
 for i in range(nnClassCount):
     fpr, tpr, threshold = metrics.roc_curve(outGT.cpu()[:, i], outPRED.cpu()[:, i])
     roc_auc = metrics.auc(fpr, tpr)
@@ -284,7 +274,7 @@ for i in range(nnClassCount):
     ax[i].set_xlabel('False Positive Rate')
 
 plt.savefig('{0}ROC_{1}.png'.format(PATH, nnClassCount), dpi = 100)
-plt.close()'''
+plt.close()
 
 
 
