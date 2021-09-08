@@ -175,14 +175,14 @@ if not os.path.exists(PATH): os.makedirs(PATH)
 # Train frontal model
 train_valid_start_frt = time.time()
 '''See 'materials.py' to check the class 'CheXpertTrainer'.'''
-model_num_frt, model_num_frt_each, train_time_frt = CheXpertTrainer.train(model, dataLoaderTrain_frt, dataLoaderVal_frt, class_names,
+model_num_frt, model_num_frt_each, train_time_frt = CheXpertTrainer.train(model, dataLoaderTrain_frt, dataLoaderVal_frt,
                                                                           nnClassCount, trMaxEpoch, PATH, 'frt', checkpoint = None, cfg = cfg)
 train_valid_end_frt = time.time()
 
 # Train lateral model
 train_valid_start_lat = time.time()
 '''See 'materials.py' to check the class 'CheXpertTrainer'.'''
-model_num_lat, model_num_lat_each, train_time_lat = CheXpertTrainer.train(model, dataLoaderTrain_lat, dataLoaderVal_lat, class_names,
+model_num_lat, model_num_lat_each, train_time_lat = CheXpertTrainer.train(model, dataLoaderTrain_lat, dataLoaderVal_lat,
                                                                           nnClassCount, trMaxEpoch, PATH, 'lat', checkpoint = None, cfg = cfg)
 train_valid_end_lat = time.time()
 print('<<< Model Trained >>>')
