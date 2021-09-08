@@ -24,17 +24,8 @@ if cfg.image_type == 'small':
     img_type = '-small'
 else:
     img_type = ''
-Traindata_raw = pd.read_csv('./CheXpert-v1.0{0}/train.csv'.format(img_type))
-paths = list(Traindata_raw['Path'])
 
-for i in range(len(paths)):
-    paths[i] = paths[i].split('/')[2] + '/' + paths[i].split('/')[3]
-
-path_unique = list(dict.fromkeys(paths))
-border = path_unique[500]
-border_idx = paths.index(border)
-
-Traindata = Traindata_raw[border_idx:].copy()
+Traindata = pd.read_csv('./CheXpert-v1.0{0}/train.csv'.format(img_type))
 Traindata_frt = Traindata[Traindata['Path'].str.contains('frontal')].copy()
 Traindata_lat = Traindata[Traindata['Path'].str.contains('lateral')].copy()
 Traindata_frt.to_csv('./CheXpert-v1.0{0}/train_frt.csv'.format(img_type), index = False)
@@ -43,7 +34,7 @@ print('Train data length(frontal):', len(Traindata_frt))
 print('Train data length(lateral):', len(Traindata_lat))
 print('Train data length(total):', len(Traindata_frt) + len(Traindata_lat))
 
-Validdata = Traindata_raw[:border_idx].copy() # use first 500 studies from training set as valid set (observation ratio is almost same!)
+Validdata = pd.read_csv('./CheXpert-v1.0{0}/valid.csv'.format(img_type))
 Validdata_frt = Validdata[Validdata['Path'].str.contains('frontal')].copy()
 Validdata_lat = Validdata[Validdata['Path'].str.contains('lateral')].copy()
 Validdata_frt.to_csv('./CheXpert-v1.0{0}/valid_frt.csv'.format(img_type), index = False)
@@ -66,5 +57,5 @@ Testdata_frt.loc[:, 'Study'] = Testdata_frt.Path.str.split('/').str[2] + '/' + T
 Testdata_frt_agg = Testdata_frt.groupby('Study').agg('first').reset_index()
 Testdata_frt_agg = Testdata_frt_agg.sort_values('Path')
 Testdata_frt_agg = Testdata_frt_agg.drop('Study', axis = 1)
-Testdata_frt_agg.to_csv('./CheXpert-v1.0{0}/test_200.csv'.format(img_type), index = False)
+Testdata_frt_agg.to_csv('./CheXpert-v1.0{0}/test_agg.csv'.format(img_type), index = False)
 print('Test data length(study):', len(Testdata_frt_agg))

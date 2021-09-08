@@ -570,3 +570,154 @@ Traindata_lat = Traindata_lat.sort_values('Path').reset_index(drop=True)
 
 data_lat3 = Traindata_lat[Traindata_lat['Path'].isin(list(data_lat2['Path']))].reset_index(drop=True)
 data_lat3.to_csv('./CheXpert-v1.0{0}/train_lat0.9s_all.csv'.format(img_type), index = False)
+
+
+
+
+##########################
+## Sample Discriminator ## ## 500 studies as valid set
+##########################
+img_type = '-small' ###
+PATH = './results/' ###
+
+data_frt = pd.read_csv('./CheXpert-v1.0{0}/data_frt_boost1.csv'.format(img_type))
+data_frt['Card_diff'] = data_frt.apply(lambda row: abs(row.Card - row.Cardiomegaly), axis = 1)
+data_frt['Edem_diff'] = data_frt.apply(lambda row: abs(row.Edem - row.Edema), axis = 1)
+data_frt['Cons_diff'] = data_frt.apply(lambda row: abs(row.Cons - row.Consolidation), axis = 1)
+data_frt['Atel_diff'] = data_frt.apply(lambda row: abs(row.Atel - row.Atelectasis), axis = 1)
+data_frt['PlEf_diff'] = data_frt.apply(lambda row: abs(row.PlEf - row.Pleural_Effusion), axis = 1)
+data_frt['Card_flag'] = data_frt.apply(lambda row: float(row.Card_diff > 0.5), axis = 1) # 1 means bad sample
+data_frt['Edem_flag'] = data_frt.apply(lambda row: float(row.Edem_diff > 0.5), axis = 1) # 0 means good sample
+data_frt['Cons_flag'] = data_frt.apply(lambda row: float(row.Cons_diff > 0.5), axis = 1)
+data_frt['Atel_flag'] = data_frt.apply(lambda row: float(row.Atel_diff > 0.5), axis = 1)
+data_frt['PlEf_flag'] = data_frt.apply(lambda row: float(row.PlEf_diff > 0.5), axis = 1)
+
+train_frt = pd.read_csv('./CheXpert-v1.0-small/train_frt.csv')
+train_frt['Cardiomegaly'] = data_frt['Card_flag']
+train_frt['Edema'] = data_frt['Edem_flag']
+train_frt['Consolidation'] = data_frt['Cons_flag']
+train_frt['Atelectasis'] = data_frt['Atel_flag']
+train_frt['Pleural Effusion'] = data_frt['PlEf_flag']
+
+paths = list(train_frt['Path'])
+
+for i in range(len(paths)):
+    paths[i] = paths[i].split('/')[2] + '/' + paths[i].split('/')[3]
+
+path_unique = list(dict.fromkeys(paths))
+border = path_unique[500]
+border_idx = paths.index(border)
+Traindata_frt = train_frt[border_idx:].copy()
+Traindata_frt.to_csv('./CheXpert-v1.0{0}/train_frt_SD.csv'.format(img_type), index = False)
+
+Validdata_frt = train_frt[:border_idx].copy() # use first 500 studies from training set as valid set (observation ratio is almost same!)
+Validdata_frt.to_csv('./CheXpert-v1.0{0}/valid_frt_SD.csv'.format(img_type), index = False)
+
+
+
+data_lat = pd.read_csv('./CheXpert-v1.0{0}/data_lat_boost1.csv'.format(img_type))
+data_lat['Card_diff'] = data_lat.apply(lambda row: abs(row.Card - row.Cardiomegaly), axis = 1)
+data_lat['Edem_diff'] = data_lat.apply(lambda row: abs(row.Edem - row.Edema), axis = 1)
+data_lat['Cons_diff'] = data_lat.apply(lambda row: abs(row.Cons - row.Consolidation), axis = 1)
+data_lat['Atel_diff'] = data_lat.apply(lambda row: abs(row.Atel - row.Atelectasis), axis = 1)
+data_lat['PlEf_diff'] = data_lat.apply(lambda row: abs(row.PlEf - row.Pleural_Effusion), axis = 1)
+data_lat['Card_flag'] = data_lat.apply(lambda row: float(row.Card_diff > 0.5), axis = 1) # 1 means bad sample
+data_lat['Edem_flag'] = data_lat.apply(lambda row: float(row.Edem_diff > 0.5), axis = 1) # 0 means good sample
+data_lat['Cons_flag'] = data_lat.apply(lambda row: float(row.Cons_diff > 0.5), axis = 1)
+data_lat['Atel_flag'] = data_lat.apply(lambda row: float(row.Atel_diff > 0.5), axis = 1)
+data_lat['PlEf_flag'] = data_lat.apply(lambda row: float(row.PlEf_diff > 0.5), axis = 1)
+
+train_lat = pd.read_csv('./CheXpert-v1.0-small/train_lat.csv')
+train_lat['Cardiomegaly'] = data_lat['Card_flag']
+train_lat['Edema'] = data_lat['Edem_flag']
+train_lat['Consolidation'] = data_lat['Cons_flag']
+train_lat['Atelectasis'] = data_lat['Atel_flag']
+train_lat['Pleural Effusion'] = data_lat['PlEf_flag']
+
+paths = list(train_lat['Path'])
+
+for i in range(len(paths)):
+    paths[i] = paths[i].split('/')[2]
+border_idx = paths.index('patient00149')
+
+Traindata_lat = train_lat[border_idx:].copy()
+Traindata_lat.to_csv('./CheXpert-v1.0{0}/train_lat_SD.csv'.format(img_type), index = False)
+
+Validdata_lat = train_lat[:border_idx].copy() # use first 500 studies from training set as valid set (observation ratio is almost same!)
+Validdata_lat.to_csv('./CheXpert-v1.0{0}/valid_lat_SD.csv'.format(img_type), index = False)
+
+
+
+# Make testset for 500 studies (use given valid set as test set)
+Validdata_frt.loc[:, 'Study'] = Validdata_frt.Path.str.split('/').str[2] + '/' + Validdata_frt.Path.str.split('/').str[3]
+Testdata_frt_agg = Validdata_frt.groupby('Study').agg('first').reset_index()
+Testdata_frt_agg = Testdata_frt_agg.sort_values('Path')
+Testdata_frt_agg = Testdata_frt_agg.drop('Study', axis = 1)
+Testdata_frt_agg.to_csv('./CheXpert-v1.0{0}/test_500_SD.csv'.format(img_type), index = False)
+
+
+
+##################################
+## SD sample weight calculation ##
+##################################
+
+img_type = '-small' ###
+PATH = './results/' ###
+
+with open('{}210806/testPROB_all.txt'.format(PATH), 'rb') as f:
+    outPROB_base = pickle.load(f)
+
+with open('{}210802_0.9/testPROB_all.txt'.format(PATH), 'rb') as f:
+    outPROB_05 = pickle.load(f)
+
+with open('{}210813/testPROB_all.txt'.format(PATH), 'rb') as f:
+    outPROB_sd = pickle.load(f)
+
+outPROB_base_05 = []
+'''
+for i in range(len(outPROB_base)):
+    outPROB_base_05.append(list(map(min, zip(outPROB_base[i][0], outPROB_05[i][0])))) # min, max
+'''
+for i in range(len(outPROB_base)):
+    outPROB_base_05.append(list(map(lambda x, y, z: (1-z)*x + z*y, outPROB_base[i][0], outPROB_05[i][0], outPROB_sd[i][0]))) # min, max
+
+
+# Tranform data
+imgtransResize = 320
+transformList = []
+transformList.append(transforms.Resize((imgtransResize, imgtransResize))) # 320
+transformList.append(transforms.ToTensor())
+transformSequence = transforms.Compose(transformList)
+
+class_names = ["Card", "Edem", "Cons", "Atel", "PlEf"]
+nnClassCount = 5
+policy = "diff"
+pathFileTest_agg = './CheXpert-v1.0{0}/test_agg.csv'.format(img_type)
+datasetTest_agg = CheXpertDataSet(pathFileTest_agg, nnClassCount, policy, transformSequence)
+dataLoaderTest_agg = DataLoader(dataset = datasetTest_agg, num_workers = 2, pin_memory = True)
+
+
+
+# Draw ROC curves
+EnsemTest = outPROB_base_05
+'''See 'materials.py' to check the function 'EnsemAgg'.'''
+outGT, outPRED, aurocMean, aurocIndividual = EnsemAgg(EnsemTest, dataLoaderTest_agg, nnClassCount, class_names)
+
+fig, ax = plt.subplots(nrows = 1, ncols = nnClassCount)
+ax = ax.flatten()
+fig.set_size_inches((nnClassCount * 10, 10))
+for i in range(nnClassCount):
+    fpr, tpr, threshold = metrics.roc_curve(outGT.cpu()[:, i], outPRED.cpu()[:, i])
+    roc_auc = metrics.auc(fpr, tpr)
+    
+    ax[i].plot(fpr, tpr, label = 'AUC = %0.2f' % (roc_auc))
+    ax[i].set_title('ROC for: ' + class_names[i])
+    ax[i].legend(loc = 'lower right')
+    ax[i].plot([0, 1], [0, 1],'r--')
+    ax[i].set_xlim([0, 1])
+    ax[i].set_ylim([0, 1])
+    ax[i].set_ylabel('True Positive Rate')
+    ax[i].set_xlabel('False Positive Rate')
+
+#plt.savefig('{0}ROC_{1}.png'.format(PATH, nnClassCount), dpi = 100)
+plt.close()
