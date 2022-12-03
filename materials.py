@@ -50,7 +50,7 @@ class CheXpertDataSet(Dataset):
             for line in csvReader:
                 image_name = line[0]
                 npline = np.array(line)
-                idx = [7, 10, 11, 13, 15]
+                idx = [7, 10, 15]
                 label = list(npline[idx])
                 for i in range(nnClassCount):
                     if label[i]:
@@ -72,7 +72,7 @@ class CheXpertDataSet(Dataset):
                     else:
                         label[i] = 0
                         
-                image_names.append('./' + image_name)
+                image_names.append('/media/leelabsg-storage1/wonyoung/leelab/CXR/CheXpert/' + image_name)
                 labels.append(label)
 
         self.image_names = image_names
@@ -111,14 +111,14 @@ class CheXpertTrainer():
         # check initial model valid set performance
         lossv1, lossv_each = CheXpertTrainer.epochVal(model, dataLoaderVal, optimizer, trMaxEpoch, nnClassCount, loss)
         print("Initial valid loss (overall): {:.3f}".format(lossv1))
-        for i in range(5):
+        for i in range(nnClassCount):
             print("Initial valid loss {}: {:.3f}".format(class_names[i], lossv_each[i]))
         print('')
 
         # Train the network
-        lossMIN, lossMIN_each = 100000, [100000]*5
+        lossMIN, lossMIN_each = 100000, [100000]*nnClassCount
         lossv_traj_epoch = np.empty((nnClassCount, 0)).tolist()
-        model_num_each = [0]*5
+        model_num_each = [0]*nnClassCount
         train_start, train_end = [], []
         
         for epochID in range(0, trMaxEpoch):
@@ -127,7 +127,7 @@ class CheXpertTrainer():
             train_end.append(time.time())   # training ends
 
             lossv, lossv_each = CheXpertTrainer.epochVal(model, dataLoaderVal, optimizer, trMaxEpoch, nnClassCount, loss)
-            for i in range(5):
+            for i in range(nnClassCount):
                 lossv_traj_epoch[i].append(lossv_each[i])
                 if lossv_each[i] < lossMIN_each[i]:
                     lossMIN_each[i] = lossv_each[i]
@@ -191,29 +191,29 @@ class CheXpertTrainer():
                 target_Card = torch.tensor([i[0] for i in target.tolist()])
                 varOutput_Edem = torch.tensor([i[1] for i in varOutput.tolist()])
                 target_Edem = torch.tensor([i[1] for i in target.tolist()])
-                varOutput_Cons = torch.tensor([i[2] for i in varOutput.tolist()])
-                target_Cons = torch.tensor([i[2] for i in target.tolist()])
-                varOutput_Atel = torch.tensor([i[3] for i in varOutput.tolist()])
-                target_Atel = torch.tensor([i[3] for i in target.tolist()])
-                varOutput_PlEf = torch.tensor([i[4] for i in varOutput.tolist()])
-                target_PlEf = torch.tensor([i[4] for i in target.tolist()])
+                #varOutput_Cons = torch.tensor([i[2] for i in varOutput.tolist()])
+                #target_Cons = torch.tensor([i[2] for i in target.tolist()])
+                #varOutput_Atel = torch.tensor([i[3] for i in varOutput.tolist()])
+                #target_Atel = torch.tensor([i[3] for i in target.tolist()])
+                varOutput_PlEf = torch.tensor([i[2] for i in varOutput.tolist()])
+                target_PlEf = torch.tensor([i[2] for i in target.tolist()])
 
                 lossvalue = loss(varOutput, target)
                 lossVal += lossvalue.item()*varInput.size(0)
                 
                 lossVal_Card += loss(varOutput_Card, target_Card).item()*varInput.size(0)
                 lossVal_Edem += loss(varOutput_Edem, target_Edem).item()*varInput.size(0)
-                lossVal_Cons += loss(varOutput_Cons, target_Cons).item()*varInput.size(0)
-                lossVal_Atel += loss(varOutput_Atel, target_Atel).item()*varInput.size(0)
+                #lossVal_Cons += loss(varOutput_Cons, target_Cons).item()*varInput.size(0)
+                #lossVal_Atel += loss(varOutput_Atel, target_Atel).item()*varInput.size(0)
                 lossVal_PlEf += loss(varOutput_PlEf, target_PlEf).item()*varInput.size(0)
                 
             lossv = lossVal / len(dataLoaderVal.dataset)
             lossv_Card = lossVal_Card / len(dataLoaderVal.dataset)
             lossv_Edem = lossVal_Edem / len(dataLoaderVal.dataset)
-            lossv_Cons = lossVal_Cons / len(dataLoaderVal.dataset)
-            lossv_Atel = lossVal_Atel / len(dataLoaderVal.dataset)
+            #lossv_Cons = lossVal_Cons / len(dataLoaderVal.dataset)
+            #lossv_Atel = lossVal_Atel / len(dataLoaderVal.dataset)
             lossv_PlEf = lossVal_PlEf / len(dataLoaderVal.dataset)
-            lossv_each = [lossv_Card, lossv_Edem, lossv_Cons, lossv_Atel, lossv_PlEf]
+            lossv_each = [lossv_Card, lossv_Edem, lossv_PlEf]
                                 
         return lossv, lossv_each
 
